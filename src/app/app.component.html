@@ -1,0 +1,52 @@
+<div *ngIf="isLoggedIn" class="app-wrapper d-flex">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content flex-grow-1 ms-sidebar">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+<div *ngIf="!isLoggedIn" class="row" style="height: 98vh; background-color: black; color: white">
+  <div class="col-8 d-flex justify-content-center align-items-center">
+    <div class="">
+      <img src="../assets/s3t.png" style="width: 600px" alt="" />
+    </div>
+  </div>
+  <div *ngIf="loginform" class="col-4">
+    <div class="image">
+      <img
+        src="../../assets/instalogo.png"
+        alt="Instagram"
+        class="img-fluid logo"
+        style="width: 250px; height: 70px"
+      />
+    </div>
+    <input type="email" placeholder="Enter Email" /><br />
+    <input type="password" placeholder="Enter Password" /><br />
+    <div class="btn btn-primary">Log In</div>
+    <br />
+    ────────── OR ──────────
+    <div  class="d-flex align-items-center justify-content-center" >
+      <!-- Google button will be rendered here -->
+      <div id="googleBtn"></div>
+    </div>
+    <p>Don't have an account? <a class="  text-primary" style="cursor: pointer;" (click)="signup()">Sign up</a></p>
+  </div>
+   <div *ngIf="!loginform" class="col-4">
+    <div class="image">
+      <img
+        src="../../assets/instalogo.png"
+        alt="Instagram"
+        class="img-fluid logo"
+        style="width: 250px; height: 70px"
+      />
+    </div>
+    <p>Sign up to see photos and videos from your friends.</p>
+    <input type="email" placeholder="Enter Email" /><br />
+    <input type="password" placeholder="Enter Password" /><br />
+    <input type="text" placeholder="Full Name" /><br />
+    <input type="text" placeholder="UserName" /><br />
+    <div class="btn btn-primary">Sign In</div>
+    <br /> 
+    <p> have an account? <a class="  text-primary" style="cursor: pointer;" (click)="signup()">Log in</a></p>
+  </div>
+</div>

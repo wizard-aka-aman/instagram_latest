@@ -1,0 +1,33 @@
+.left-sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  border-right: 1px solid #dbdbdb;
+  background-color: #000000;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+}
+
+.logo {
+  width: 130px;
+}
+
+.nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #f2f2f2;
+  color: #000;
+  text-decoration: none;
+}
+
+.nav-link i {
+  min-width: 24px;
+  text-align: center;
+}
