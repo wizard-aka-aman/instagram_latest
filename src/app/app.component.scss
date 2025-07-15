@@ -1,9 +1,41 @@
+ 
 .app-wrapper {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 }
 
-.ms-sidebar {
-  margin-left: 300px; // same as sidebar width
-  width: calc(100% - 300px);
+.main-content {
+  margin-left: 300px;
+  flex-grow: 1;
+  width: 100%;
+}
+@media (max-width: 768px) {
+.main-content {
+  margin-left: 0;
+  flex-grow: 1;
+  width: 100%;
+}
+}
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: #fafafa;
+}
+
+.card { 
+  background-color: #000000;
+}
+
+input::placeholder {
+  font-size: 14px;
+  color: rgb(180, 180, 180);
+}
+
+.btn-primary {
+  background-color: #0095f6;
+  border-color: #0095f6;
+}
+
+.alert-danger {
+  font-size: 14px;
 }

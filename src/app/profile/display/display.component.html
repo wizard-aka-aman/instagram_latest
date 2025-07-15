@@ -1,0 +1,48 @@
+<div class="container py-5">
+  <div class="d-flex justify-content-center ">
+    <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4">
+      <!-- Profile Image -->
+      <div>
+        <img [src]="avatarUrl" alt="Profile" class="rounded-circle border"
+          style="width: 120px; height: 120px; object-fit: cover;">
+      </div>
+
+      <!-- Profile Info -->
+      <div class="flex-grow-1 ms-md-5 text-center text-md-start">
+        <!-- Username + Edit -->
+        <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
+          <h4 class="mb-0 me-2">{{ username }}</h4>
+          <button class="btn btn-outline-secondary btn-sm">Edit Profile</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="d-flex justify-content-center justify-content-md-start gap-5 mb-3">
+          <span><strong>{{ posts }}</strong> <span style="color: rgb(172, 172, 172);"> posts</span></span>
+          <span><strong>{{ followers }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> followers</span></span>
+          <span><strong>{{ following }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> following</span></span>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <strong>{{ fullname }}</strong><br>
+          <span [innerText]="bio"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="my-4">
+
+  </div>
+
+  <!-- New Post Section -->
+ 
+    <div class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
+      <div class="me-3">
+        <img [src]="plusIconUrl" alt="Add Post"
+          style="width: 80px; height: 80px; border-radius: 50%;">
+      </div>
+      <div class="text-white bg-dark px-3 py-2 rounded">NEW</div>
+    </div>
+ 
+</div>

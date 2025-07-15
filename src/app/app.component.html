@@ -1,52 +1,80 @@
-<div *ngIf="isLoggedIn" class="app-wrapper d-flex">
-  <app-sidebar></app-sidebar>
+<div *ngIf="!isLoggedIn" style="background-color: black !important;" class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100 justify-content-center align-items-center">
 
-  <div class="main-content flex-grow-1 ms-sidebar">
-    <router-outlet></router-outlet>
+    <!-- Left Side Image -->
+    <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+      <img src="../assets/s3t.png" class="img-fluid" style="max-height: 600px; width: 600px;" alt="Instagram Screenshot" />
+    </div>
+
+    <!-- Right Side Auth Form -->
+    <div class="col-12 col-md-8 col-lg-4">
+
+      <div class="card p-4 text-center mb-3">
+        <img src="../../assets/instalogo.png" alt="Instagram" class="img-fluid mx-auto mb-3" style="max-width: 200px;" />
+
+        <!-- LOGIN FORM -->
+<div *ngIf="loginform">
+  <label for="loginEmail"  class="text-white text-start w-100">Email</label>
+  <input id="loginEmail" type="email" [(ngModel)]="loginemail" style="background-color: black; color: white;" class="form-control mb-2" placeholder="Email" />
+
+  <label for="loginPassword" class="text-white text-start w-100">Password</label>
+  <input id="loginPassword" type="password" [(ngModel)]="loginpassword" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Password" />
+
+  <button class="btn btn-primary w-100  my-2" (click)="loginIn()">Log In</button>
+
+  <div class="d-flex align-items-center my-3">
+    <div class="flex-grow-1 border-bottom"></div>
+    <span class="mx-2 text-white">OR</span>
+    <div class="flex-grow-1 border-bottom"></div>
+  </div>
+
+  <!-- <div id="googleBtn"   class="fs-3 text-white d-flex justify-content-center ">Googlee</div>  -->
+
+  <p class="mt-3 text-white">Don't have an account?
+    <a class="text-primary" style="cursor: pointer;" (click)="signup()">Sign up</a>
+  </p>
+</div>
+
+<!-- SIGNUP FORM -->
+<div *ngIf="!loginform">
+  <p class="mb-3 text-white">Sign up to see photos and videos from your friends.</p>
+
+  <label for="signupEmail"   class=" text-white text-start w-100">Email</label>
+  <input id="signupEmail" type="email" [(ngModel)]="signupemail" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Email" />
+
+  <label for="signupPassword" class="text-white text-start w-100">Password</label>
+  <input id="signupPassword" type="password" [(ngModel)]="signuppassword" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Password" />
+
+  <label for="signupName" class="text-white text-start w-100">Full Name</label>
+  <input id="signupName" type="text" [(ngModel)]="signupname" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Full Name" />
+
+  <label for="signupUsername" class="text-white text-start w-100">Username</label>
+  <input id="signupUsername" type="text" [(ngModel)]="signupusername" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Username" />
+
+  <!-- Error Messages -->
+  <div *ngIf="errorMessages.length > 0" class="alert alert-danger text-start p-2">
+    <ul class="mb-0 ps-3">
+      <li *ngFor="let message of errorMessages">{{ message }}</li>
+    </ul>
+  </div>
+
+  <button class="btn btn-primary w-100 my-2" (click)="SignUpInsta()">Sign Up</button>
+
+  <p class="mt-3 text-white">Already have an account?
+    <a class="text-primary" style="cursor: pointer;" (click)="signup()">Log in</a>
+  </p>
+</div>
+
+      </div>
+ 
+    </div>
   </div>
 </div>
-<div *ngIf="!isLoggedIn" class="row" style="height: 98vh; background-color: black; color: white">
-  <div class="col-8 d-flex justify-content-center align-items-center">
-    <div class="">
-      <img src="../assets/s3t.png" style="width: 600px" alt="" />
-    </div>
-  </div>
-  <div *ngIf="loginform" class="col-4">
-    <div class="image">
-      <img
-        src="../../assets/instalogo.png"
-        alt="Instagram"
-        class="img-fluid logo"
-        style="width: 250px; height: 70px"
-      />
-    </div>
-    <input type="email" placeholder="Enter Email" /><br />
-    <input type="password" placeholder="Enter Password" /><br />
-    <div class="btn btn-primary">Log In</div>
-    <br />
-    ────────── OR ──────────
-    <div  class="d-flex align-items-center justify-content-center" >
-      <!-- Google button will be rendered here -->
-      <div id="googleBtn"></div>
-    </div>
-    <p>Don't have an account? <a class="  text-primary" style="cursor: pointer;" (click)="signup()">Sign up</a></p>
-  </div>
-   <div *ngIf="!loginform" class="col-4">
-    <div class="image">
-      <img
-        src="../../assets/instalogo.png"
-        alt="Instagram"
-        class="img-fluid logo"
-        style="width: 250px; height: 70px"
-      />
-    </div>
-    <p>Sign up to see photos and videos from your friends.</p>
-    <input type="email" placeholder="Enter Email" /><br />
-    <input type="password" placeholder="Enter Password" /><br />
-    <input type="text" placeholder="Full Name" /><br />
-    <input type="text" placeholder="UserName" /><br />
-    <div class="btn btn-primary">Sign In</div>
-    <br /> 
-    <p> have an account? <a class="  text-primary" style="cursor: pointer;" (click)="signup()">Log in</a></p>
+
+<!-- Main App When Logged In -->
+<div *ngIf="isLoggedIn" style="background-color: black !important; color: white !important;" class="app-wrapper d-flex">
+  <app-sidebar></app-sidebar>
+  <div class="main-content flex-grow-1 ms-sidebar">
+    <router-outlet></router-outlet>
   </div>
 </div>

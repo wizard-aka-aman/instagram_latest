@@ -8,7 +8,7 @@ import { SharedModule } from "./shared/shared.module";
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; // Required
 import { ToastrModule } from 'ngx-toastr';
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; 
 
 
 @NgModule({
@@ -24,7 +24,7 @@ import { FormsModule } from '@angular/forms';
     SharedModule, 
     HttpClientModule, 
     BrowserAnimationsModule, // 👈 Required for toast animations
-    ToastrModule.forRoot(),  // 👈 Global config
+    ToastrModule.forRoot(),  // 👈 Global config 
 ],
   providers: [],
   bootstrap: [AppComponent]
