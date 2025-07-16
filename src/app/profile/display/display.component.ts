@@ -13,14 +13,21 @@ export class DisplayComponent implements OnInit {
   fullname: string = "";
   //   username: string = 'username_here';
   //  fullname: string = 'Full Name';
-  posts: number = 1;
+  numberposts: number = 1;
   followers: number = 0;
   following: number = 29;
-  bio: string = `This is bio\nThis is another line\nMore lines`;
+  bio: string = "";
   avatarUrl: string = 'assets/avatar.png';
   plusIconUrl: string = 'assets/plus.png';
+  activeTab = 'posts';
+
+posts = [
+  // { imageUrl: 'assets/avatar.png' },
+  // { imageUrl: 'assets/default.png' },
+  // { imageUrl: 'assets/plus.png' }, 
+];
   constructor(private Service: ServiceService , private route : ActivatedRoute) {
-    this.username = this.Service.getUserName();
+    // this.username = this.Service.getUserName();
     this.email = this.Service.getEmail();
     this.fullname = this.Service.getFullName();
     console.log(this.username + this.email + this.fullname);
@@ -28,19 +35,24 @@ export class DisplayComponent implements OnInit {
   }
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      const username = params.get('username');
-      if (username) {
-        this.getProfile(username);
+      this.username =(String) (params.get('username'));
+      if (this.username) {
+        this.getProfile(this.username);
       }
     });
   }
   getProfile(username: string) {
-  // this.http.get(`https://localhost:7071/api/users/profile/${username}`)
-  //   .subscribe(user => {
-  //     this.user = user;
-  //   }, err => {
-  //     // handle user not found
-  //   });
+ this.Service.GetProfileByUserName(username).subscribe({
+  next: (data:any) => {
+    console.log(data); 
+    this.email = data.email;
+    this.fullname = data.fullName;
+    this.bio = data.bio;
+ },
+ error: (error: any) => {
+  console.error(error);
+  }
+});
 }
 
 }

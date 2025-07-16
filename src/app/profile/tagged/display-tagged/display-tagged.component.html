@@ -24,7 +24,7 @@
 
         <!-- Bio -->
         <div>
-          <p class="fs-5">{{ fullname }}</p><br>
+         <p class="fs-5">{{ fullname }}</p><br>
           <span [innerText]="bio"></span>
         </div>
       </div>
@@ -47,17 +47,17 @@
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2">
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}" (click)="activeTab = 'posts'">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}"  routerLink="/{{username}}" (click)="activeTab = 'posts'">
       <i class="fa-solid fa-table-cells"></i> POSTS
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" (click)="activeTab = 'saved'">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved"  >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}"  routerLink="/{{username}}/tagged"  (click)="activeTab = 'tagged'">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}" routerLink="/{{username}}/tagged" >
       <i class="fa-solid fa-user-tag"></i> TAGGED
     </a>
   </li>

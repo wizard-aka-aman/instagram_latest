@@ -69,4 +69,7 @@ export class ServiceService {
   Authsignup(item:any){
     return this.http.post(`${this.BaseUrl}/api/Account/register`,item);
   }
+  GetProfileByUserName(username :string){
+    return this.http.get(`${this.BaseUrl}/Users/${username}`);
+  }
 }

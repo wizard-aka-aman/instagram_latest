@@ -72,7 +72,7 @@
 </div>
 
 <!-- Main App When Logged In -->
-<div *ngIf="isLoggedIn" style="background-color: black !important; color: white !important;" class="app-wrapper d-flex">
+<div *ngIf="isLoggedIn" style="background-color: black !important; color: white !important; height: 100vh!important;" class="app-wrapper d-flex">
   <app-sidebar></app-sidebar>
   <div class="main-content flex-grow-1 ms-sidebar">
     <router-outlet></router-outlet>

@@ -6,6 +6,14 @@ const routes: Routes = [
   {
     path: '',
     component: DisplayComponent,
+  },
+  {
+    path: 'saved',
+    loadChildren: () => import('./saved/saved.module').then(e => e.SavedModule)
+  },
+  {
+    path: 'tagged',
+    loadChildren: () => import('./tagged/tagged.module').then(e => e.TaggedModule)
   }
 ];
 
