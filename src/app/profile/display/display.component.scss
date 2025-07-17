@@ -19,7 +19,7 @@
 }
 
 img.object-fit-cover {
-  object-fit: cover;
+  object-fit: fill;
 }
 .post-wrapper {
   position: relative;
@@ -27,11 +27,13 @@ img.object-fit-cover {
 }
 
 .post-wrapper img {
-  object-fit: cover;
+  object-fit: fill !important;
   height: 100%;
   width: 100%; 
 }
-
+.postimage{
+  object-fit: cover !important;
+}
  
 
 .overlay {

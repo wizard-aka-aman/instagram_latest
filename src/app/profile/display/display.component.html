@@ -66,20 +66,16 @@
 <!-- Posts Grid -->
 <div class="container mt-3">
   <div *ngIf="activeTab === 'posts'" class="row g-2">
-    <div class="col-12 col-sm-6 col-md-4" *ngFor="let post of fullDetailPost">
-  <div class="post-wrapper position-relative">
-    <img [src]="post.imageUrl" alt="Post" class="w-100 h-100 postimage" />
-    
-    <!-- Overlay -->
-    <div class="overlay d-flex justify-content-center align-items-center">
-      <div class="text-white d-flex gap-3 fs-5 fw-bold">
-        <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
-        <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
+    <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
+      <img [src]="post.imageUrl" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" >
+      <!-- Overlay -->
+      <div class="overlay d-flex justify-content-center align-items-center">
+        <div class="text-white d-flex gap-3 fs-5 fw-bold">
+          <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
+          <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
   </div>  
   <div *ngIf="!isPostAvailable" class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
