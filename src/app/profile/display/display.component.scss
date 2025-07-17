@@ -21,6 +21,32 @@
 img.object-fit-cover {
   object-fit: cover;
 }
+.post-wrapper {
+  position: relative;
+  overflow: hidden; 
+}
+
+.post-wrapper img {
+  object-fit: cover;
+  height: 100%;
+  width: 100%; 
+}
+
+ 
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0; 
+}
+
+.post-wrapper:hover .overlay {
+  opacity: 1;
+}
 
 @media (max-width: 768px) {
   .profile-top {

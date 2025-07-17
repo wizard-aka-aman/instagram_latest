@@ -1,0 +1,95 @@
+<div class="container py-5" style="max-width: 600px;">
+  <!-- Profile Image Section -->
+  <div class="d-flex align-items-center mb-4">
+    <img [src]="user.profilePicture" alt="Profile" class="rounded-circle me-3 border"
+         style="width: 60px; height: 60px; object-fit: cover;">
+    <div>
+      <h6 class="mb-1">{{ user.userName }}</h6>
+      <label for="profilePicInput" class="text-primary" style="cursor: pointer; "  data-bs-toggle="modal" data-bs-target="#profileModal" >Change Profile Photo</label>
+ 
+    </div>
+  </div>
+
+  <!-- Edit Form -->
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Name</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" [(ngModel)]="user.fullName" name="name">
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Username</label>
+      <div class="col-sm-9">
+        <input type="text" disabled="true" class="form-control" [(ngModel)]="user.userName" name="username">
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Bio</label>
+      <div class="col-sm-9">
+        <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
+      </div>
+    </div>
+
+    <!-- <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Website</label>
+      <div class="col-sm-9">
+        <input type="text" class="form-control" [(ngModel)]="user.website" name="website">
+      </div>
+    </div> -->
+ 
+
+    <!-- <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Email</label>
+      <div class="col-sm-9">
+        <input type="email" class="form-control" [(ngModel)]="user.email" name="email">
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Phone Number</label>
+      <div class="col-sm-9">
+        <input type="tel" class="form-control" [(ngModel)]="user.phone" name="phone">
+      </div>
+    </div> -->
+
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Gender</label>
+      <div class="col-sm-9">
+        <select class="form-select" [(ngModel)]="user.gender" name="gender">
+          <option value="">Select</option>
+          <option value="Male" >Male</option>
+          <option value="Female" >Female</option>
+          <!-- <option>Prefer not to say</option> -->
+        </select>
+        <span class="fs-small" style="color: rgb(175, 175, 175);" >This won’t be part of your public profile.</span>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-primary px-4" type="submit">Submit</button>
+    </div>
+  </form>
+</div>
+ 
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100" id="profileModalLabel">Change Profile Photo</h5>
+      </div>
+      <div class="modal-body p-0">
+        <button class="btn w-100 text-primary fw-bold border-top" (click)="triggerFileInput()">Upload Photo</button>
+        <button class="btn w-100 text-danger border-top" (click)="removePhoto()">Remove Current Photo</button>
+        <button class="btn w-100 border-top text-white" #closeModal data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" />

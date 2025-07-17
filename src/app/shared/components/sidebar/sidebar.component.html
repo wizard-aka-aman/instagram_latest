@@ -30,7 +30,7 @@
       <i class="fa-solid fa-bell fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications" ></i>
       <span class=" d-xl-inline">Notifications</span>
     </a>
-    <a class="nav-link d-flex align-items-center " routerLink="/create">
+    <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#createModal" >
       <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" ></i>
       <span class=" d-xl-inline">Create</span>
     </a>
@@ -52,4 +52,20 @@
     </a>
   </div>
 </div>
-<!-- <router-outlet></router-outlet> -->
+<!-- Bootstrap create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
+      <div class="modal-header  border-0" style="background-color: black; color: white;" >
+        <h5 class="modal-title d-flex justify-content-between w-100" id="createModalLabel">Change Profile Photo</h5>
+        <button class="btn border  text-white" #closeModal data-bs-dismiss="modal">X</button>
+      </div>
+      <div class="modal-body p-0" style="background-color: rgb(38, 38, 38);">
+         <i class="fa-solid m-4 pt-3 fa-photo-film" style="font-size: 100px;"></i>
+         <p class="mt-2 fs-4">Drag photos and videos here</p>
+          <button class="btn m-5 fw-bold  btn-primary" (click)="triggerFileInputPost()">Upload Photo</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="file" accept="image/*" style="display:none" #fileInputPost (change)="handleFileUploadPost($event)" />

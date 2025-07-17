@@ -1,9 +1,9 @@
-<div class="container  py-5">
-  <div class="d-flex justify-content-center ">
+<div class="container  ">
+  <div class="d-flex justify-content-center pt-4 ">
     <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4">
       <!-- Profile Image -->
       <div>
-        <img [src]="avatarUrl" alt="Profile" class="rounded-circle border"
+        <img [src]="avatarUrl"  data-bs-toggle="modal" data-bs-target="#profileModal"  alt="Profile" class="rounded-circle border"
           style="width: 120px; height: 120px; object-fit: cover;">
       </div>
 
@@ -12,7 +12,7 @@
         <!-- Username + Edit -->
         <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
           <h3 class="mb-0 me-2">{{ username }}</h3>
-          <button class="btn btn-outline-secondary btn-sm">Edit Profile</button>
+          <button class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
         </div>
 
         <!-- Stats -->
@@ -22,9 +22,9 @@
           <span><strong>{{ following }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> following</span></span>
         </div>
 
-        <!-- Bio -->
-        <div>
-          <p class="fs-5">{{ fullname }}</p><br>
+       <!-- Bio -->
+        <div style=" word-wrap: break-word; overflow-wrap: break-word; max-height: 200px; overflow: auto;">
+          <p class="fs-5">{{ fullname }}</p>
           <span [innerText]="bio"></span>
         </div>
       </div>
@@ -52,12 +52,12 @@
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" (click)="activeTab = 'saved'">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}"  routerLink="/{{username}}/tagged"  (click)="activeTab = 'tagged'">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}"  routerLink="/{{username}}/tagged"  >
       <i class="fa-solid fa-user-tag"></i> TAGGED
     </a>
   </li>
@@ -66,20 +66,47 @@
 <!-- Posts Grid -->
 <div class="container mt-3">
   <div *ngIf="activeTab === 'posts'" class="row g-2">
-    <div class="col-12 col-sm-6 col-md-4" *ngFor="let post of posts">
-      <img [src]="post" alt="Post" class="w-100 h-100 object-fit-cover" style="aspect-ratio: 1;">
+    <div class="col-12 col-sm-6 col-md-4" *ngFor="let post of fullDetailPost">
+  <div class="post-wrapper position-relative">
+    <img [src]="post.imageUrl" alt="Post" class="w-100 h-100 postimage" />
+    
+    <!-- Overlay -->
+    <div class="overlay d-flex justify-content-center align-items-center">
+      <div class="text-white d-flex gap-3 fs-5 fw-bold">
+        <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
+        <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
+      </div>
     </div>
   </div>
+</div>
 
-  <div *ngIf="activeTab === 'saved'" class="text-center py-2  ">
-    <i class="fa-solid fs-1 fa-bookmark"></i>
-    <p class="fw-bold fs-2" >Save</p>
-    <p> Save photos and videos that you want to see again. <br>No one is notified, and only you can see what you've saved.</p>
+  </div>  
+  <div *ngIf="!isPostAvailable" class="text-center py-2 " >
+    <i class="fa-solid fs-1 fa-table-cells"></i>
+    <p class="fw-bold fs-2" >Share Photos</p>
+    <p> When you share photos, they will appear on your profile.</p> 
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"  >Share your first photo</button>
   </div>
 
-  <div *ngIf="activeTab === 'tagged'" class="text-center mt-5">
-    <p>No tagged posts yet.</p>
+</div>
+
+<!-- Bootstrap profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100" id="profileModalLabel">Change Profile Photo</h5>
+      </div>
+      <div class="modal-body p-0">
+        <button class="btn w-100 text-primary fw-bold border-top" (click)="triggerFileInput()">Upload Photo</button>
+        <button class="btn w-100 text-danger border-top" (click)="removePhoto()">Remove Current Photo</button>
+        <button class="btn w-100 border-top text-white" #closeModal data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
 
-</div>
+ 
+
+<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 
