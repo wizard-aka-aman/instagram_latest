@@ -94,4 +94,31 @@ export class ServiceService {
   GetAllPostByUsername(username: string) {
     return this.http.get(`${this.BaseUrl}/Posts/${username}`);
   }
+  GetPostByIdWithUserNameAsync(postId:number , username:string){
+    return this.http.get(`${this.BaseUrl}/Posts/post/${postId}/${username}`);
+  }
+  LikePost(item:any){
+    return this.http.post(`${this.BaseUrl}/Posts/like`,item);
+  }
+  UnLikePost(item:any){
+    return this.http.post(`${this.BaseUrl}/Posts/unlike`,item);
+  }
+  AddComment(item:any){
+    return this.http.post(`${this.BaseUrl}/Posts/comment`,item);
+  }
+  GetFollower(username: string){
+    return this.http.get(`${this.BaseUrl}/Follower/getfollower/${username}`);
+  }
+  GetFollowing(username: string){
+    return this.http.get(`${this.BaseUrl}/Follower/getfollowing/${username}`);
+  }
+  FollowPost(item:any){
+    return this.http.post(`${this.BaseUrl}/Follower/follow`,item);
+  }
+  UnFollowPost(item:any){
+    return this.http.post(`${this.BaseUrl}/Follower/unfollow`,item);
+  }
+  isFollowing(loggedInUsername:string , displayUsername:string){
+    return this.http.get(`${this.BaseUrl}/Follower/isfollowing/${loggedInUsername}/${displayUsername}`);
+  }
 }

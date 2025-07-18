@@ -42,7 +42,7 @@ export class EditProfileComponent implements OnInit {
         if (res.profilePicture == null) {
           this.user.profilePicture = 'assets/avatar.png';
         } else {
-          this.user.profilePicture = res.profilePicture;
+          this.user.profilePicture = "data:image/jpeg;base64,"+res.profilePicture;
         }
 
       },

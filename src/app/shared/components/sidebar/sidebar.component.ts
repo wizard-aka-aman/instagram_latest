@@ -15,6 +15,8 @@ export class SidebarComponent {
   isNextStep: boolean = false;
   caption: string = '';
   selectedFile!: File;
+  isCompletedLoading = false;
+  postShared = false;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
   constructor(private Service: ServiceService) {
@@ -50,7 +52,7 @@ export class SidebarComponent {
 
         // ✅ This callback is called *after* file is fully read
         reader.onload = () => {
-          this.previewUrl = reader.result;  // ✅ base64 image preview 
+          this.previewUrl ="data:image/jpeg;base64,"+ reader.result;  // ✅ base64 image preview 
         };
 
         reader.readAsDataURL(file); // Start reading the file
@@ -78,29 +80,33 @@ ResetModal() {
     this.isNextStep = false;
     this.selectedFile = null!;
     this.fileInputPost.nativeElement.value = ''; // ✅ Reset file input
+    this.postShared = false;
   }
 
 UploadFinalPost() {     
+  this.isCompletedLoading = true;
   if (!this.selectedFile ) {
-      alert('Please provide an image and caption.');
-      return;
-    }
-
-    const fData = new FormData();
-    fData.append('Caption', this.caption);
-    fData.append('UserName', this.username);
-    fData.append('imageFile', this.selectedFile);
-
-    this.Service.UploadPost(fData).subscribe({
-      next: (res) => {
-        console.log(res);
-        this.ClearPreview();
-        this.close();
-        this.Service.emitPostRefresh(); // Notify post component
-      },
-      error: (err) => {
-        console.error(err);
-        this.close();
+    alert('Please provide an image and caption.');
+    return;
+  }
+  
+  const fData = new FormData();
+  fData.append('Caption', this.caption);
+  fData.append('UserName', this.username);
+  fData.append('imageFile', this.selectedFile);
+  
+  this.Service.UploadPost(fData).subscribe({
+    next: (res) => {
+      console.log(res);
+      this.ClearPreview();
+      this.postShared = true;
+      this.Service.emitPostRefresh(); // Notify post component
+      this.isCompletedLoading = false;
+    },
+    error: (err) => {
+      console.error(err);
+      this.close();
+      this.isCompletedLoading = false;
       }
     });
   }

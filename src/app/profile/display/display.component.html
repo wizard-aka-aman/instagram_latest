@@ -12,7 +12,10 @@
         <!-- Username + Edit -->
         <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
           <h3 class="mb-0 me-2">{{ username }}</h3>
-          <button class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
+          <button *ngIf="loggedInUserName == username" class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
+          <button *ngIf="loggedInUserName != username && !alreadyFollowing"(click)="Follow()" class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
+          <button *ngIf="loggedInUserName != username && alreadyFollowing"(click)="UnFollow()" class="btn btn-secondary px-3 ms-3 btn-sm"  >UnFollow</button>
+          <!-- <button *ngIf="loggedInUserName != username"  class="btn btn-primary px-3 ms-3  btn-sm"  >Follow</button> -->
         </div>
 
         <!-- Stats -->
@@ -67,9 +70,10 @@
 <div class="container mt-3">
   <div *ngIf="activeTab === 'posts'" class="row g-2">
     <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
-      <img [src]="post.imageUrl" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" >
+      <img [src]="'data:image/jpeg;base64,'+post.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >
       <!-- Overlay -->
-      <div class="overlay d-flex justify-content-center align-items-center">
+      <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.postId)"  
+          >
         <div class="text-white d-flex gap-3 fs-5 fw-bold">
           <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
           <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
@@ -101,8 +105,8 @@
       </div>
     </div>
   </div>
-</div>
-
+</div> 
  
+
 
 <input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 

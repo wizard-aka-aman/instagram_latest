@@ -67,7 +67,7 @@
         </h5>
 
         <!-- Buttons -->
-        <button *ngIf="!previewUrl" class="btn border text-white" (click)="ClearPreview()"  data-bs-dismiss="modal">X</button>
+        <button   class="btn border text-white" (click)="ClearPreview()"  data-bs-dismiss="modal">X</button>
         <button  style="display: none;" class="btn border text-white" (click)="ClearPreview()"  #closeModal data-bs-dismiss="modal">X</button>
         <button *ngIf="previewUrl && !isNextStep" class="btn text-primary" (click)="NextModal()">Next</button>
         <button *ngIf="isNextStep" class="btn text-primary" (click)="ResetModal()">Back</button>
@@ -77,7 +77,7 @@
       <div class="modal-body p-0" style="background-color: rgb(38, 38, 38); transition: all 0.5s ease;">
         
         <!-- Preview with Caption -->
-        <div *ngIf="previewUrl && isNextStep" class="d-md-flex gap-2 p-3">
+        <div *ngIf="previewUrl && isNextStep && !postShared && !isCompletedLoading" class="d-md-flex gap-2 p-3">
           <div class="flex-shrink-0 d-flex justify-content-center align-items-center">
             <img [src]="previewUrl" alt="Preview" class="img-fluid rounded" style="max-width: 300px;" />
           </div>
@@ -88,12 +88,19 @@
             <button class="btn btn-primary mt-3 float-end" (click)="UploadFinalPost()">Post</button>
           </div>
         </div>
+        <div *ngIf="isCompletedLoading">
+          <img src="../../../../assets/instagram_loading.png" class="m-5 instagramloading" alt="">
+        </div>
 
         <!-- Initial Upload UI -->
-        <div *ngIf="!previewUrl" class="py-5">
+        <div *ngIf="!previewUrl && !postShared" class="py-5">
           <i class="fa-solid fa-photo-film mb-3" style="font-size: 100px;"></i>
           <p class="fs-4">Drag photos and videos here</p>
           <button class="btn fw-bold btn-primary" (click)="triggerFileInputPost()">Upload Photo</button>
+        </div>
+        <div *ngIf="postShared">
+          <img src="../../../../assets/instagram_loading_complete-removebg-preview.png" class="mt-3 " alt="">
+          <p class="fs-3 fw-light" >Your post has been shared.</p>
         </div>
 
         <!-- Preview Only -->

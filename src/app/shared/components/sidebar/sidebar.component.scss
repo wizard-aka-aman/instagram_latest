@@ -34,7 +34,17 @@
 textarea::placeholder{
   color: rgb(255, 255, 255) !important;
 }
- 
+.instagramloading{
+  animation: ghumna .5s linear infinite  ;
+}
+ @keyframes ghumna {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 @media (max-width: 768px) {
   .ms-sidebar {
     margin-left: 0 !important;
