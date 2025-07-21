@@ -40,6 +40,7 @@ export class PostViewComponent implements OnInit {
   zeroComment = true;
   ListLike: any[] = []
   ListComment :any[]= []
+  isSavedPost =false;
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(
     private route: ActivatedRoute,
@@ -58,7 +59,15 @@ export class PostViewComponent implements OnInit {
   }
 
   getPostById(id: number) {
-    this.service.GetPostByIdWithUserNameAsync(id, this.username).subscribe({
+    this.service.IsSaved(this.LoggedInUser,this.postid).subscribe({
+      next: (res: any) => {
+        this.isSavedPost = res;
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+      this.service.GetPostByIdWithUserNameAsync(id, this.username).subscribe({
       next: (data: any) => {
         console.log(data);
         this.user.userName = data.userName
@@ -176,6 +185,40 @@ export class PostViewComponent implements OnInit {
       setTimeout(() => {
     this.comment.nativeElement.focus();
   }, 0);
+  }
+  AddSaved(){
+    const savedform = {
+      postId: this.postid,
+      UserName: this.LoggedInUser,
+    }; 
+    console.log(savedform);
+    
+    this.service.AddedToSaved(savedform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.getPostById(this.postid);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+  }
+  RemoveSaved(){
+   const savedform = {
+      postId: this.postid,
+      UserName: this.LoggedInUser,
+    }; 
+    console.log(savedform);
+    
+    this.service.RemovedFromSaved(savedform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.getPostById(this.postid);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
   }
 
 }

@@ -18,17 +18,21 @@ const routes: Routes = [
         loadChildren: () => import('./accounts/accounts.module').then(e => e.AccountsModule)
     },
     {
+        path: 'search',
+        loadChildren: () => import('./search/search.module').then(e => e.SearchModule)
+    },
+    {
+        path: 'not-found',
+        component: PagenotfoundComponent
+    },
+    {
         path: ':username',
         loadChildren: () => import('./profile/profile.module').then(e => e.ProfileModule)
     },
     {
         path: ':username/p/:postid',
         component: PostViewComponent
-    },
-    {
-        path: '**',
-        component: PagenotfoundComponent,
-    }
+    } 
 ];
 
 @NgModule({

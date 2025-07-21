@@ -94,31 +94,49 @@ export class ServiceService {
   GetAllPostByUsername(username: string) {
     return this.http.get(`${this.BaseUrl}/Posts/${username}`);
   }
-  GetPostByIdWithUserNameAsync(postId:number , username:string){
+  GetPostByIdWithUserNameAsync(postId: number, username: string) {
     return this.http.get(`${this.BaseUrl}/Posts/post/${postId}/${username}`);
   }
-  LikePost(item:any){
-    return this.http.post(`${this.BaseUrl}/Posts/like`,item);
+  LikePost(item: any) {
+    return this.http.post(`${this.BaseUrl}/Posts/like`, item);
   }
-  UnLikePost(item:any){
-    return this.http.post(`${this.BaseUrl}/Posts/unlike`,item);
+  UnLikePost(item: any) {
+    return this.http.post(`${this.BaseUrl}/Posts/unlike`, item);
   }
-  AddComment(item:any){
-    return this.http.post(`${this.BaseUrl}/Posts/comment`,item);
+  AddComment(item: any) {
+    return this.http.post(`${this.BaseUrl}/Posts/comment`, item);
   }
-  GetFollower(username: string){
+  GetFollower(username: string) {
     return this.http.get(`${this.BaseUrl}/Follower/getfollower/${username}`);
   }
-  GetFollowing(username: string){
+  GetFollowing(username: string) {
     return this.http.get(`${this.BaseUrl}/Follower/getfollowing/${username}`);
   }
-  FollowPost(item:any){
-    return this.http.post(`${this.BaseUrl}/Follower/follow`,item);
+  FollowPost(item: any) {
+    return this.http.post(`${this.BaseUrl}/Follower/follow`, item);
   }
-  UnFollowPost(item:any){
-    return this.http.post(`${this.BaseUrl}/Follower/unfollow`,item);
+  UnFollowPost(item: any) {
+    return this.http.post(`${this.BaseUrl}/Follower/unfollow`, item);
   }
-  isFollowing(loggedInUsername:string , displayUsername:string){
+  isFollowing(loggedInUsername: string, displayUsername: string) {
     return this.http.get(`${this.BaseUrl}/Follower/isfollowing/${loggedInUsername}/${displayUsername}`);
+  }
+  GetAllUsers() {
+    return this.http.get(`${this.BaseUrl}/Users/getallusers`)
+  }
+  SearchUsers(query: string) {
+    return this.http.get(`${this.BaseUrl}/Users/search?query=${query}`);
+  }
+  GetAllSavedByUserName(username: string) {
+    return this.http.get(`${this.BaseUrl}/Saved/getallsaved/${username}`)
+  }
+  AddedToSaved(item:any) {
+    return this.http.post(`${this.BaseUrl}/Saved/addtosaved`,item)
+  }
+  RemovedFromSaved(item: any) {
+    return this.http.post(`${this.BaseUrl}/Saved/removesaved`,item)
+  }
+  IsSaved(username:string,postid:number){
+    return this.http.get(`${this.BaseUrl}/Saved/issaved/${username}/${postid}`)
   }
 }

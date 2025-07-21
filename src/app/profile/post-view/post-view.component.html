@@ -48,7 +48,8 @@
     <i style="cursor: pointer; color: #ff4242;" *ngIf="isLikedByMe" class="fa-solid fa-heart fs-4" (click)="UnLike()"></i>
     <i class="fa-regular fa-comment fs-4" style="cursor: pointer;"   (click)="FocusComment()" ></i>
     <i class="fa-regular fa-paper-plane fs-4" style="cursor: pointer;"></i>
-    <i class="fa-regular fa-bookmark fs-4 ms-auto" style="cursor: pointer;"></i>
+    <i *ngIf="!isSavedPost" class="fa-regular fa-bookmark fs-4 ms-auto" (click)="AddSaved()" style="cursor: pointer;"></i>
+    <i *ngIf="isSavedPost"  class="fa-solid fa-bookmark fs-4 ms-auto" (click)="RemoveSaved()"  style="cursor: pointer;"></i>
   </div>
 
   <!-- Likes Count -->
@@ -71,7 +72,8 @@
   <div class="d-flex align-items-center pt-2">
     <input #comment
       [(ngModel)]="newComment"
-      class="form-control bg-black text-white border-0 px-0"
+
+      class="form-control bg-black text-white border-0 px-0 px-2"
       style="box-shadow: none; font-size: 14px;"
       placeholder="Add a comment..."
     />

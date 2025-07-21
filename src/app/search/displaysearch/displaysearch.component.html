@@ -1,0 +1,33 @@
+<div class="search-box position-relative">
+  <p class="text-center fs-2 my-3" >Search</p>
+ <div class="d-flex justify-content-center align-items-center">
+   <input
+    type="text"
+    class="form-control w-50 "
+    placeholder="Search..." 
+    [(ngModel)]="searchQuery" 
+     (input)="DeBounce()"
+  />
+ </div>
+
+  <!-- Dropdown Results -->
+  <div
+    class="search-dropdown position-absolute bg-dark flex-column d-flex justify-content-center align-items-center  rounded w-100 mt-1 z-3"
+    *ngIf="showDropdown"
+    style="max-height: 300px; overflow-y: auto;background-color: black!important; "
+  >
+    <div
+      class="search-item w-50 d-flex  align-items-center gap-2 p-2 hover-effect border-bottom"
+      *ngFor="let user of searchResults"
+      [routerLink]="['/', user.userName]"
+      (click)="showDropdown = false"
+      style="cursor: pointer;"
+    >
+      <img [src]="getProfileImage(user.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+      <div>
+        <div class="fw-bold text-white">{{ user.userName }}</div>
+        <div class=" small">{{ user.fullName }}</div>
+      </div>
+    </div>
+  </div>
+</div>

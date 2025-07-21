@@ -52,7 +52,9 @@ export class SidebarComponent {
 
         // ✅ This callback is called *after* file is fully read
         reader.onload = () => {
-          this.previewUrl ="data:image/jpeg;base64,"+ reader.result;  // ✅ base64 image preview 
+          console.log(reader.result);
+          
+          this.previewUrl=reader.result;  // ✅ base64 image preview 
         };
 
         reader.readAsDataURL(file); // Start reading the file

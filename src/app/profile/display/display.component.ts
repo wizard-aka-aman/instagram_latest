@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PagenotfoundComponent } from 'src/app/pagenotfound/pagenotfound.component';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -27,6 +28,8 @@ export class DisplayComponent implements OnInit {
     followerUsername : '',
     followingUsername: ''
   }
+  follower :any;
+  followingdata :any;
   alreadyFollowing = false;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -34,39 +37,30 @@ export class DisplayComponent implements OnInit {
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
   constructor(private Service: ServiceService, private route: ActivatedRoute , private router: Router) {
     this.email = this.Service.getEmail();
-  }
-
-   
-
-  addComment() {
-    if (this.newComment.trim()) {
-      this.selectedPost.comments.push({
-        username: this.username,
-        text: this.newComment.trim()
-      });
-      this.newComment = '';
-      // Optionally call API to save comment
-    }
-  }
+  } 
   ngOnInit(): void {
-    this.loggedInUserName =this.Service.getUserName();
-    this.route.paramMap.subscribe(params => {
-      this.username = (String)(params.get('username'));
-      if (this.username) {
-        this.getProfile(this.username);
-      }
-    });
-        this.isFollowing();
-    this.GetPost();
+  this.loggedInUserName = this.Service.getUserName();
 
-    // 👇 Subscribe to refresh signal
-    this.Service.postRefresh$.subscribe(refresh => {
-      if (refresh) {
-        this.fullDetailPost = []; // Clear old posts
-        this.GetPost();
-      }
-    });
-  }
+  this.route.paramMap.subscribe(params => {
+    this.username = String(params.get('username'));
+    if (this.username) {
+      this.getProfile(this.username);
+      this.GetPost(); // ✅ Add this line to fetch posts again
+    }
+
+    if (this.loggedInUserName != this.username) {
+      this.isFollowing();
+    }
+  });
+
+  // 👇 Subscribe to refresh signal
+  this.Service.postRefresh$.subscribe(refresh => {
+    if (refresh) {
+      this.fullDetailPost = []; // Clear old posts
+      this.GetPost();
+    }
+  });
+}
   isFollowing(){
      this.Service.isFollowing(this.loggedInUserName,this.username).subscribe({
       next: (data:any) => {
@@ -80,11 +74,13 @@ export class DisplayComponent implements OnInit {
     })
   }
   GetPost() {
+     this.fullDetailPost = []
     this.Service.GetAllPostByUsername(this.username).subscribe({
       next: (data: any) => {
         console.log(data);
         if (data.length == 0) {
           this.isPostAvailable = false;
+          this.numberposts = data.length;
         } else {
           this.numberposts = data.length;
 
@@ -112,16 +108,16 @@ export class DisplayComponent implements OnInit {
         }
       },
       error: (error: any) => {
-        console.error(error);
+        console.log(error);
+       this.router.navigateByUrl('/not-found', { skipLocationChange: true });
       }
     });
   }
 
   triggerFileInput() {
-
-
     this.fileInput.nativeElement.click();
   }
+
   close() {
     this.closeModal.nativeElement.click();
   }
@@ -148,7 +144,32 @@ export class DisplayComponent implements OnInit {
       })
     }
   }
-
+  GetFollowers(){
+    this.Service.GetFollower(this.username).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.follower = res;   
+      },
+      error : (err:any)=>{
+        console.log(err);
+        
+      }
+    })
+    
+  }
+  GetFollowing(){
+    this.Service.GetFollowing(this.username).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.followingdata = res;   
+      },
+      error : (err:any)=>{
+        console.log(err);
+        
+      }
+    })
+    
+  }
   removePhoto() {
     this.Service.RemoveProfilePicture(this.username).subscribe({
       next: (res: any) => {
@@ -196,5 +217,11 @@ export class DisplayComponent implements OnInit {
         console.log(err);
       }
     })
+  }
+    getProfileImage(image: string | null): string {
+    if (!image || image === 'null') {
+      return 'assets/avatar.png';
+    }
+    return 'data:image/jpeg;base64,' + image;
   }
 }

@@ -1,9 +1,9 @@
-<div class="container  py-5">
-  <div class="d-flex justify-content-center ">
+<div class="container  ">
+  <div class="d-flex justify-content-center pt-4 ">
     <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4">
       <!-- Profile Image -->
       <div>
-        <img [src]="avatarUrl" alt="Profile" class="rounded-circle border"
+        <img [src]="avatarUrl"  data-bs-toggle="modal" data-bs-target="#profileModal"  alt="Profile" class="rounded-circle border"
           style="width: 120px; height: 120px; object-fit: cover;">
       </div>
 
@@ -12,19 +12,22 @@
         <!-- Username + Edit -->
         <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
           <h3 class="mb-0 me-2">{{ username }}</h3>
-          <button class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
+          <button *ngIf="loggedInUserName == username" class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
+          <button *ngIf="loggedInUserName != username && !alreadyFollowing"(click)="Follow()" class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
+          <button *ngIf="loggedInUserName != username && alreadyFollowing"(click)="UnFollow()" class="btn btn-secondary px-3 ms-3 btn-sm"  >UnFollow</button>
+          <!-- <button *ngIf="loggedInUserName != username"  class="btn btn-primary px-3 ms-3  btn-sm"  >Follow</button> -->
         </div>
 
         <!-- Stats -->
         <div class="d-flex justify-content-center justify-content-md-start gap-5 mb-3">
           <span><strong>{{ numberposts }}</strong> <span style="color: rgb(172, 172, 172);"> posts</span></span>
-          <span><strong>{{ followers }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> followers</span></span>
-          <span><strong>{{ following }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> following</span></span>
+          <span (click)="GetFollowers()" data-bs-toggle="modal" data-bs-target="#follower" ><strong>{{ followers }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> followers</span></span>
+          <span (click)="GetFollowing()" data-bs-toggle="modal" data-bs-target="#following" ><strong>{{ following }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> following</span></span>
         </div>
 
-        <!-- Bio -->
-          <div style=" word-wrap: break-word; overflow-wrap: break-word; max-height: 200px; overflow: auto;">
-         <p class="fs-5">{{ fullname }}</p> 
+       <!-- Bio -->
+        <div style=" word-wrap: break-word; overflow-wrap: break-word; max-height: 200px; overflow: auto;">
+          <p class="fs-5">{{ fullname }}</p>
           <span [innerText]="bio"></span>
         </div>
       </div>
@@ -40,10 +43,7 @@
           style="width: 80px; height: 80px; border-radius: 50%;">
       </div>
       
-    </div> 
-
-    
-
+    </div>  
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2">
   <li class="nav-item">
@@ -52,7 +52,7 @@
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved"  >
+    <a class="nav-link text-white" *ngIf="loggedInUserName == username" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved"  >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
   </li>
@@ -74,5 +74,96 @@
   </div>
 </div>
 
+<!-- Bootstrap profile Modal -->
+<div class="modal fade" id="profileModal" *ngIf="loggedInUserName == username" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
+      <div class="modal-header border-0">
+        <h5 class="modal-title w-100" id="profileModalLabel">Change Profile Photo</h5>
+      </div>
+      <div class="modal-body p-0">
+        <button class="btn w-100 text-primary fw-bold border-top" (click)="triggerFileInput()">Upload Photo</button>
+        <button class="btn w-100 text-danger border-top" (click)="removePhoto()">Remove Current Photo</button>
+        <button class="btn w-100 border-top text-white" #closeModal data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div> 
+
+<!-- follower Modal -->
+<div class="modal fade" id="follower" tabindex="-1" aria-labelledby="followerLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="followerLabel" style="font-weight: 600;">Follower</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+        <!-- Loop Over Likes -->
+        
+         <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+      *ngFor="let like of follower" 
+      data-bs-dismiss="modal" aria-label="Close"
+      [routerLink]="['/', like.userName]"
+       
+    >
+      <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+      <div>
+        <div class="fw-bold text-white">{{ like.userName }}</div>
+        <div class=" small">{{ like.userName }}</div>
+      </div>
+    </div>
+
+      </div>
+
+    </div>
+  </div>
 </div>
+<!-- following Modal -->
+<div class="modal fade" id="following" tabindex="-1" aria-labelledby="followingLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Following</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+        <!-- Loop Over Likes -->
+          <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+      *ngFor="let like of followingdata" 
+      data-bs-dismiss="modal" aria-label="Close"
+      [routerLink]="['/', like.userName]"
+       
+    >
+      <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+      <div>
+        <div class="fw-bold text-white">{{ like.userName }}</div>
+        <div class=" small">{{ like.userName }}</div>
+      </div>
+    </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+ 
+</div>
+
+
+<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 
+
+
+
 
