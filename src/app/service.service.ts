@@ -9,7 +9,7 @@ export class ServiceService {
 
   //  public BaseUrl :string= 'https://wizardamansociety.bsite.net';
   public BaseUrl: string = 'https://localhost:7246';
-
+  private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   postRefresh$ = this.postRefreshSubject.asObservable();
   constructor(private http: HttpClient) {
@@ -65,6 +65,15 @@ export class ServiceService {
 
     return decodedToken.UserName;
   }
+
+
+setChatList(list: any[]) {
+  this.chatListCache = list;
+}
+
+getChatList(): any[] {
+  return this.chatListCache;
+}
 
   Auth(item: any) {
     return this.http.post(`${this.BaseUrl}/api/auth/login`, item);

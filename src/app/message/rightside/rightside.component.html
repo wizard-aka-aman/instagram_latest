@@ -1,0 +1,83 @@
+<div class="d-flex flex-column h-100 text-white bg-black">
+  <!-- Chat Header -->
+  <div   class="p-3 border-bottom d-flex align-items-center justify-content-start" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
+    <!-- Mobile Back Button -->
+    <button class="btn btn-sm d-md-none text-white" (click)="goBack()">
+      <i class="fa fa-arrow-left"></i>
+    </button>
+     
+    <div class="search-item d-flex align-items-center  p-2  " 
+     routerLink="/{{groupName}}" >
+      <img [src]="getProfileImage(profilePicture)" class="rounded-circle mx-3" width="40" height="40" style="object-fit: cover;" />
+      <div>
+        <div class="fw-bold text-white">{{ groupName }}</div>
+        <div class=" small">{{ fullName }}</div>
+      </div>
+    </div>
+    <div class="d-md-none" style="width: 30px;"></div> <!-- placeholder -->
+  </div>
+
+<!-- Messages Wrapper -->
+<div class="messages-wrapper" #scrollContainer>
+
+  <div *ngFor="let msg of messages" class="mb-2 message-text position-relative"
+       [class.text-end]="msg.groupName === user">
+
+    <!-- Emoji Button for Sender -->
+    <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName === user"> 
+      <i class="fa-regular fa-face-smile"></i>
+    </div>
+    <div *ngIf="msg.reaction &&  msg.groupName === user" class=" ">
+      <span class="emoji fs-6">{{ msg.reaction }}</span>
+    </div>
+    <!-- Message Bubble -->
+    <div class="d-inline-block fs-small px-2 py-1 rounded-5 text-break position-relative"
+         [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}">
+      {{ msg.message }}
+
+      <!-- Reaction Display -->
+    </div>
+    <div *ngIf="msg.reaction && msg.groupName !== user" class=" ">
+      <span class="emoji fs-6">{{ msg.reaction }}</span>
+    </div>
+
+    <!-- Emoji Button for Receiver -->
+    <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName !== user">
+      <i class="fa-regular fa-face-smile"></i>
+    </div>
+
+    <!-- Emoji Picker -->
+    <div *ngIf="emojiPickerIndex === msg.id" class="emoji-picker-container position-absolute bg-light rounded shadow p-2">
+      <span class="emoji" *ngFor="let emoji of emojis" (click)="addEmojiToMessage(msg.id, emoji)">
+        {{ emoji }}
+      </span>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div class="p-3 border-top" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
+  <form (ngSubmit)="send()">
+    <div class="input-group">
+      <input type="text"
+             class="form-control bg-black text-white rounded-pill border-secondary "
+             [(ngModel)]="newMessage"
+             name="message"
+             required
+             placeholder="Type a message..."
+             aria-label="Message"
+             style="box-shadow: none; outline: none; padding-right: 70px;">
+
+      <!-- Send Button inside input -->
+      <button type="submit"
+              class="btn position-absolute text-primary end-0 me-3  "
+              style="background-color: transparent; border: none;  z-index: 10;">
+        Send
+      </button>
+    </div>
+  </form>
+</div>
+
+</div>

@@ -67,6 +67,15 @@ export class DisplaySavedComponent implements OnInit {
   }
   GetSaved() {
      this.fullDetailPost = []
+     this.Service.GetAllPostByUsername(this.username).subscribe({
+      next: (data: any) => {
+        console.log(data); 
+          this.numberposts = data.length; 
+      },
+      error: (error) => {
+        console.log(error);
+      }
+    })
     this.Service.GetAllSavedByUserName(this.username).subscribe({
       next: (data: any) => {
         console.log(data);

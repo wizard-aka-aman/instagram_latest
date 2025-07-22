@@ -1,0 +1,57 @@
+input::placeholder {
+  color: rgb(145, 145, 145);
+}
+
+.mytext {
+  background-color: rgb(55, 151, 240);
+  color: white;
+}
+
+.othertext {
+  background-color: rgb(38, 38, 38);
+  color: white;
+}
+
+.message-text {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* default for other messages */
+}
+
+.message-text.text-end {
+  justify-content: flex-end;
+}
+
+.message-text:hover .overlay {
+  display: inline-block;
+}
+
+.overlay {
+  position: relative;
+  display: none;
+  margin-left: 6px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+.emoji-picker-container {
+  position: absolute;
+  bottom: 100%; /* 👈 this pushes the picker above the button */
+
+  z-index: 1000;
+  background: #fff;
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.emoji {
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin: 0 5px;
+}
+.messages-wrapper {
+  height: calc(100vh - 150px); /* Adjust based on header/footer */
+  overflow-y: auto;
+  padding: 1rem;
+}
+ 

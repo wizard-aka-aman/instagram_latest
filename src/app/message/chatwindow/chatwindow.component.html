@@ -1,0 +1,20 @@
+<div class="list-group bg-black h-100 overflow-auto">
+  <div class="d-flex justify-content-between mx-3 p-3 align-items-center border-bottom"  style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
+    <p class="fs-3 text-white mb-0">Messages</p>
+    <i class="fa-regular fa-pen-to-square fs-3 text-white"></i>
+  </div>
+
+  <a *ngFor="let chat of chatList"
+     class="list-group-item list-group-item-action border-0 rounded-0 text-white bg-black"
+     [routerLink]="['/messages/t', chat.userName]"
+     routerLinkActive="active"
+     style="cursor: pointer;">
+    <div class="d-flex align-items-center gap-2">
+      <img [src]="getProfileImage(chat.profilePicture)" class="rounded-circle" width="45" height="45" />
+      <div class="text-truncate">
+        <strong class="fw-light">{{ chat.fullName }}</strong><br />
+        <small style="color: rgb(145, 145, 145);" >{{ chat.lastMessage }}</small>
+      </div>
+    </div>
+  </a>
+</div>

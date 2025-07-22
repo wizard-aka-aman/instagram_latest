@@ -22,6 +22,10 @@ const routes: Routes = [
         loadChildren: () => import('./search/search.module').then(e => e.SearchModule)
     },
     {
+        path: 'messages',
+        loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
+    },
+    {
         path: 'not-found',
         component: PagenotfoundComponent
     },
