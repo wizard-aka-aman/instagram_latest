@@ -148,4 +148,19 @@ getChatList(): any[] {
   IsSaved(username:string,postid:number){
     return this.http.get(`${this.BaseUrl}/Saved/issaved/${username}/${postid}`)
   }
+  DeleteChat(item:number){
+    return this.http.post(`${this.BaseUrl}/api/Chat/delete`,item)
+  }
+  GetRecentMessage(username:string){
+    return this.http.get(`${this.BaseUrl}/api/RecentMessages/recent-messages/${username}`)
+  }
+  SaveRecentMessage(item:any){
+    return this.http.post(`${this.BaseUrl}/api/RecentMessages/save-recent-message`,item)
+  }
+  GetStoryByUsername(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Story/GetStoriesByUser/${username}`)
+  }
+  PostStory(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Story/AddStory`,item)
+  }
 }

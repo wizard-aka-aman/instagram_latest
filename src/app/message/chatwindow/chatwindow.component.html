@@ -1,20 +1,71 @@
 <div class="list-group bg-black h-100 overflow-auto">
   <div class="d-flex justify-content-between mx-3 p-3 align-items-center border-bottom"  style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
     <p class="fs-3 text-white mb-0">Messages</p>
-    <i class="fa-regular fa-pen-to-square fs-3 text-white"></i>
+    <i class="fa-regular  fa-pen-to-square fs-3 text-white" style="cursor: pointer;"  data-bs-toggle="modal" data-bs-target="#message"></i>
   </div>
 
   <a *ngFor="let chat of chatList"
      class="list-group-item list-group-item-action border-0 rounded-0 text-white bg-black"
-     [routerLink]="['/messages/t', chat.userName]"
+     [routerLink]="['/messages/t', chat.username]"
      routerLinkActive="active"
      style="cursor: pointer;">
     <div class="d-flex align-items-center gap-2">
       <img [src]="getProfileImage(chat.profilePicture)" class="rounded-circle" width="45" height="45" />
       <div class="text-truncate">
         <strong class="fw-light">{{ chat.fullName }}</strong><br />
-        <small style="color: rgb(145, 145, 145);" >{{ chat.lastMessage }}</small>
+        <small style="color: rgb(145, 145, 145);" >{{ chat.lastMessage }}- {{chat.lastMessageDateTime | date :'short'}}</small>
       </div>
     </div>
   </a>
 </div>
+<!-- following Modal -->
+<div class="modal fade" id="message" tabindex="-1" aria-labelledby="messageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="height: 500px !important; background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="messageLabel" style="font-weight: 600;">New Message</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0   " style="background-color: black; border: 1px solid rgb(64, 64, 64);" > <!-- 👈 Scroll when needed -->
+        <!-- Loop Over Likes -->
+          <div class="search-box position-relative">
+  <p class="text-center fs-5 my-3"  >Search</p>
+ 
+<div class=" d-flex justify-content-center align-items-center">
+   <div class="input-group  w-50 border-rounded mb-3" >
+  <span class="fa-solid mt-1 text-white border-rounded fa-magnifying-glass input-group-text border-0" style="background-color: rgb(0, 0, 0) !important;"></span>
+  <input type="text" (input)="DeBounce()" class="inputtext form-control w-50 border-0  "   [(ngModel)]="searchQuery"   placeholder="Search..." >
+</div>
+</div>
+
+  <!-- Dropdown Results -->
+  <div
+    class="search-dropdown position-absolute bg-dark flex-column d-flex justify-content-center align-items-center  rounded w-100 mt-1 z-3"
+    *ngIf="showDropdown"
+    style="max-height: 600px !important; overflow-y: auto;background-color: black!important; "
+  >
+    <div
+      class="search-item w-50 d-flex  align-items-center gap-2 p-2 hover-effect border-bottom"
+      *ngFor="let user of searchResults"
+      [routerLink]="[user.userName]"
+      (click)="showDropdown = false"
+      data-bs-dismiss="modal" aria-label="Close"
+      style="cursor: pointer;"
+    >
+      <img [src]="getProfileImage(user.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+      <div>
+        <div class="fw-bold text-white">{{ user.userName }}</div>
+        <div class=" small">{{ user.fullName }}</div>
+      </div>
+    </div>
+  </div>
+</div> 
+      </div> 
+    </div>
+  </div>
+</div>
+

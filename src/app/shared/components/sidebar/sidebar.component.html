@@ -6,7 +6,7 @@
 
   <!-- Navigation -->
   <nav class="nav flex-column gap-2">
-    <a  class="nav-link d-flex align-items-center" routerLink="/home">
+    <a  class="nav-link d-flex align-items-center" routerLink="/">
       <i class="fa-solid fa-house fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Home"></i>
       <span class=" d-xl-inline">Home</span>
     </a>
@@ -34,12 +34,16 @@
       <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" ></i>
       <span class=" d-xl-inline">Create</span>
     </a>
+    <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#storyModal" >
+      <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Story" ></i>
+      <span class=" d-xl-inline">Story</span>
+    </a>
     <a class="nav-link d-flex align-items-center " routerLink="/{{username}}">
       <i class="fa-solid fa-user fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile" ></i>
       <span class=" d-xl-inline">Profile</span>
     </a>
     <a class="nav-link d-flex align-items-center " (click)="logout()" >
-      <i class="fa-solid fa-user fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" ></i>
+      <i class="fa-solid fa-arrow-right-from-bracket fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" ></i>
       <span class=" d-xl-inline">Logout</span>
     </a>
   </nav>
@@ -88,6 +92,7 @@
             <button class="btn btn-primary mt-3 float-end" (click)="UploadFinalPost()">Post</button>
           </div>
         </div>
+         
         <div *ngIf="isCompletedLoading">
           <img src="../../../../assets/instagram_loading.png" class="m-5 instagramloading" alt="">
         </div>
@@ -95,9 +100,10 @@
         <!-- Initial Upload UI -->
         <div *ngIf="!previewUrl && !postShared" class="py-5">
           <i class="fa-solid fa-photo-film mb-3" style="font-size: 100px;"></i>
-          <p class="fs-4">Drag photos and videos here</p>
-          <button class="btn fw-bold btn-primary" (click)="triggerFileInputPost()">Upload Photo</button>
+          <p class="fs-4">Drag photos and videos here </p>
+          <button class="btn fw-bold btn-primary" (click)="triggerFileInputPost()">Upload Post</button>
         </div>
+         
         <div *ngIf="postShared">
           <img src="../../../../assets/instagram_loading_complete-removebg-preview.png" class="mt-3 " alt="">
           <p class="fs-3 fw-light" >Your post has been shared.</p>
@@ -112,6 +118,64 @@
     </div>
   </div>
 </div>
+<!-- Bootstrap story Modal -->
+<div class="modal fade" id="storyModal" tabindex="-1" aria-labelledby="storyModalLabel" aria-hidden="true">
+  <div
+    class="modal-dialog modal-dialog-centered"
+    [ngClass]="{ 'modal-lg': isNextStepStory }"
+    style="transition: all 0.5s ease;">
+    <div class="modal-content text-center" style="background-color: rgb(38, 38, 38); transition: all 0.5s ease;">
+      
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: black; color: white;">
+        <h5 class="modal-title w-100" id="storyModalLabel">
+         Upload Story 
+        </h5>
+
+        <!-- Buttons -->
+        <button class="btn border text-white" (click)="ClearPreviewStory()"  data-bs-dismiss="modal">X</button>
+        <button style="display: none;" class="btn border text-white" (click)="ClearPreviewStory()"  #storyModal data-bs-dismiss="modal">X</button>
+        <button *ngIf="previewUrlStory && !isNextStepStory" class="btn text-primary" (click)="NextModalStory()">Next</button>
+        <button *ngIf="isNextStepStory" class="btn text-primary" (click)="ResetModalStory()">Back</button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="background-color: rgb(38, 38, 38); transition: all 0.5s ease;">
+        
+        <!-- Preview with Caption -->
+        <div *ngIf="previewUrlStory && isNextStepStory && !postSharedStory && !isCompletedLoadingStory" class="d-md-flex gap-2 p-3">
+          <div class="flex-shrink-0 d-flex justify-content-center align-items-center">
+            <img [src]="previewUrlStory" alt="Preview" class="img-fluid rounded" style="max-width: 300px;" />
+            <button *ngIf="previewUrlStory && isNextStepStory " class="btn btn-primary mt-3 float-end" (click)="UploadFinalStory()" >Post</button>
+          </div> 
+        </div>
+         
+        <div *ngIf="isCompletedLoadingStory">
+          <img src="../../../../assets/instagram_loading.png" class="m-5 instagramloading" alt="">
+        </div>
+
+        <!-- Initial Upload UI -->
+        <div *ngIf="!previewUrlStory && !postSharedStory" class="py-5">
+          <i class="fa-solid fa-photo-film mb-3" style="font-size: 100px;"></i>
+          <p class="fs-4">Drag photos and videos here </p>
+          <button class="btn fw-bold btn-primary" (click)="triggerFileInputStory()">Upload Story</button>
+        </div>
+         
+        <div *ngIf="postSharedStory">
+          <img src="../../../../assets/instagram_loading_complete-removebg-preview.png" class="mt-3 " alt="">
+          <p class="fs-3 fw-light" >Your Story has been shared.</p>
+        </div>
+
+        <!-- Preview Only -->
+        <div *ngIf="previewUrlStory && !isNextStepStory" class="mt-3">
+          <img [src]="previewUrlStory" alt="Preview" class="img-fluid rounded" style="max-height: 300px;" />
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <input type="file" accept="image/*" style="display:none" #fileInputPost (change)="handleFileUploadPost($event)" />
+<input type="file" accept="image/*" style="display:none" #fileInputStory (change)="handleFileUploadStory($event)" />

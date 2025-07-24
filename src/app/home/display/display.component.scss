@@ -1,0 +1,28 @@
+.story-scroll {
+  background-color: #000;
+  scrollbar-width: none;
+}
+
+.story-avatar {
+  border: 2px solid #f56040;
+  padding: 2px;
+  object-fit: cover;
+}
+
+.story-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.story-content {
+  max-width: 400px;
+  max-height: 700px;
+}

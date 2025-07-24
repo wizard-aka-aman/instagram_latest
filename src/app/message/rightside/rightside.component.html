@@ -1,6 +1,15 @@
+
+
 <div class="d-flex flex-column h-100 text-white bg-black">
+  
+  <div *ngIf="noUserSelected" class="h-100 d-flex justify-content-center flex-column align-items-center">
+  <i style="font-size:100px;" class=" fa-regular fa-message"></i>
+  <p class="fs-4" >Your messages</p>
+  <p class="fs-6" >Send a message to start a chat.</p>
+  <div class="btn btn-primary p-1 rounded-3 px-3 " data-bs-toggle="modal" data-bs-target="#message">Send Message</div>
+</div>
   <!-- Chat Header -->
-  <div   class="p-3 border-bottom d-flex align-items-center justify-content-start" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
+  <div  *ngIf="!noUserSelected" class="p-3 border-bottom d-flex align-items-center justify-content-start" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
     <!-- Mobile Back Button -->
     <button class="btn btn-sm d-md-none text-white" (click)="goBack()">
       <i class="fa fa-arrow-left"></i>
@@ -18,7 +27,7 @@
   </div>
 
 <!-- Messages Wrapper -->
-<div class="messages-wrapper" #scrollContainer>
+<div    [ngClass]="noUserSelected ? '':'messages-wrapper'" #scrollContainer>
 
   <div *ngFor="let msg of messages" class="mb-2 message-text position-relative"
        [class.text-end]="msg.groupName === user">
@@ -30,10 +39,25 @@
     <div *ngIf="msg.reaction &&  msg.groupName === user" class=" ">
       <span class="emoji fs-6">{{ msg.reaction }}</span>
     </div>
+     <!-- 3-dot Menu Button -->
+<div class="menu position-relative" *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
+  <i class="fa-solid fa-ellipsis-vertical"></i>
+
+  <!-- Dropdown -->
+  <div *ngIf="menuOpenId === msg.id" class="dropdown-menu-custom position-absolute end-0   p-2 rounded shadow">
+    <div class="dropdown-item text-danger" (click)="unsendMessage(msg.id)">
+      Unsend
+    </div>
+  </div>
+</div>
+
+
     <!-- Message Bubble -->
     <div class="d-inline-block fs-small px-2 py-1 rounded-5 text-break position-relative"
          [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}">
       {{ msg.message }}
+
+
 
       <!-- Reaction Display -->
     </div>
@@ -45,6 +69,7 @@
     <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName !== user">
       <i class="fa-regular fa-face-smile"></i>
     </div>
+     
 
     <!-- Emoji Picker -->
     <div *ngIf="emojiPickerIndex === msg.id" class="emoji-picker-container position-absolute bg-light rounded shadow p-2">
@@ -58,7 +83,7 @@
 
 
 
-<div class="p-3 border-top" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
+<div *ngIf="!noUserSelected" class="p-3 border-top" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
   <form (ngSubmit)="send()">
     <div class="input-group">
       <input type="text"
@@ -80,4 +105,4 @@
   </form>
 </div>
 
-</div>
+</div> 

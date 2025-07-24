@@ -11,12 +11,16 @@ export class ChatwindowComponent implements OnInit {
 
   chatList: any;
   loggedInUser: string = ""
-
+//search
+  searchQuery = '';
+  searchResults: any[] = []; 
+  showDropdown = false;
+  debounceTimer: any;
   constructor(private route: ActivatedRoute, private service: ServiceService) { }
 
   ngOnInit() {
     this.loggedInUser = this.service.getUserName()
-    this.service.GetFollowing(this.loggedInUser).subscribe({
+    this.service.GetRecentMessage(this.loggedInUser).subscribe({
       next: (data: any) => {
         console.log(data); 
         this.chatList = data;
@@ -34,5 +38,35 @@ export class ChatwindowComponent implements OnInit {
     }
     return 'data:image/jpeg;base64,' + image;
   }
+ performSearch(query: string) {
+    if (!query || query.trim().length === 0) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
 
+    this.service.SearchUsers(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res;
+        this.showDropdown = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.searchResults = [];
+        this.showDropdown = false;
+      }
+    });
+  }  
+   DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.performSearch(this.searchQuery);
+    
+    }, 300); // ⏱ 300ms delay
+  }
 }
