@@ -3,9 +3,15 @@
   scrollbar-width: none;
 }
 
-.story-avatar {
-  border: 2px solid #f56040;
+.story-avatar { 
   padding: 2px;
+  object-fit: cover;
+  position: absolute;
+  top: 5px;
+  left: 5.7px;
+  z-index: 1000;
+}
+img.rounded-circle {
   object-fit: cover;
 }
 
@@ -25,4 +31,23 @@
 .story-content {
   max-width: 400px;
   max-height: 700px;
+}
+.circle-image{
+  position: relative !important;
+  cursor: pointer;
+}
+
+.story-bar {
+  background-color: #000;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.story-image {
+  width: 450px;
+  height: 96vh;
+  object-fit: cover;
+  border-radius: 10px;
 }

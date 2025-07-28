@@ -1,18 +1,64 @@
-<div class="" >
+<div class="ms-4" >
    <!-- Story Avatars -->
-<div class="d-flex overflow-auto story-scroll py-2">
-  <div *ngFor="let user of storiesGroupedByUser" (click)="openStory(user)">
-    <img [src]="getProfileImage(user.imageUrl)" class="story-avatar rounded-circle me-3 border border-danger" width="60" height="60">
-    <div class="text-center small">{{ user.username }}</div>
-  </div>
+  <div class="d-flex overflow-auto story-scroll py-2 m-4">
+
+    <div class="circle-image me-3 " *ngIf="isStoryAvailable" > 
+      <img  src="../../../assets/instagram_loading_seen.png"  width="100" height="100" alt="" srcset=""> 
+      <img [src]="getProfileImage(loggedInUserStory?.profilePicture)"  routerLink="stories/{{loggedInUserStory.username}}/{{loggedInUserStory.displayStories[0].storyId}}"   class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div  class="text-center small">Your Story</div> 
+    </div>
+
+    <div class="circle-image me-3 " *ngIf="!isStoryAvailable" style="position: relative;"> 
+      <img src="../../../assets/instagram_loading_seen.png"  width="100" height="100" alt="" srcset=""> 
+      <i style="position: absolute;bottom: 17px;right: 10px;z-index: 1000 !important;" class="fa-solid fa-circle-plus"></i>
+      <img [src]="getProfileImage(loggedInUserStory?.profilePicture)"   data-bs-toggle="modal" data-bs-target="#storyModal"  class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div   class="text-center small">Add Story</div> 
+    </div>
+
+    <div *ngFor="let user of storiesGroupedByUser" class="circle-image me-3 " >
+      <img *ngIf="!user.isSeen" src="../../../assets/instagram_loading.png"  width="100" height="100" alt="" srcset="">
+      <img *ngIf="user.isSeen" src="../../../assets/instagram_loading_seen.png" width="100" height="100" alt="" srcset="">
+      <img [src]="getProfileImage(user.profilePicture)" (click)="openStory(user)" routerLink="stories/{{user.username}}/{{user.displayStories[0].storyId}}" class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div class="text-center small">{{ user.username }}</div>
+    </div>
+  </div> 
 </div>
+
 
 <!-- Story Modal -->
-<div *ngIf="currentStory" class="story-modal">
-  <div class="story-content" (click)="nextStory()">
-    <img *ngIf="currentStory.mediaType === 'image'" [src]="currentStory.mediaUrl" class="w-100">
-    <video *ngIf="currentStory.mediaType === 'video'" [src]="currentStory.mediaUrl" autoplay muted controls></video>
+<div
+  class="modal fade show d-block"
+  tabindex="-1"
+  *ngIf="showModal"
+  style="background-color: rgba(0, 0, 0, 0.9);"
+>
+  <div class="d-flex justify-content-center align-items-center h-100 w-100">
+    <div class="position-relative">
+      <button class="btn btn-light position-absolute top-0 end-0 m-2" (click)="closeStory()">✕</button>
+      <img
+        [src]="getProfileImage(currentUserStories[currentStoryIndex]?.imageUrl)"
+        class="rounded story-image"
+        alt="story"
+      />
+
+      <!-- Previous / Next -->
+      <button
+        class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-sm px-2"
+        (click)="prevStory()"
+        *ngIf="currentStoryIndex > 0"
+      >‹</button>
+
+      <button
+        class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-sm px-2"
+        (click)="nextStory()"
+        *ngIf="currentStoryIndex < currentUserStories.length - 1"
+      >›</button>
+    </div>
   </div>
 </div>
 
-</div>
+ 
+ 
+
+
+

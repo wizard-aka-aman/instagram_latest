@@ -4,6 +4,7 @@ import { DisplayComponent } from './display/display.component';
 import { SharedModule } from '../shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
     HomeRoutingModule,
     SharedModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ]
 })
 export class HomeModule { }

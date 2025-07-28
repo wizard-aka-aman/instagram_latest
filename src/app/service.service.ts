@@ -67,13 +67,13 @@ export class ServiceService {
   }
 
 
-setChatList(list: any[]) {
-  this.chatListCache = list;
-}
+  setChatList(list: any[]) {
+    this.chatListCache = list;
+  }
 
-getChatList(): any[] {
-  return this.chatListCache;
-}
+  getChatList(): any[] {
+    return this.chatListCache;
+  }
 
   Auth(item: any) {
     return this.http.post(`${this.BaseUrl}/api/auth/login`, item);
@@ -139,28 +139,40 @@ getChatList(): any[] {
   GetAllSavedByUserName(username: string) {
     return this.http.get(`${this.BaseUrl}/Saved/getallsaved/${username}`)
   }
-  AddedToSaved(item:any) {
-    return this.http.post(`${this.BaseUrl}/Saved/addtosaved`,item)
+  AddedToSaved(item: any) {
+    return this.http.post(`${this.BaseUrl}/Saved/addtosaved`, item)
   }
   RemovedFromSaved(item: any) {
-    return this.http.post(`${this.BaseUrl}/Saved/removesaved`,item)
+    return this.http.post(`${this.BaseUrl}/Saved/removesaved`, item)
   }
-  IsSaved(username:string,postid:number){
+  IsSaved(username: string, postid: number) {
     return this.http.get(`${this.BaseUrl}/Saved/issaved/${username}/${postid}`)
   }
-  DeleteChat(item:number){
-    return this.http.post(`${this.BaseUrl}/api/Chat/delete`,item)
+  DeleteChat(item: number) {
+    return this.http.post(`${this.BaseUrl}/api/Chat/delete`, item)
   }
-  GetRecentMessage(username:string){
+  GetRecentMessage(username: string) {
     return this.http.get(`${this.BaseUrl}/api/RecentMessages/recent-messages/${username}`)
   }
-  SaveRecentMessage(item:any){
-    return this.http.post(`${this.BaseUrl}/api/RecentMessages/save-recent-message`,item)
+  SaveRecentMessage(item: any) {
+    return this.http.post(`${this.BaseUrl}/api/RecentMessages/save-recent-message`, item)
   }
-  GetStoryByUsername(username:string){
+  GetStoryByUsername(username: string) {
     return this.http.get(`${this.BaseUrl}/api/Story/GetStoriesByUser/${username}`)
   }
-  PostStory(item:any){
-    return this.http.post(`${this.BaseUrl}/api/Story/AddStory`,item)
+  GetPersonalStories(username: string) {
+    return this.http.get(`${this.BaseUrl}/api/Story/GetPersonalStories/${username}`)
+  }
+  PostStory(item: any) {
+    return this.http.post(`${this.BaseUrl}/api/Story/AddStory`, item)
+  }
+  postStorySeen(data: any) {
+    return this.http.post(`${this.BaseUrl}/api/Story/seen`, data);
+  }
+  GetWhoSeenStory(username: string) {
+    return this.http.get(`${this.BaseUrl}/api/story/GetStoryViewers/${username}`);
+  }
+  GetLoggedInUserStory(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Story/IsStoryAvailable/${username}`)
   }
 }

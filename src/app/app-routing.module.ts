@@ -26,6 +26,10 @@ const routes: Routes = [
         loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
     },
     {
+        path: 'stories/:username',
+        loadChildren: () => import('./stories/stories.module').then(e => e.StoriesModule)
+    },
+    {
         path: 'not-found',
         component: PagenotfoundComponent
     },
