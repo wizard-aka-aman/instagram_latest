@@ -7,3 +7,12 @@ video {
   width: 100%;
   border-radius: 0.25rem 0.25rem 0 0;
 }
+ @media (max-width: 768px) {
+    video {
+      width: 90vw !important;
+    }
+    .position-absolute[style*="right: 5vw;"] {
+      right: 2vw !important;
+      font-size: 14px;
+    }
+  }

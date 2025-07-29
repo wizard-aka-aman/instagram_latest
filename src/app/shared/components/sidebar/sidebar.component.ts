@@ -247,7 +247,7 @@ export class SidebarComponent {
 
     const fData = new FormData(); 
     fData.append('Username', this.username);
-    fData.append('file', this.selectedFileStory);
+    fData.append('imageFile', this.selectedFileStory);
 
     this.Service.PostStory(fData).subscribe({
       next: (res) => {

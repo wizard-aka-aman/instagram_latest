@@ -8,7 +8,7 @@ import { ServiceService } from 'src/app/service.service';
   styleUrls: ['./display-reel.component.scss']
 })
 export class DisplayReelComponent implements OnInit {
-reels: any[] = [];
+  reels: any[] = [];
   publicid: string = "";
   LoggedInUser: string = "";
 
@@ -24,19 +24,24 @@ reels: any[] = [];
     });
   }
 
-  ngOnInit(): void {}
-
+  ngOnInit(): void { }
+  getProfileImage(image: string | null): string {
+    if (!image || image === 'null') {
+      return 'assets/avatar.png';
+    }
+    return 'data:image/jpeg;base64,' + image;
+  }
   fivereel(publicid: string) {
     this.serviceSrv.GetFiveReel().subscribe({
-      next: (res: any ) => {
+      next: (res: any) => {
         this.reels = res;
         console.log(this.reels);
-        
+
       },
       error: (err: any) => {
         console.error(err);
       }
-    }); 
+    });
   }
 
   // Play only the selected video, pause the rest

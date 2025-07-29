@@ -1,37 +1,33 @@
 <div class="container-fluid p-0" style="background-color: black;">
-  <div class="row   align-items-center" style="scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh;">
-    
-    <div 
-      class="col-12 d-flex justify-content-center align-items-center" 
-      *ngFor="let reel of reels; let i = index"
-      style="scroll-snap-align: start; height: 100vh; position: relative;"
-    >
+  <div class="row align-items-center" style="scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh;">
 
-      <!-- Video -->
-      <video 
-        #videoPlayer
-        class=" h-100"
-        autoplay
-        muted
-        loop 
-        controls
-        (play)="pauseOtherVideos(i)"
-        style="object-fit: contain; width: 50vw !important;"
-        [src]="reel.url" 
-      >
-        Your browser does not support the video tag.
-      </video>
+    <div class="col-12 d-flex flex-column align-items-center p-3" *ngFor="let reel of reels; let i = index"
+      style="scroll-snap-align: start; height: 100vh; ">
 
-      <!-- Reel Details -->
-      <div 
-        class="  text-white p-3" 
-        style=" width: 100%; background: rgba(0, 0, 0, 0.5);"
-      >
-        <p style="top: 0 ; right: 0; position: absolute;"><strong>{{ reel.userName }}</strong></p>
-        <p style="bottom: 0 ; left: 0; position: absolute;">{{ reel.descripton }}</p>
-        <p>
-          ❤️ {{ reel.likesCount }} &nbsp;&nbsp; 💬 {{ reel.commentsCount }}
-        </p>
+      <!-- Video and Side Info -->
+      <div class="d-flex justify-content-center align-items-center position-relative" style="height: 80vh; width: 100%;">
+
+        <!-- Video -->
+        <video #videoPlayer class="h-100" autoplay loop [src]="reel.url" (play)="pauseOtherVideos(i)"
+          style="object-fit: contain; width: 500px;">
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- Likes & Comments (to right of video, spaced) -->
+        <div class="d-flex flex-column align-items-center text-white ms-3">
+          <p class="mb-4 text-center"><i class="fa-regular fa-heart"></i><br>{{ reel.likesCount }}</p>
+          <p class="mb-4 text-center"><i class="fa-regular fa-comment"></i><br>{{ reel.commentsCount }}</p>
+        </div>
+
+      </div>
+
+      <!-- Username & Profile Picture aligned with video start -->
+      <div class="d-flex align-items-start justify-content-start mt-3 text-white" style="width: 377px;">
+        <img [src]="getProfileImage(reel.profilePicture)" alt="Profile" class="rounded-circle me-2" width="40" height="40">
+        <div>
+          <strong>{{ reel.userName }}</strong><br>
+          <span class="fw-light">{{ reel.descripton }}</span>
+        </div>
       </div>
 
     </div>
