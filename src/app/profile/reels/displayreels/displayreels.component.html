@@ -43,70 +43,61 @@
           style="width: 80px; height: 80px; border-radius: 50%;">
       </div>
       
-    </div>  
- 
+    </div> 
+
+    
+
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2">
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}"  routerLink="/{{username}}"  >
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}"  routerLink="/{{username}}">
       <i class="fa-solid fa-table-cells"></i> POSTS
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'reels'}" routerLink="/{{username}}/reels" >
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'reels'}">
       <i class="fa-solid fa-film"></i> REELS
     </a>
   </li>
   <li class="nav-item" *ngIf="loggedInUserName == username">
-    <a class="nav-link text-white"  [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved"  >
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}" routerLink="/{{username}}/tagged" >
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}"  routerLink="/{{username}}/tagged"  >
       <i class="fa-solid fa-user-tag"></i> TAGGED
     </a>
   </li>
 </ul>
 
-<!-- Saved Grid -->
-<div class="container mt-3  pb-5"> 
-  <div *ngIf="!isSavedAvailable" class="text-center py-2  ">
-    <i class="fa-solid fs-1 fa-bookmark"></i>
-    <p class="fw-bold fs-2" >Save</p>
-    <p> Save photos and videos that you want to see again. <br>No one is notified, and only you can see what you've saved.</p>
-  </div>  
-  <div *ngIf="isSavedAvailable" class="row g-2">
-    <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
-      <img [src]="'data:image/jpeg;base64,'+post.posts.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >
+<!-- reels Grid -->
+<div class="container mt-3  pb-5">
+  <div *ngIf="activeTab === 'reels'" class="row g-2">
+    <div class="col-6 col-sm-6 col-md-3 post-wrapper " *ngFor="let reel of reels">
+      <video [src]="reel.url" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" ></video>
       <!-- Overlay -->
-      <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.posts.postId)"  
+      <div class="overlay d-flex justify-content-center align-items-center" (click)="OpenReelPage(reel.publicId)"  
           >
         <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ post.posts.likesCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ post.posts.commentsCount }}</span>
+          <span><i class="fas fa-heart"></i> {{ reel.likeCount }}</span>
+          <span><i class="fas fa-comment"></i> {{ reel.commentCount }}</span>
         </div>
       </div>
     </div>
-    <div class="col-12 col-sm-6 col-md-4 post-wrapper" *ngFor="let reel of savedReels">
-      <div class="position-relative">
-        <video [src]="reel.cloudinaryDB.url" class="w-100"  style="border-radius: 8px;"></video>
-       <div class="overlay d-flex justify-content-center align-items-center" (click)="openReelPage(reel.cloudinaryDB.publicId)"  
-          >
-        <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ reel.cloudinaryDB.likeCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ reel.cloudinaryDB.commentCount }}</span>
-        </div>
-      </div>
-      </div>
-    </div>
-  </div>   
- 
-</div>
+  </div>  
+  <div *ngIf="!isPostAvailable" class="text-center py-2 " >
+    <i class="fa-solid fs-1 fa-table-cells"></i>
+    <p class="fw-bold fs-2" >Share Reels</p>
+    <p> When you share Reels, they will appear on your profile.</p> 
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reelModal"  >Share your first reel  </button>
+  </div>
+
 </div>
 
 <!-- Bootstrap profile Modal -->
-<div class="modal fade" *ngIf="loggedInUserName == username" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+<div *ngIf="loggedInUserName == username" class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
       <div class="modal-header border-0">
@@ -189,9 +180,12 @@
     </div>
   </div>
 </div>
-  
-
+ 
+</div>
 
 
 <input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 
+
+
+
 

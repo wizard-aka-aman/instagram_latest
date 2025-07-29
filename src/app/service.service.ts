@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
 import { BehaviorSubject } from 'rxjs';
+import { isNgTemplate } from '@angular/compiler';
 @Injectable({
   providedIn: 'root'
 })
@@ -172,7 +173,41 @@ export class ServiceService {
   GetWhoSeenStory(username: string) {
     return this.http.get(`${this.BaseUrl}/api/story/GetStoryViewers/${username}`);
   }
-  GetLoggedInUserStory(username:string){
+  GetLoggedInUserStory(username: string) {
     return this.http.get(`${this.BaseUrl}/api/Story/IsStoryAvailable/${username}`)
   }
+  postReel(item: any) {
+    return this.http.post(`${this.BaseUrl}/api/Videos/upload`, item);
+  }
+  GetReelsByUsername(username: string) {
+    return this.http.get(`${this.BaseUrl}/api/Videos/GetReelByUsername/${username}`)
+  }
+  GetReelByPublicId(publicid: string) {
+    return this.http.get(`${this.BaseUrl}/api/Videos/GetReelByPublicid/${publicid}`)
+  }
+  LikeReel(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Videos/LikeReel`, item)
+  }
+  UnLikeReel(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Videos/UnLikeReel`, item)
+  }
+  CommentReel(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Videos/CommentReel`, item)
+  }
+  GetAllSavedReel(username:string){
+    return this.http.get(`${this.BaseUrl}/Saved/getallsavedreels/${username}`)
+  }
+  AddToSavedReel(item:any){
+    return this.http.post(`${this.BaseUrl}/Saved/addtosavedreels`, item)
+  }
+  RemoveSavedReel(item:any){
+    return this.http.post(`${this.BaseUrl}/Saved/removesavedreels`, item)
+  }
+  IsSavedReel(username:string , publicid:string){
+    return this.http.get(`${this.BaseUrl}/Saved/issavedreels/${username}/${publicid}`)
+  }
 }
+
+
+
+

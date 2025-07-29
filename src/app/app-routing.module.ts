@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { PostViewComponent } from './profile/post-view/post-view.component';
+import { ReelViewComponent } from './profile/reel-view/reel-view.component';
 
 const routes: Routes = [
     {
@@ -40,6 +41,10 @@ const routes: Routes = [
     {
         path: ':username/p/:postid',
         component: PostViewComponent
+    } ,
+    {
+        path: ':username/reel/:publicid',
+        component: ReelViewComponent
     } 
 ];
 

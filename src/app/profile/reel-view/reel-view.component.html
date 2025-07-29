@@ -1,0 +1,117 @@
+<div class="container-fluid vh-100 d-flex flex-column flex-md-row p-0 text-white" >
+  
+  <!-- Left: Post Image -->
+  <div class="col-md-7 bg-black d-flex align-items-center justify-content-center">
+    <video [src]="singlepost.url" controls autoplay  class="img-fluid" style="max-height: 90vh; object-fit: contain;" ></video>
+  </div>
+
+  <!-- Right: Comments and Info -->
+  <div class="col-md-5 bg-dark d-flex flex-column position-relative"style="background-color: black !important;">
+
+    <!-- ❌ Close Button -->
+    <button class="btn btn-dark position-absolute top-0 end-0 m-2 fs-4" (click)="closePost()">×</button>
+
+    <!-- User Info -->
+    <div class="d-flex align-items-center gap-2 p-3 border-bottom">
+      <img [src]="user.profilePicture " class="rounded-circle" width="40" height="40" />
+      <strong>{{ user.userName }}</strong> 
+    </div>
+     
+
+  <!-- Comments Section (Instagram Style) -->
+<div class="flex-grow-1 overflow-auto p-3" style="font-size: 15px;">
+  <div *ngFor="let comment of ListComment" class="d-flex align-items-start mb-3">
+    <!-- User Profile Picture -->
+    <img [src]="getProfileImage(comment.profilePicture)" 
+         alt="User" 
+         class="rounded-circle me-2" 
+         width="35" height="35" 
+         style="object-fit: cover;" />
+
+    <!-- Comment Content -->
+    <div>
+      <span>
+        <strong class="me-2">{{ comment.userName }}</strong>
+        <span>{{ comment.commentText }}</span>
+      </span>
+      <div class="text-muted" style="font-size: 12px; color: rgb(152, 152, 152)!important;">{{ comment.commentedAt | date : 'shortTime' }}</div>
+    </div>
+  </div>
+</div>
+
+
+    <!-- Footer (Like, Comment, Bookmark, Input) -->
+<div class="border-top px-3 py-2" style="background-color: #000;">
+  <!-- Icons Row -->
+  <div class="d-flex align-items-center gap-5 mb-2">
+    <i style="cursor: pointer;" *ngIf="!isLikedByMe" (click)="Like()" class="fa-regular fa-heart fs-4"></i>
+    <i style="cursor: pointer; color: #ff4242;" *ngIf="isLikedByMe" class="fa-solid fa-heart fs-4" (click)="UnLike()"></i>
+    <i class="fa-regular fa-comment fs-4" style="cursor: pointer;"   (click)="FocusComment()" ></i>
+    <i class="fa-regular fa-paper-plane fs-4" style="cursor: pointer;"></i>
+    <i *ngIf="!isSavedPost" class="fa-regular fa-bookmark fs-4 ms-auto" (click)="AddSaved()" style="cursor: pointer;"></i>
+    <i *ngIf="isSavedPost"  class="fa-solid fa-bookmark fs-4 ms-auto" (click)="RemoveSaved()"  style="cursor: pointer;"></i>
+  </div>
+
+  <!-- Likes Count -->
+  <div class="mb-2" *ngIf="!zeroLike" data-bs-toggle="modal" data-bs-target="#Likes" style="cursor: pointer;">
+    <strong class="me-2">{{ singlepost.likesCount }} likes</strong> 
+    <strong>{{ singlepost.commentsCount }} Comments</strong>
+  </div>
+
+  <!-- Post Caption (Optional) -->
+  <div class="mb-2">
+    <strong>{{ user.userName }}</strong> {{ singlepost.description }}
+  </div>
+
+  <!-- Post Time -->
+  <div class=" mb-2" style="font-size: 12px;color: rgb(157, 157, 157);">
+    {{ singlepost.createdAt | date: 'short' }}
+  </div>
+
+  <!-- Comment Input -->
+  <div class="d-flex align-items-center pt-2">
+    <input #comment
+      [(ngModel)]="newComment"
+
+      class="form-control bg-black text-white border-0 px-0 px-2"
+      style="box-shadow: none; font-size: 14px;"
+      placeholder="Add a comment..."
+    />
+    <button class="btn border-0 text-primary fw-bold" (click)="addComment()" [disabled]="!newComment.trim()">Post</button>
+  </div>
+</div>
+
+  </div>
+</div>
+<!-- Likes Modal -->
+<div class="modal fade" id="Likes" tabindex="-1" aria-labelledby="LikesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="LikesLabel" style="font-weight: 600;">Likes</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+        <!-- Loop Over Likes -->
+        <div *ngFor="let like of ListLike" class="d-flex align-items-center justify-content-between px-3 py-2 hover-effect">
+
+          <!-- Profile Info -->
+          <div class="d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close" style="cursor: pointer;" [routerLink]="['/', like.userName]">
+            <img [src]="getProfileImage(like.profilePicture)" alt="User" class="rounded-circle" width="45" height="45" style="object-fit: cover;" />
+            <span class="fw-bold text-white">{{ like.userName }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+

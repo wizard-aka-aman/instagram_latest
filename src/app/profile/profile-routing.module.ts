@@ -14,6 +14,10 @@ const routes: Routes = [
   {
     path: 'tagged',
     loadChildren: () => import('./tagged/tagged.module').then(e => e.TaggedModule)
+  },
+  {
+    path: 'reels',
+    loadChildren: () => import('./reels/reels.module').then(e => e.ReelsModule)
   }
 ];
 

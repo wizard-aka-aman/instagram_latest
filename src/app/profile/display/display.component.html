@@ -54,6 +54,11 @@
       <i class="fa-solid fa-table-cells"></i> POSTS
     </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'reels'}" routerLink="/{{username}}/reels" >
+      <i class="fa-solid fa-film"></i> REELS
+    </a>
+  </li>
   <li class="nav-item" *ngIf="loggedInUserName == username">
     <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" >
       <i class="fa-solid fa-bookmark"></i> SAVED
@@ -67,7 +72,7 @@
 </ul>
 
 <!-- Posts Grid -->
-<div class="container mt-3">
+<div class="container mt-3 pb-5">
   <div *ngIf="activeTab === 'posts'" class="row g-2">
     <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
       <img [src]="'data:image/jpeg;base64,'+post.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >

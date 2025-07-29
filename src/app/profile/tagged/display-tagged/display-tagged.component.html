@@ -52,6 +52,11 @@
     </a>
   </li>
   <li class="nav-item">
+    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'reels'}" routerLink="/{{username}}/reels" >
+      <i class="fa-solid fa-film"></i> REELS
+    </a>
+  </li>
+  <li class="nav-item">
     <a class="nav-link text-white" *ngIf="loggedInUserName == username" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved"  >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
