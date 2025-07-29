@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { log } from 'console';
 import { ServiceService } from 'src/app/service.service';
+import { CLIENT_RENEG_LIMIT } from 'tls';
 
 @Component({
   selector: 'app-reel-view',
@@ -53,6 +54,10 @@ export class ReelViewComponent implements OnInit {
     this.route.paramMap.subscribe((params: any) => {
       this.username = params.get('username')!;
       this.publicid = String(params.get('publicid'));
+      console.log(this.publicid);
+      console.log(this.username);
+      
+      
       this.getReelById(this.publicid);
 
     });

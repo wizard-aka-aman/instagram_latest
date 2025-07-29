@@ -1,0 +1,39 @@
+<div class="container-fluid p-0" style="background-color: black;">
+  <div class="row   align-items-center" style="scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh;">
+    
+    <div 
+      class="col-12 d-flex justify-content-center align-items-center" 
+      *ngFor="let reel of reels; let i = index"
+      style="scroll-snap-align: start; height: 100vh; position: relative;"
+    >
+
+      <!-- Video -->
+      <video 
+        #videoPlayer
+        class=" h-100"
+        autoplay
+        muted
+        loop 
+        controls
+        (play)="pauseOtherVideos(i)"
+        style="object-fit: contain; width: 50vw !important;"
+        [src]="reel.url" 
+      >
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Reel Details -->
+      <div 
+        class="  text-white p-3" 
+        style=" width: 100%; background: rgba(0, 0, 0, 0.5);"
+      >
+        <p style="top: 0 ; right: 0; position: absolute;"><strong>{{ reel.userName }}</strong></p>
+        <p style="bottom: 0 ; left: 0; position: absolute;">{{ reel.descripton }}</p>
+        <p>
+          ❤️ {{ reel.likesCount }} &nbsp;&nbsp; 💬 {{ reel.commentsCount }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

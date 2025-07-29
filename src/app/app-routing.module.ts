@@ -23,6 +23,10 @@ const routes: Routes = [
         loadChildren: () => import('./search/search.module').then(e => e.SearchModule)
     },
     {
+        path: 'reels',
+        loadChildren: () => import('./reels/reels.module').then(e => e.ReelsModule)
+    },
+    {
         path: 'messages',
         loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
     },

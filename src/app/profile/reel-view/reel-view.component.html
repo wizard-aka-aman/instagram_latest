@@ -2,7 +2,7 @@
   
   <!-- Left: Post Image -->
   <div class="col-md-7 bg-black d-flex align-items-center justify-content-center">
-    <video [src]="singlepost.url" controls autoplay  class="img-fluid" style="max-height: 90vh; object-fit: contain;" ></video>
+    <video [src]="singlepost.url"  controls autoplay loop class="img-fluid" style="max-height: 90vh; object-fit: contain;" ></video>
   </div>
 
   <!-- Right: Comments and Info -->
@@ -53,7 +53,7 @@
   </div>
 
   <!-- Likes Count -->
-  <div class="mb-2" *ngIf="!zeroLike" data-bs-toggle="modal" data-bs-target="#Likes" style="cursor: pointer;">
+  <div class="mb-2" *ngIf="!zeroLike || !zeroComment" data-bs-toggle="modal" data-bs-target="#Likes" style="cursor: pointer;">
     <strong class="me-2">{{ singlepost.likesCount }} likes</strong> 
     <strong>{{ singlepost.commentsCount }} Comments</strong>
   </div>

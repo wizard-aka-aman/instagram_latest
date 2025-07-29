@@ -193,6 +193,7 @@ export class SidebarComponent {
     this.selectedFile = null!;
     this.fileInputPost.nativeElement.value = ''; // ✅ Reset file input
     this.postShared = false;
+    this.caption = ""
   }
   ClearPreviewStory() {
     this.previewUrlStory = null; 
@@ -207,6 +208,7 @@ export class SidebarComponent {
     this.selectedFileReel = null!;
     this.fileInputReel.nativeElement.value = ''; // ✅ Reset file input
     this.postSharedReel = false;
+    this.descripton = ""
   }
 
   UploadFinalPost() {

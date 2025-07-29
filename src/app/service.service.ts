@@ -206,6 +206,9 @@ export class ServiceService {
   IsSavedReel(username:string , publicid:string){
     return this.http.get(`${this.BaseUrl}/Saved/issavedreels/${username}/${publicid}`)
   }
+  GetFiveReel(){
+    return this.http.get(`${this.BaseUrl}/api/Videos/GetAllFive`)
+  }
 }
 
 
