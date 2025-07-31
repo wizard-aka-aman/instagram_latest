@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -21,7 +22,7 @@ export class EditProfileComponent implements OnInit {
   username: string = "";
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
-  constructor(private ServiceSrv: ServiceService) {
+  constructor(private ServiceSrv: ServiceService,private toastr: ToastrService) {
     this.username = this.ServiceSrv.getUserName();
   }
 
@@ -52,13 +53,12 @@ export class EditProfileComponent implements OnInit {
     });
   }
   onSubmit() {
-    console.log(this.user);
-
-
+    console.log(this.user); 
     this.ServiceSrv.UpdateUserProfile(this.user, this.username).subscribe({
       next: (res: any) => {
         console.log(res);
         this.GetData();
+        this.toastr.success("Profile Updated Successfully");
       },
       error: (err) => {
         console.log(err);

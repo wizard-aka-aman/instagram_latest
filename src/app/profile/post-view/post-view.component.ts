@@ -134,7 +134,6 @@ export class PostViewComponent implements OnInit {
         console.log(data);
         this.newComment = ""
         this.getPostById(this.postid)
-
       },
       error: (err: any) => {
         console.log(err);

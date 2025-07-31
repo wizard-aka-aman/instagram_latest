@@ -53,7 +53,7 @@
   </div>
 
   <!-- Likes Count -->
-  <div class="mb-2" *ngIf="!zeroLike && !!zeroComment" data-bs-toggle="modal" data-bs-target="#Likes" style="cursor: pointer;">
+  <div class="mb-2" *ngIf="!zeroLike && !zeroComment" data-bs-toggle="modal" data-bs-target="#Likes" style="cursor: pointer;">
     <strong class="me-2">{{ singlepost.likesCount }} likes</strong> 
     <strong>{{ singlepost.commentsCount }} Comments</strong>
   </div>

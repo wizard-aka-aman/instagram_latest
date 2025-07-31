@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -30,7 +30,7 @@ export class DisplaystoriesComponent implements OnInit {
   personalprogress: number = 0;
 
 
-  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute) {
+  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute,private router : Router) {
     this.loggedInUser = this.serviceSrv.getUserName();
   }
   ngOnInit() {
@@ -73,6 +73,10 @@ export class DisplaystoriesComponent implements OnInit {
       const nextUser = this.usersWithStories[this.currentUserIndex + 1];
       console.log([nextUser][0]);
       this.openStory([nextUser][0]);
+      console.log("next user if");
+    }else{
+     console.log("next user else");
+       this.router.navigateByUrl('/');
     }
   }
 
