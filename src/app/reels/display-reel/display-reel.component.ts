@@ -21,12 +21,17 @@ export class DisplayReelComponent implements OnInit {
     Publicid: '',
     LikedBy: ''
   }
+  isLoadingReels = false;
+  followForm = {
+    followerUsername: '',
+    followingUsername: ''
+  }
   constructor(private serviceSrv: ServiceService, private route: ActivatedRoute, private eRef: ElementRef) {
     this.LoggedInUser = this.serviceSrv.getUserName();
 
     this.route.paramMap.subscribe((params: any) => {
       this.publicid = params.get('publicid');
-      this.fivereel(this.publicid);
+      this.fivereel();
     });
   }
   @HostListener('document:click', ['$event'])
@@ -67,15 +72,16 @@ export class DisplayReelComponent implements OnInit {
     return 'data:image/jpeg;base64,' + image;
   }
 
-  fivereel(publicid: string) {
+  fivereel() {
     this.serviceSrv.GetFiveReel(this.LoggedInUser).subscribe({
       next: (res: any) => {
-        this.reels = res;
+        this.reels = [...this.reels, ...res];
         console.log(this.reels);
-
+        this.isLoadingReels = false;
       },
       error: (err: any) => {
         console.error(err);
+        this.isLoadingReels = false;
       }
     });
   }
@@ -91,9 +97,10 @@ export class DisplayReelComponent implements OnInit {
       (entries) => {
         entries.forEach((entry) => {
           const video: HTMLVideoElement = entry.target as HTMLVideoElement;
-          const index = this.videoPlayers.toArray().findIndex(
+          let index = this.videoPlayers.toArray().findIndex(
             v => v.nativeElement === video
           );
+          // console.log(  entry);
 
           if (entry.isIntersecting) {
             // ✅ Close comments for all other reels
@@ -101,7 +108,14 @@ export class DisplayReelComponent implements OnInit {
               reel.showComments = i === index ? reel.showComments : false;
             });
 
-            console.log(video);
+
+            console.log(index);
+            if (index == this.reels.length - 3 && !this.isLoadingReels) {
+              this.isLoadingReels = true;
+              this.fivereel();
+              return
+            }
+            // console.log(video);
             console.log(video.src);
             this.publicid = video.src.split('/')[8 - 1].split('.mp4')[0]
             console.log(video.src.split('/')[8 - 1].split('.mp4')[0]);
@@ -130,9 +144,9 @@ export class DisplayReelComponent implements OnInit {
       video.pause();
     }
   }
-  Like(reel: any, isLikedLoggedInUser :boolean) {
+  Like(reel: any, isLikedLoggedInUser: boolean) {
     if (isLikedLoggedInUser) {
-      return ;
+      return;
     }
     console.log("like");
     this.likeAndUnLike.Publicid = this.publicid;
@@ -181,10 +195,12 @@ export class DisplayReelComponent implements OnInit {
     // Wait for DOM to render comment section, then scroll
 
     // Scroll after comment box opens
-    setTimeout(() => {
-      const el = this.chatContainer.nativeElement;
-      el.scrollTop = el.scrollHeight;
-    }, 150);
+    if (selectedReel.showComments) {
+      setTimeout(() => {
+        const el = this.chatContainer.nativeElement;
+        el.scrollTop = el.scrollHeight;
+      }, 150);
+    }
 
   }
 
@@ -215,6 +231,36 @@ export class DisplayReelComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+  Follow(reel:any) {
+    this.followForm.followerUsername = this.LoggedInUser
+    this.followForm.followingUsername = reel.userName;
+    console.log(this.followForm);
+
+    this.serviceSrv.FollowPost(this.followForm).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        reel.isLoggedInUserFollow = true
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+  UnFollow(reel:any) {
+    this.followForm.followerUsername = this.LoggedInUser
+    this.followForm.followingUsername = reel.userName;
+    console.log(this.followForm);
+    
+    this.serviceSrv.UnFollowPost(this.followForm).subscribe({
+      next: (res: any) => {
+        console.log(res);  
+        reel.isLoggedInUserFollow = false
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
 }

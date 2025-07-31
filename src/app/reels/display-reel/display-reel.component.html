@@ -1,16 +1,19 @@
 <div class="container-fluid p-0" style="background-color: black;">
-  <div class="row align-items-center" style="scroll-snap-type: y mandatory; overflow-y: scroll; height: 100vh;">
+  <div class="row align-items-center"
+    style="scroll-snap-type: y mandatory; overflow-y: auto; height: 100vh; scrollbar-width: none;">
 
-    <div class="col-12 d-flex flex-column align-items-center p-3" *ngFor="let reel of reels; let i = index"
-      style="scroll-snap-align: start; height: 100vh; ">
+    <div class="col-12 d-flex flex-column align-items-center  " *ngFor="let reel of reels; let i = index"
+      style="scroll-snap-align: start; ">
 
       <!-- Video and Side Info -->
-      <div class="d-flex justify-content-center align-items-center position-relative"
-        style="height: 80vh; width: 100%;">
+      <div class="d-flex justify-content-center align-items-center  "
+        style="height: 90vh; width: 100%; padding-top: 20px; transition: linear; position: relative !important;">
 
+        <!-- <i  *ngIf="videoPlayer.paused;" class="fa-solid fa-pause fs-1"  ></i>  -->
         <!-- Video -->
-        <video #videoPlayer class="h-100" autoplay (dblclick)="Like(reel , reel.isLikedLoggedInUser)" (click)="StopAndPlayVideo(videoPlayer)" muted loop [src]="reel.url"
-          style="object-fit: contain; width: 500px; border-radius:8%;">
+        <video #videoPlayer class="h-100" autoplay (dblclick)="Like(reel , reel.isLikedLoggedInUser)"
+          (click)="StopAndPlayVideo(videoPlayer)" muted loop [src]="reel.url"
+          style="object-fit: contain; width: 350px;border-radius: 4%;">
           Your browser does not support the video tag.
         </video>
 
@@ -27,29 +30,36 @@
 
         </div>
 
-      </div>
 
-      <!-- Username & Profile Picture aligned with video start -->
-      <div class="d-flex align-items-start justify-content-start mt-3 text-white" style="width: 377px;">
-        <img [src]="getProfileImage(reel.profilePicture)" alt="Profile" class="rounded-circle me-2" width="40"
-          height="40">
-        <div>
-          <strong>{{ reel.userName }}</strong><br>
-          <span class="fw-light">{{ reel.descripton }}</span>
+        <!-- Username & Profile Picture aligned with video start -->
+        <div class="d-flex   text-white" style="position: absolute; bottom: 60px; width: 300px !important;">
+          <img [src]="getProfileImage(reel.profilePicture)" routerLink="/{{reel.userName}}" style="cursor: pointer;"
+            alt="Profile" class="rounded-circle me-2" width="40" height="40">
+          <div>
+            <strong>{{ reel.userName }}</strong>
+            <button *ngIf="!reel.isLoggedInUserFollow && LoggedInUser != reel.userName" (click)="Follow(reel)"
+              class="btn btn-primary px-3 ms-3 btn-sm">Follow</button>
+            <button *ngIf="reel.isLoggedInUserFollow && LoggedInUser != reel.userName" (click)="UnFollow(reel)"
+              class="btn btn-secondary px-3 ms-3 btn-sm">UnFollow</button>
+            <br>
+            <span class="fw-light " style="width: 300px; height: 50px !important;">{{ reel.descripton }}</span>
+          </div>
         </div>
       </div>
       <!-- 💬 COMMENT SECTION -->
       <div *ngIf="reel.showComments" [id]="'comment-box-' + reel.id" class="text-white w-100 mt-3"
-        style="background-color: black; max-width: 500px; position: absolute; top: 0; height: 500px;">
+        style="background-color: rgba(90, 90, 90, 0.719);border-radius: 4%; max-width: 300px; position: absolute;  top: 90px; height: 400px;">
 
         <!-- Fixed Heading -->
-        <p class="text-center fs-3 sticky-top bg-black pt-2" style="z-index: 10;">Comments</p>
+        <p class="text-center fs-3 sticky-top   pt-2" style="border-radius: 4%;z-index: 10;   color: white;">Comments
+        </p>
 
         <!-- Scrollable Middle Comment List -->
-        <div  #chatContainer style="height: 380px; overflow-y: auto;" class="px-2" >
+        <div #chatContainer style="border-radius: 4%;height: 300px; overflow-y: auto; scrollbar-width: none;"
+          class="px-2">
           <div *ngFor="let comment of reel.comments" class="d-flex align-items-start mb-2">
-            <img [src]="getProfileImage(comment.profilePicture)" alt="Profile" class="rounded-circle me-2" width="30"
-              height="30">
+            <img [src]="getProfileImage(comment.profilePicture)" style="cursor: pointer;"
+              routerLink="/{{comment.userName}}" alt="Profile" class="rounded-circle me-2" width="30" height="30">
             <div>
               <strong>{{ comment.userName }}</strong><br>
               <span>{{ comment.commentText }}</span>
@@ -58,9 +68,11 @@
         </div>
 
         <!-- Fixed Input at Bottom -->
-        <div class="d-flex mt-2 px-2 position-absolute bottom-0 w-100 pb-2" style="background-color: black;">
-          <input [(ngModel)]="reel.newComment" class="form-control me-2" placeholder="Add a comment..." />
-          <button class="btn btn-primary" (click)="postComment(reel)">Post</button>
+        <div class="d-flex mt-2 justify-content-center align-items-center px-2 position-absolute bottom-0 w-100  "
+          style="border-radius: 4%;background-color: rgba(90, 90, 90, 0.719);">
+          <input [(ngModel)]="reel.newComment" class="form-control me-2" style="height: 30px;"
+            placeholder="Add a comment..." />
+          <button class="btn  text-light" (click)="postComment(reel)">Post</button>
         </div>
 
       </div>
