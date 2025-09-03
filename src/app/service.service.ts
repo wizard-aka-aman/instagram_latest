@@ -12,9 +12,14 @@ export class ServiceService {
   public BaseUrl: string = 'https://localhost:7246';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
+  private isSeenNoti = new BehaviorSubject<boolean>(true);
+  isSeenNoti$ = this.isSeenNoti.asObservable();
   postRefresh$ = this.postRefreshSubject.asObservable();
   constructor(private http: HttpClient) {
 
+  }
+  setNoti(bol : boolean){
+    this.isSeenNoti.next(bol);
   }
   emitPostRefresh() {
     this.postRefreshSubject.next(true);
@@ -208,6 +213,18 @@ export class ServiceService {
   }
   GetFiveReel(username:string){
     return this.http.get(`${this.BaseUrl}/api/Videos/GetAllFive/${username}`)
+  }
+  DisplayPostHome(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Story/DisplayPostHome/${username}`)
+  }
+  GetAllNotifications(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Notification/getAllNotification/${username}`)
+  }
+  SeenNotification(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Notification/SeenNotification/${username}`)
+  }
+  AddNotification(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Notification/AddNotification`,item)
   }
 }
 

@@ -70,3 +70,37 @@ img.rounded-circle {
     width: calc(100vw - 45vw)!important;
   }
 }
+
+.post-card {
+  border-bottom: 1px solid #dbdbdb; 
+  overflow: hidden;
+}
+
+.post-card img.card-img-top {
+  object-fit: cover;
+  max-height: 600px;
+}
+
+.post-card .card-header {
+  font-size: 14px;
+}
+
+.post-card .card-body {
+  font-size: 14px;
+}
+.card-body{
+  flex: 1 1 auto !important;
+  padding: 0 !important;
+
+}
+
+.post-card .card-body i {
+  font-size: 16px;
+}
+input::placeholder{
+  color: #dbdbdb;
+}
+.card-header{
+  padding: 0 !important;
+  margin-bottom: 10px !important;
+}

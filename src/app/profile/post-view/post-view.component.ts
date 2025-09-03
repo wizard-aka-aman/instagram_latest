@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-post-view',
   templateUrl: './post-view.component.html',
@@ -45,7 +45,8 @@ export class PostViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private service: ServiceService
+    private service: ServiceService,
+    private location: Location,
   ) { }
 
   ngOnInit(): void {
@@ -143,7 +144,7 @@ export class PostViewComponent implements OnInit {
   
 
   closePost() {
-    this.router.navigate([`/${this.username}`]);
+    this.location.back();
   }
   Like() {
     console.log("like");

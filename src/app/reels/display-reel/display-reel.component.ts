@@ -262,5 +262,8 @@ export class DisplayReelComponent implements OnInit {
       }
     })
   }
-
+  DisableDownload(event:any){
+    event.preventDefault();
+    
+  }
 }

@@ -2,7 +2,7 @@
   
   <!-- Left: Post Image -->
   <div class="col-md-7 bg-black d-flex align-items-center justify-content-center">
-    <video [src]="singlepost.url"  controls autoplay loop class="img-fluid" style="max-height: 90vh; object-fit: contain;" ></video>
+    <video [src]="singlepost.url" (contextmenu)="$event.preventDefault()" [attr.controlsList]="'nodownload'"  controls autoplay loop class="img-fluid" style="max-height: 90vh; object-fit: contain;" ></video>
   </div>
 
   <!-- Right: Comments and Info -->
@@ -34,7 +34,7 @@
         <strong class="me-2">{{ comment.userName }}</strong>
         <span>{{ comment.commentText }}</span>
       </span>
-      <div class="text-muted" style="font-size: 12px; color: rgb(152, 152, 152)!important;">{{ comment.commentedAt | date : 'shortTime' }}</div>
+      <div class="text-muted" style="font-size: 12px; color: rgb(152, 152, 152)!important;">{{ comment.commentedAt | date : 'medium' }}</div>
     </div>
   </div>
 </div>

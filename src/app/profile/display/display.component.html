@@ -86,12 +86,16 @@
       </div>
     </div>
   </div>  
-  <div *ngIf="!isPostAvailable" class="text-center py-2 " >
+  <div *ngIf="!isPostAvailable && loggedInUserName == username" class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
     <p class="fw-bold fs-2" >Share Photos</p>
     <p> When you share photos, they will appear on your profile.</p> 
 
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"  >Share your first photo</button>
+  </div>
+  <div *ngIf="!isPostAvailable && loggedInUserName != username" class="text-center py-2 " >
+    <i class="fa-solid fa-camera  fs-1"></i>
+    <p class="fw-bold fs-2 mt-3" >No Posts Yet</p>  
   </div>
 
 </div>
@@ -137,7 +141,7 @@
       <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
       <div>
         <div class="fw-bold text-white">{{ like.userName }}</div>
-        <div class=" small">{{ like.userName }}</div>
+        <div class=" small">{{ like.fullName }}</div>
       </div>
     </div>
 
@@ -170,7 +174,7 @@
       <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
       <div>
         <div class="fw-bold text-white">{{ like.userName }}</div>
-        <div class=" small">{{ like.userName }}</div>
+        <div class=" small">{{ like.fullName }}</div>
       </div>
     </div>
 

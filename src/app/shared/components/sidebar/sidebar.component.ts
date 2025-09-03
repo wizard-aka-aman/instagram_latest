@@ -36,11 +36,31 @@ export class SidebarComponent {
   @ViewChild('fileInputStory') fileInputStory!: ElementRef<HTMLInputElement>; 
   @ViewChild('fileInputReel') fileInputReel!: ElementRef<HTMLInputElement>;
   descripton : string = ""
+  isSeen : boolean = true;
   constructor(private Service: ServiceService, private route: Router) {
     this.username = this.Service.getUserName();
   }
 
   ngOnInit(): void {
+      this.Service.GetAllNotifications(this.username).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        this.isSeen = data.every((e:any)=> e.isSeen)
+        console.log(this.isSeen);
+      },
+      error:(err:any)=>{
+        console.log(err);
+      },
+    })
+
+    this.Service.isSeenNoti$.subscribe({
+      next:(data:any)=>{
+        this.isSeen = data;
+      },
+      error:(err:any)=>{
+        console.log(err);
+      },
+    })
   }
   logout() {
     const pakka = confirm("Sure you want to Logout?");

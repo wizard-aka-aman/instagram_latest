@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { log } from 'console';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-reel-view',
   templateUrl: './reel-view.component.html',
@@ -46,7 +46,8 @@ export class ReelViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private service: ServiceService
+    private service: ServiceService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -150,7 +151,7 @@ export class ReelViewComponent implements OnInit {
 
 
   closePost() {
-    this.router.navigate([`/${this.username}`]);
+    this.location.back();
   }
   Like() {
     console.log("like");

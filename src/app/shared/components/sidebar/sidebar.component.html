@@ -26,8 +26,9 @@
       <i class="fa-solid fa-message fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Messages" ></i>
       <span class=" d-xl-inline">Messages</span>
     </a>
-    <a class="nav-link d-flex align-items-center " routerLink="/notifications">
-      <i class="fa-solid fa-bell fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications" ></i>
+    <a class="nav-link d-flex align-items-center " routerLink="/notifications" style="position: relative;">
+      <i class="fa-solid fa-bell fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications"></i>
+      <i *ngIf="!isSeen" class="fa-solid fa-circle" style="color: #ff0000;position: absolute; top: 10px; left: 43px; font-size: 10px;" ></i>
       <span class=" d-xl-inline">Notifications</span>
     </a>
     <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#createModal" >

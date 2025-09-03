@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { ServiceService } from 'src/app/service.service';
   templateUrl: './display.component.html',
   styleUrls: ['./display.component.scss']
 })
-export class DisplayComponent implements OnInit {
+export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   storiesGroupedByUser: any[] = []; 
   loggedInUserStory : any;
   loggedInUser : string = ""  
@@ -16,12 +16,36 @@ export class DisplayComponent implements OnInit {
   showModal: boolean = false;
   storyInterval: any; 
   isStoryAvailable : boolean = false;
-  
+  posts : any;
+  isLikedByMe = false;
+  ListLike: any[] = []
+  ListComment :any[]= []
+  isSavedPost =false;
+   likeAndUnLike = {
+    postUsername: '',
+    likedBy: '',
+    postId: 0
+  }
+  newComment:string = "";
+  formAddComment={
+    CommentText :'',
+    UserName : '',
+    PostId : 0
+  }
+   newComments: { [postId: string]: string } = {}; // Har post ke liye alag comment
+   private scrollPosition = 0;
+
+  @ViewChildren('commentInput') commentInputs!: QueryList<ElementRef>;
+  @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(private serviceSrv : ServiceService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
-
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    this.scrollPosition = window.scrollY; // save scroll position
+  }
   ngOnInit(): void {
+    
     this.serviceSrv.GetLoggedInUserStory(this.loggedInUser).subscribe({
       next: (data:any) => { 
         this.loggedInUserStory = data;
@@ -44,14 +68,235 @@ export class DisplayComponent implements OnInit {
         console.error(error);
         }
     }) 
+
+    this.serviceSrv.DisplayPostHome(this.loggedInUser).subscribe({
+      next: (data:any) => { 
+        data.forEach((post: any) => {
+          post.isLikedByMe =this.isLike(post.likes); 
+        })
+        this.posts = data; 
+        console.log(this.posts);
+      },
+      error: (error) => {
+        console.log(error);
+        }
+    })
+     // Restore saved scroll position when component initializes
+    setTimeout(() => {
+      window.scrollTo({ top: this.scrollPosition, behavior: 'auto' });
+    }, 0);
+     const saved = localStorage.getItem('homeScroll');
+     console.log(saved);
+     
+  if (saved) {
+    setTimeout(() => {
+      window.scrollTo({ top: +saved, behavior: 'auto' });
+    }, 0);
+  }
+    this.serviceSrv.GetAllNotifications(this.loggedInUser).subscribe({
+      next:(data:any)=>{
+        console.log(data);
+         this.serviceSrv.setNoti(data.every((e:any)=> e.isSeen))
+      },
+      error:(err:any)=>{
+        console.log(err);
+      },
+    })
   } 
+
+
+    ngOnDestroy(): void {
+    // Save position before leaving
+    localStorage.setItem('homeScroll', this.scrollPosition.toString());
+  }
+
+
  getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
     return 'data:image/jpeg;base64,' + image;
   }
-  
+
+
+  ngAfterViewInit() {
+    window.scrollBy({ 
+      top: 200, 
+      left: 0, 
+      behavior: 'smooth'   // optional for smooth scrolling
+    });
+ 
+  }
+
+
+  TimeSincePost(postDateTimeString: string): string {
+  const postTime = new Date(postDateTimeString);
+  const currentTime = new Date();
+
+  const diffMs = currentTime.getTime() - postTime.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+
+  if (diffHours < 24) {
+    const diffMinutes = diffMs / (1000 * 60);
+    if (diffMinutes < 1) {
+      return 'Just now';
+    } else if (diffMinutes < 60) {
+      return `${Math.floor(diffMinutes)} min ago`;
+    } else {
+      return `${Math.floor(diffHours)} hr ago`;
+    }
+  } else {
+    // Agar 24 hr se jyada ho to date/time format
+    return postTime.toLocaleString('en-US', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
+}
+
+isLike(data: any): boolean { 
+    this.ListLike = data
+    for (let index = 0; index < this.ListLike.length; index++) {
+      if (this.ListLike[index].userName == this.loggedInUser) {
+        return true;
+      }
+    }
+    return false;
+  }
+    Like(post:any) {
+    console.log("like");
+    this.likeAndUnLike.postId = post.postId;
+    this.likeAndUnLike.likedBy = this.loggedInUser;
+    this.likeAndUnLike.postUsername = post.userName;
+    console.log(this.likeAndUnLike);
+
+    this.serviceSrv.LikePost(this.likeAndUnLike).subscribe({
+      next: (data: any) => {
+        console.log(data);
+         this.posts.forEach((postt: any) => {
+          if(post.postId==postt.postId){
+            post.isLikedByMe = true
+            post.likesCount = post.likesCount+1
+          } 
+        }) 
+        // this.isLikedByMe = true;
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+  }
+  UnLike(post:any) {
+    console.log("unlike");
+    this.likeAndUnLike.postId = post.postId;
+    this.likeAndUnLike.likedBy = this.loggedInUser;
+    this.likeAndUnLike.postUsername = post.userName;
+    console.log(this.likeAndUnLike);
+    this.serviceSrv.UnLikePost(this.likeAndUnLike).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.posts.forEach((postt: any) => {
+          if(post.postId==postt.postId){
+            post.isLikedByMe = false
+             post.likesCount = post.likesCount-1
+          } 
+        }) 
+        // this.isLikedByMe = false;
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+  }
+    addComment(post: any) {
+    const commentText = this.newComments[post.postId]?.trim();
+    if (!commentText) return;
+    post.comments.push({
+      userName: this.loggedInUser,
+      commentText: commentText
+    });
+
+    this.formAddComment.CommentText = commentText;
+    this.formAddComment.PostId = post.postId;
+    this.formAddComment.UserName = this.loggedInUser; 
+    console.log(this.formAddComment);
+    
+    this.serviceSrv.AddComment(this.formAddComment).subscribe({
+      next: (postt: any) => {
+        console.log(postt);
+        this.posts.forEach((postt: any) => {
+          if(post.postId==postt.postId){
+              post.commentsCount++;
+              this.newComments[post.postId] = ''; // Reset input 
+          } 
+        }) 
+      },
+      error: (err: any) => {
+        console.log(err);
+      }        
+    }) 
+  }
+    
+      AddSaved(post:any){
+    const savedform = {
+      postId: post.postId,
+      UserName: this.loggedInUser,
+    }; 
+    console.log(savedform);
+    
+    this.serviceSrv.AddedToSaved(savedform).subscribe({
+      next: (data: any) => {
+        console.log(data); 
+        this.posts.forEach((postt: any) => {
+          if(post.postId==postt.postId){
+            post.isSaved = true
+          } 
+        }) 
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+  }
+  RemoveSaved(post:any){
+   const savedform = {
+      postId: post.postId,
+      UserName: this.loggedInUser,
+    }; 
+    console.log(savedform);
+    
+    this.serviceSrv.RemovedFromSaved(savedform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.posts.forEach((postt: any) => {
+          if(post.postId==postt.postId){
+            post.isSaved = false
+          } 
+        })  
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    })
+  }
+  FocusComment(post: any) {
+    setTimeout(() => {
+      const index = this.posts.findIndex((p:any) => p.postId === post.postId);
+      const input = this.commentInputs.toArray()[index];
+      if (input) input.nativeElement.focus();
+    }, 0);
+  }
+
+  selectedLikes: any[] = [];
+
+openLikesModal(post: any) {
+  this.selectedLikes = post.likes;
+}
+
   openStory(user: any) {
     this.currentUser = user;
     this.currentUserStories = user.displayStories;
@@ -87,40 +332,6 @@ export class DisplayComponent implements OnInit {
       this.nextStory();
     }, 5000);
   }
- stories = [
-    {
-      storyId: 9,
-      imageUrl: "iVBORw0KGgoAAmiwAAAABJRU5ErkJggg==",
-      createdAt: 22,
-      expirationTime: "2025-07-25T16:48:15.4076724",
-      isSeen: false,
-      likedBy: [
-        { username: "john_doe", profilePicture: "Ukl4A" },
-        { username: "jane_smith", profilePicture: "Ukl5B" }
-      ]
-    },
-    {
-      storyId: 10,
-      imageUrl: "iVBORw0KGgoAAmiwAAAAXYZERkJggg==",
-      createdAt: 25,
-      expirationTime: "2025-08-01T18:30:00.0000000",
-      isSeen: true,
-      likedBy: [
-        { username: "alex", profilePicture: "Ukl6C" },
-        { username: "sam", profilePicture: "Ukl7D" }
-      ]
-    }
-  ];
-
-  selectedLikes: any[] = [];
-  selectedStoryId: number | null = null;
-
-  openLikesModal(storyId: number): void {
-    const story = this.stories.find(s => s.storyId === storyId);
-    if (story) {
-      this.selectedLikes = story.likedBy;
-      this.selectedStoryId = storyId;
-    }
-  }
+  
   
 }

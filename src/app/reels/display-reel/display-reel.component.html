@@ -11,7 +11,7 @@
 
         <!-- <i  *ngIf="videoPlayer.paused;" class="fa-solid fa-pause fs-1"  ></i>  -->
         <!-- Video -->
-        <video #videoPlayer class="h-100" autoplay (dblclick)="Like(reel , reel.isLikedLoggedInUser)"
+        <video (contextmenu)="DisableDownload($event)" #videoPlayer class="h-100" autoplay (dblclick)="Like(reel , reel.isLikedLoggedInUser)"
           (click)="StopAndPlayVideo(videoPlayer)" muted loop [src]="reel.url"
           style="object-fit: contain; width: 350px;border-radius: 4%;">
           Your browser does not support the video tag.

@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <h4 class="mb-3">Notifications</h4>
+
+  <ul class="list-group w-75 mt-5">
+    <li *ngFor="let n of notifications"
+        class="list-group-item d-flex align-items-center list-group-hover
+        mb-3 border-0 border-bottom"
+        style="background-color: black; color: white; cursor: pointer;">
+
+      <!-- Left side: profile image -->
+      <img [src]="getProfileImage(n.profilePicture)"   routerLink="/{{n.loggedInUserName}}"
+           class="rounded-circle me-3" 
+           alt="user" width="40" height="40">
+
+      <!-- Middle content -->
+      <div class="flex-grow-1">
+        <span class="fw-bold">{{ n.loggedInUserName }}</span> {{ n.notificationText }}
+        <div class="small" style="color: rgb(167, 167, 167);">
+          {{ TimeSincePost(n.createdAt) }}
+        </div>
+      </div>
+
+      <!-- Right side: post image -->
+      <img *ngIf="n.postId != null"  routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
+           [src]="getProfileImage(n.postId.imageUrl)" 
+           alt="post" 
+           class="rounded ms-auto" 
+           width="60" height="60" 
+           style="object-fit: cover; border-radius: 8px;">
+
+      <!-- Right side: post image -->
+      <video *ngIf="n.reelId != null"  routerLink="/{{n.userName}}/reel/{{n.reelId.publicId}}"
+           [src]="n.reelId.url" 
+           alt="post" 
+           class="rounded ms-auto" 
+           width="60" height="60" 
+           style="object-fit: cover; border-radius: 8px;"></video>
+    </li>
+
+    <li *ngIf="notifications.length == 0" style="background-color: black; color: white;" class="list-group-item text-center">No Notifications Yet</li>
+  </ul>
+</div>

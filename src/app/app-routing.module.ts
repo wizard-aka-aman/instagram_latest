@@ -31,6 +31,10 @@ const routes: Routes = [
         loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
     },
     {
+        path: 'notifications',
+        loadChildren: () => import('./notification/notification.module').then(e => e.NotificationModule)
+    },
+    {
         path: 'stories/:username',
         loadChildren: () => import('./stories/stories.module').then(e => e.StoriesModule)
     },

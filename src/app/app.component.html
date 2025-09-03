@@ -18,7 +18,7 @@
   <input id="loginEmail" type="email" [(ngModel)]="loginemail" style="background-color: black; color: white;" class="form-control mb-2" placeholder="Email" />
 
   <label for="loginPassword" class="text-white text-start w-100">Password</label>
-  <input id="loginPassword" type="password" [(ngModel)]="loginpassword" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Password" />
+  <input id="loginPassword" (keydown.enter)="loginIn()" type="password" [(ngModel)]="loginpassword" class="form-control mb-2" style="background-color: black; color: white;" placeholder="Password" />
 
   <button class="btn btn-primary w-100  my-2" (click)="loginIn()">Log In</button>
 
