@@ -7,25 +7,15 @@ import { ServiceService } from 'src/app/service.service';
   styleUrls: ['./display.component.scss']
 })
 export class DisplayComponent implements OnInit {
-notifications: any;
+notifications: any[] = [];
   loggedInUser:string = "";
   constructor(private serviceSrv : ServiceService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
 
   ngOnInit(): void {
-    this.serviceSrv.GetAllNotifications(this.loggedInUser).subscribe({
-      next:(data:any)=>{
-        this.notifications = data
-        console.log(data);
-        
-      },
-      error:(err:any)=>{
-        console.log(err);
-        
-      },
-    })
-
+    
+    this.AllNoti();
     this.serviceSrv.SeenNotification(this.loggedInUser).subscribe({
       next:(data:any)=>{
         console.log(data);
@@ -35,7 +25,19 @@ notifications: any;
       }
     })
   }
-
+  AllNoti(){
+    this.serviceSrv.GetAllNotifications(this.loggedInUser).subscribe({
+      next:(data:any)=>{
+        this.notifications = data
+        console.log(data);
+        this.serviceSrv.setNoti(data.every((e:any)=> e.isSeen))
+      },
+      error:(err:any)=>{
+        console.log(err);
+        
+      },
+    })
+  }
   getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
@@ -71,5 +73,35 @@ notifications: any;
     });
   }
 }
+ConfirmFollow(username:string){
+  const followForm = {
+    followerUsername: '',
+    followingUsername: ''
+  };
+   followForm.followerUsername = username
+    followForm.followingUsername =this.loggedInUser ;
+    console.log(followForm);
+    
+    this.serviceSrv.FollowPost(followForm).subscribe({
+      next: (res: any) => {
+        console.log(res); 
+         this.AllNoti();
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+}
+RemoveRequest(username:string){
+    this.serviceSrv.DeleteRequest(username,this.loggedInUser).subscribe({
+      next: (data:any) => {
+      console.log(data);
+      this.AllNoti();
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    })
+  }
 
 }

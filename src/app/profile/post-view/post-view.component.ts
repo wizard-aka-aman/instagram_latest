@@ -72,18 +72,10 @@ export class PostViewComponent implements OnInit {
       next: (data: any) => {
         console.log(data);
         this.user.userName = data.userName
-        if (data.profilePicture == null) {
-          this.user.profilePicture = 'assets/avatar.png';
-        } else {
-          this.user.profilePicture = "data:image/jpeg;base64," + data.profilePicture
-        }
+        this.user.profilePicture =  data.profilePicture
         this.singlepost.caption = data.caption
         this.singlepost.commentsCount = data.commentsCount
-        if (data.imageUrl == null) {
-          this.singlepost.imageUrl = 'assets/avatar.png';
-        } else {
-          this.singlepost.imageUrl = "data:image/jpeg;base64," + data.imageUrl
-        }
+        this.singlepost.imageUrl = data.imageUrl
         this.singlepost.likesCount = data.likesCount
         this.singlepost.createdAt = data.createdAt
         this.ListComment = data.comments

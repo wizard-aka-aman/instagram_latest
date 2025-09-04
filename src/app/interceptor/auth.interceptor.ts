@@ -97,13 +97,31 @@ export class AuthInterceptor implements HttpInterceptor {
       })
     } 
     else if (request.url.includes('/Posts/comment')) { 
-      console.log(request);
       const userName = (request.body as any).UserName;
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
         userName : userName,
         message : "Commented on your post : "+ (request.body as any).CommentText,
+        postId : (request.body as any).PostId,
+        reelId : (request.body as any).Publicid
+      }      
+       this.serviceSrv.AddNotification(addNotiBody).subscribe({
+        next:(data:any)=>{
+          return next.handle(request);
+        },
+        error:(err:any)=>{
+         console.log(err);
+        }
+      })
+    }else if (request.url.includes('/api/Requested/AddRequested')) { 
+      console.log(request);
+      const userName = (request.body as any).userNameOfReqTo;
+      // Yahan dusri API call karo
+      const addNotiBody = {
+        loggedInUser : this.loggedInUser,
+        userName : userName,
+        message : "Requested to follow you.",
         postId : (request.body as any).PostId,
         reelId : (request.body as any).Publicid
       }

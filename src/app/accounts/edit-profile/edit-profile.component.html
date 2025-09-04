@@ -67,6 +67,17 @@
         <span class="fs-small" style="color: rgb(175, 175, 175);" >This won’t be part of your public profile.</span>
       </div>
     </div>
+    <div class="mb-3 row">
+      <label class="col-sm-3 col-form-label text-end">Profile Type</label>
+      <div class="col-sm-9">
+        <select class="form-select" [(ngModel)]="user.isPublic" name="isPublic">
+          <option value="">Select</option>
+          <option [ngValue]="true" >Public</option>
+          <option [ngValue]="false" >Private</option>
+          <!-- <option>Prefer not to say</option> -->
+        </select>
+      </div>
+    </div>
 
     <div class="text-center mt-4">
       <button class="btn btn-primary px-4" type="submit">Submit</button>

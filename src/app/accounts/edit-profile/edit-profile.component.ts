@@ -17,7 +17,8 @@ export class EditProfileComponent implements OnInit {
     email: '',
     // phone: '',
     gender: '',
-    usersId: ''
+    usersId: '',
+    isPublic: true
   };
   username: string = "";
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -40,6 +41,7 @@ export class EditProfileComponent implements OnInit {
         this.user.usersId = res.usersId
         this.user.userName = res.userName
         this.user.gender = res.gender;
+        this.user.isPublic = res.isPublic;
         if (res.profilePicture == null) {
           this.user.profilePicture = 'assets/avatar.png';
         } else {

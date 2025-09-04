@@ -2,7 +2,7 @@
   
   <!-- Left: Post Image -->
   <div class="col-md-7 bg-black d-flex align-items-center justify-content-center">
-    <img [src]="singlepost.imageUrl" class="img-fluid" style="max-height: 90vh; object-fit: contain;" />
+    <img [src]="getProfileImage(singlepost.imageUrl)" class="img-fluid" style="max-height: 90vh; object-fit: contain;" />
   </div>
 
   <!-- Right: Comments and Info -->
@@ -13,7 +13,7 @@
 
     <!-- User Info -->
     <div class="d-flex align-items-center gap-2 p-3 border-bottom">
-      <img [src]="user.profilePicture " class="rounded-circle" width="40" height="40" />
+      <img [src]="getProfileImage(user.profilePicture) " class="rounded-circle" width="40" height="40" />
       <strong>{{ user.userName }}</strong> 
     </div>
      

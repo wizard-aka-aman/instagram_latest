@@ -226,8 +226,16 @@ export class ServiceService {
   AddNotification(item:any){
     return this.http.post(`${this.BaseUrl}/api/Notification/AddNotification`,item)
   }
+  GetAllRequested(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Requested/getAllRequested/${username}`)
+  }
+  AddRequested(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Requested/AddRequested`,item)  
+  }
+  IsRequested(from:string,to:string){
+    return this.http.get(`${this.BaseUrl}/api/Requested/isRequested/${from}/${to}`);
+  }
+  DeleteRequest(from:string,to:string){
+    return this.http.delete(`${this.BaseUrl}/api/Requested/DeleteRequest/${from}/${to}`);
+  }
 }
-
-
-
-

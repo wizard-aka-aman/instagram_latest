@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationServiceService } from 'src/app/notification-service.service';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
 
@@ -35,13 +36,30 @@ export class SidebarComponent {
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputStory') fileInputStory!: ElementRef<HTMLInputElement>; 
   @ViewChild('fileInputReel') fileInputReel!: ElementRef<HTMLInputElement>;
-  descripton : string = ""
-  isSeen : boolean = true;
-  constructor(private Service: ServiceService, private route: Router) {
+  descripton : string = "" 
+  isSeen : boolean = false;
+
+  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService) {
     this.username = this.Service.getUserName();
   }
 
   ngOnInit(): void {
+     
+    this.notiService.startConnection(this.username, (sender, messageGroup, message) =>  { 
+      console.log( messageGroup,this.username );
+      
+    }).then(() => { 
+       console.log("then wala chala");
+    });
+   
+    // this.notiService.startConnection(localStorage.getItem('jwt')?? ""); // app load hote hi SignalR connect
+     this.Service.isSeenNoti$.subscribe({
+      next:(data:any)=>{
+        console.log(data);
+        
+        this.isSeen = data;
+      },
+    })
       this.Service.GetAllNotifications(this.username).subscribe({
       next:(data:any)=>{
         console.log(data);
@@ -61,6 +79,9 @@ export class SidebarComponent {
         console.log(err);
       },
     })
+  }
+    markSeen() {
+    // this.notiService.markAllSeen();
   }
   logout() {
     const pakka = confirm("Sure you want to Logout?");

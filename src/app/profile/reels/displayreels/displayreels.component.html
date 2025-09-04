@@ -13,7 +13,9 @@
         <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
           <h3 class="mb-0 me-2">{{ username }}</h3>
           <button *ngIf="loggedInUserName == username" class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
-          <button *ngIf="loggedInUserName != username && !alreadyFollowing"(click)="Follow()" class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
+          <button *ngIf="loggedInUserName != username && !alreadyFollowing && !isRequested && !isSeenUserFollwingMeVariable"(click)="Follow() " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
+          <button *ngIf="loggedInUserName != username && !alreadyFollowing && !isRequested && isSeenUserFollwingMeVariable"(click)="Follow() " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow Back</button>
+          <button *ngIf="loggedInUserName != username && !alreadyFollowing && isRequested" (click)="RemoveRequest()" class="btn btn-secondary px-3 ms-3 btn-sm"  >Requested</button>
           <button *ngIf="loggedInUserName != username && alreadyFollowing"(click)="UnFollow()" class="btn btn-secondary px-3 ms-3 btn-sm"  >UnFollow</button>
           <!-- <button *ngIf="loggedInUserName != username"  class="btn btn-primary px-3 ms-3  btn-sm"  >Follow</button> -->
         </div>
@@ -37,7 +39,7 @@
   <div class="my-4"> </div>
 
   <!-- New Post Section --> 
-    <div class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
+    <div *ngIf="loggedInUserName == username " class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
       <div class="me-3">
         <img [src]="plusIconUrl" alt="Add Post"
           style="width: 80px; height: 80px; border-radius: 50%;">
@@ -48,7 +50,7 @@
     
 
     <!-- Tabs -->
-<ul class="nav justify-content-center   py-2">
+<ul class="nav justify-content-center   py-2" *ngIf="loggedInUserName != username && ( isPublic|| alreadyFollowing ) || loggedInUserName == username">
   <li class="nav-item">
     <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}"  routerLink="/{{username}}">
       <i class="fa-solid fa-table-cells"></i> POSTS
@@ -73,7 +75,7 @@
 
 <!-- reels Grid -->
 <div class="container mt-3  pb-5">
-  <div *ngIf="activeTab === 'reels'" class="row g-2">
+  <div *ngIf="activeTab === 'reels' && ( isPublic|| alreadyFollowing )" class="row g-2">
     <div class="col-6 col-sm-6 col-md-3 post-wrapper " *ngFor="let reel of reels">
       <video [src]="reel.url" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" ></video>
       <!-- Overlay -->
@@ -93,9 +95,14 @@
 
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reelModal"  >Share your first reel  </button>
   </div>
-  <div *ngIf="!isPostAvailable && loggedInUserName != username" class="text-center py-2 " >
+  <div *ngIf="!isPostAvailable && loggedInUserName != username && ( isPublic||  alreadyFollowing )" class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
     <p class="fw-bold fs-2 mt-3" >No Reels Yet</p> 
+  </div>
+    <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing )" class="text-center py-2 " >
+    <i class="fa-solid fa-lock  fs-1"></i>
+    <p class="fw-bold fs-2 mt-3" >This account is private</p>
+    <p>Follow to see their photos and videos.</p>  
   </div>
 
 </div>

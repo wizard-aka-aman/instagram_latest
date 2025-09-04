@@ -31,6 +31,9 @@ export class DisplaySavedComponent implements OnInit {
   followingdata :any;
   alreadyFollowing = false;
 savedReels :any; 
+ isPublic :boolean= false;
+  isRequested:boolean = false;
+  isSeenUserFollwingMeVariable : boolean = false;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
@@ -49,6 +52,7 @@ savedReels :any;
 
     if (this.loggedInUserName != this.username) {
       this.isFollowing();
+      this.isSeenUserFollwingMe();
     }
   });
 
@@ -58,11 +62,46 @@ savedReels :any;
       next: (data:any) => {
         console.log(data);
         this.alreadyFollowing = data;
+        if(!this.alreadyFollowing){
+          this.Service.IsRequested(this.loggedInUserName,this.username).subscribe({
+            next: (data:any) => {
+              console.log("Requested : "+data);
+              this.isRequested = data;
+            },
+            error: (error) => {
+              console.error(error);
+            }
+          })
+        }
       },
       error: (error) => {
         console.error(error);
       }
         
+    })
+  }
+   isSeenUserFollwingMe(){
+    this.Service.isFollowing(this.username,this.loggedInUserName).subscribe({
+      next: (data:any) => {
+        console.log(data);
+        this.isSeenUserFollwingMeVariable = data;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+        
+    })
+  }
+  
+  RemoveRequest(){
+    this.Service.DeleteRequest(this.loggedInUserName,this.username).subscribe({
+      next: (data:any) => {
+      console.log(data);
+      this.isRequested = false;
+      },
+      error: (error) => {
+        console.error(error);
+      }
     })
   }
   GetSaved() {
@@ -108,6 +147,7 @@ savedReels :any;
         this.fullname = data.fullName;
         this.bio = data.bio;
         this.following = data.followingCount
+         this.isPublic = data.isPublic;
         this.followers = data.followersCount;
         if (data.profilePicture == null) {
           this.avatarUrl = 'assets/avatar.png';
@@ -198,23 +238,52 @@ savedReels :any;
     this.router.navigate([`/${this.username}/reel/${publicid}`]);
   }
   Follow(){
-    this.followForm.followerUsername = this.loggedInUserName
-    this.followForm.followingUsername = this.username;
-    console.log(this.followForm);
+    if(this.isPublic){
+      const followForm = {
+    followerUsername: '',
+    followingUsername: ''
+  };
+   followForm.followerUsername = this.loggedInUserName
+    followForm.followingUsername = this.username;
+    console.log(followForm);
     
-    this.Service.FollowPost(this.followForm).subscribe({
+    this.Service.FollowPost(followForm).subscribe({
       next: (res: any) => {
-        console.log(res);
-        this.getProfile(this.username);
+        console.log(res); 
+        this.alreadyFollowing = true
+         this.getProfile(this.username);
          this.isFollowing();
       },
       error: (err) => {
         console.log(err);
       }
     })
-  }
+    }else{
+
+      const addreq = {
+        userNameOfReqFrom: this.loggedInUserName,
+        userNameOfReqTo: this.username
+      }
+      this.Service.AddRequested(addreq).subscribe({
+        next: (res: any) => {
+          console.log(res);
+          this.isRequested = true;
+          this.getProfile(this.username);
+         this.isFollowing();
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+      
+    }
+    }
   UnFollow(){
-    this.followForm.followerUsername = this.loggedInUserName
+    if(!this.isPublic){
+      const isconfirm = confirm("If you change your mind, you'll have to request to follow "+this.username+ " again.");
+    
+    if(isconfirm){
+      this.followForm.followerUsername = this.loggedInUserName
     this.followForm.followingUsername = this.username;
     console.log(this.followForm);
     
@@ -228,6 +297,24 @@ savedReels :any;
         console.log(err);
       }
     })
+    }
+  }
+  else{
+     this.followForm.followerUsername = this.loggedInUserName
+    this.followForm.followingUsername = this.username;
+    console.log(this.followForm);
+    
+    this.Service.UnFollowPost(this.followForm).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.getProfile(this.username);
+         this.isFollowing();
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
   }
     getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
