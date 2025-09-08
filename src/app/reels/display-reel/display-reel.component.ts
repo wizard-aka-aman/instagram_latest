@@ -232,33 +232,88 @@ export class DisplayReelComponent implements OnInit {
       }
     });
   }
-  Follow(reel:any) {
-    this.followForm.followerUsername = this.LoggedInUser
+  Follow(reel:any){
+    if(reel.isPublic){
+      const followForm = {
+    followerUsername: '',
+    followingUsername: ''
+  };
+   followForm.followerUsername = this.LoggedInUser
+    followForm.followingUsername = reel.userName;
+    console.log(followForm);
+    
+    this.serviceSrv.FollowPost(followForm).subscribe({
+      next: (res: any) => {
+        console.log(res); 
+        reel.alreadyFollowing = true ;
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+    }else{
+      const addreq = {
+        userNameOfReqFrom: this.LoggedInUser,
+        userNameOfReqTo: reel.userName
+      }
+      this.serviceSrv.AddRequested(addreq).subscribe({
+        next: (res: any) => {
+          console.log(res);
+          reel.isRequested = true;
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      })
+      
+    }
+  }
+
+  UnFollow(reel:any){
+     if(!reel.isPublic){
+      const isconfirm = confirm("If you change your mind, you'll have to request to follow "+reel.userName+ " again.");
+    
+    if(isconfirm){
+      this.followForm.followerUsername = this.LoggedInUser
     this.followForm.followingUsername = reel.userName;
     console.log(this.followForm);
-
-    this.serviceSrv.FollowPost(this.followForm).subscribe({
+    
+    this.serviceSrv.UnFollowPost(this.followForm).subscribe({
       next: (res: any) => {
         console.log(res);
-        reel.isLoggedInUserFollow = true
+        reel.alreadyFollowing = false;
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+    }
+  }
+  else{
+     this.followForm.followerUsername = this.LoggedInUser
+    this.followForm.followingUsername = reel.userName;
+    console.log(this.followForm);
+    
+    this.serviceSrv.UnFollowPost(this.followForm).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        reel.alreadyFollowing = false;
+        reel.isRequested = false;
       },
       error: (err) => {
         console.log(err);
       }
     })
   }
-  UnFollow(reel:any) {
-    this.followForm.followerUsername = this.LoggedInUser
-    this.followForm.followingUsername = reel.userName;
-    console.log(this.followForm);
-    
-    this.serviceSrv.UnFollowPost(this.followForm).subscribe({
-      next: (res: any) => {
-        console.log(res);  
-        reel.isLoggedInUserFollow = false
+  }
+    RemoveRequest(reel:any){
+    this.serviceSrv.DeleteRequest(this.LoggedInUser,reel.userName).subscribe({
+      next: (data:any) => {
+      console.log(data);
+      reel.isRequested = false;
       },
-      error: (err) => {
-        console.log(err);
+      error: (error) => {
+        console.error(error);
       }
     })
   }
