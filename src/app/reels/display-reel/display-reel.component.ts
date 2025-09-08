@@ -282,6 +282,7 @@ export class DisplayReelComponent implements OnInit {
       next: (res: any) => {
         console.log(res);
         reel.alreadyFollowing = false;
+        reel.isRequested = false;
       },
       error: (err) => {
         console.log(err);
