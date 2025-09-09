@@ -7,7 +7,7 @@
 
   <!-- Prev User Button -->
   <button 
-    class="btn text-white fs-1 position-absolute start-0 translate-middle-y z-3 d-none d-md-block"
+    class="btn text-white fs-1 position-absolute start-0 translate-middle-y z-3 "
     style="top: 50%;" 
     (click)="prevUser()"
     *ngIf="currentUserIndex > 0">
@@ -16,7 +16,7 @@
 
   <!-- Prev User Preview -->
 <div 
-  class="post-wrapper d-none d-md-block position-absolute z-2" 
+  class="post-wrapper  position-absolute z-2" 
   style="left: 10%; top: 50%; transform: translateY(-50%);" 
   *ngIf="currentUserIndex > 0">
   
@@ -93,7 +93,7 @@
 
   <!-- Next User Preview -->
   <div 
-  class="post-wrapper d-none d-md-block position-absolute z-2" 
+  class="post-wrapper  position-absolute z-2" 
   style="right: 10%; top: 50%; transform: translateY(-50%);" 
   *ngIf="currentUserIndex < usersWithStories.length - 1">
   
@@ -119,7 +119,7 @@
 
   <!-- Next User Button -->
   <button 
-    class="btn text-white fs-1 position-absolute end-0 translate-middle-y z-3 d-none d-md-block"
+    class="btn text-white fs-1 position-absolute end-0 translate-middle-y z-3 "
     style="top: 50%;" 
     (click)="nextUser()"
     *ngIf="currentUserIndex < usersWithStories.length - 1">
