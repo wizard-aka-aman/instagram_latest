@@ -77,8 +77,11 @@ img.rounded-circle {
 }
 
 .post-card img.card-img-top {
-  object-fit: cover;
-  max-height: 600px;
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;  /* full image without crop */
+  max-height: none !important;     /* remove limit so full image shows */
+  background-color: #000;          /* empty space black dikhe */
 }
 
 .post-card .card-header {
@@ -108,3 +111,115 @@ input::placeholder{
   padding: 0 !important;
   margin-top: 5px !important;
 }
+/* Mobile responsiveness */ 
+@media screen and (max-width: 768px) {
+  
+  /* Post Body Cleanup */
+.post-card .card-body {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 14px !important;   /* 👈 thoda andar spacing */
+  font-size: 14px;
+}
+
+/* Action icons row (like, comment, share + bookmark) */
+.post-card .card-body .d-flex {
+  margin-bottom: 8px; /* icons ke niche halka gap */
+}
+
+.post-card .card-body i {
+  font-size: 22px;
+  margin-right: 12px;
+  cursor: pointer;
+}
+
+/* Right side bookmark thoda alag */
+.post-card .card-body div:last-child i {
+  margin-right: 0;
+}
+
+/* Likes count */
+.post-card .card-body span.fw-bold {
+  display: block;
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+/* Caption styling */
+.post-card .card-body p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* View all comments link */
+.post-card .card-body p[routerLink] {
+  font-size: 13px;
+  color: rgb(170, 170, 170) !important;
+  margin: 4px 0;
+}
+
+/* Comment preview */
+.post-card .card-body div.mb-1 {
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+/* Comment input row */
+.post-card .card-body .d-flex input {
+  border: none !important;
+  border-radius: 0;
+  border-top: 1px solid #333 !important;
+  margin-top: 10px;
+  padding: 10px 0 !important;
+  font-size: 14px !important;
+}
+
+.post-card .card-body .d-flex button {
+  font-size: 14px !important;
+  font-weight: bold;
+}
+
+  /* 🔹 Stories scroll full width */
+  .story-scroll {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  .post-card .card-header {
+    padding: 6px 10px !important;  /* mobile pe thoda compact */
+    font-size: 13px;
+  }
+  /* 🔹 Posts take full width */
+  .container {
+    padding: 0 !important;
+  }
+
+  .col-md-6 {
+    width: 100% !important;
+    padding: 0 5px !important;
+  }
+
+  .post-card {
+    margin-bottom: 20px !important;
+    border-bottom: 1px solid #333;
+  }
+
+  .post-card img.card-img-top {
+    max-height: 400px !important;
+    width: 100% !important;
+  }
+
+  /* 🔹 Comments input compact */
+  .form-control {
+    font-size: 13px !important;
+    padding: 6px 8px !important;
+  }
+
+  .btn {
+    font-size: 13px !important;
+    padding: 4px 8px !important;
+  }
+}
+ 

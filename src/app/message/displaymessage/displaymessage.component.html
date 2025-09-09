@@ -1,6 +1,7 @@
-<div class="container-fluid h-100">
+<div #myDiv  class="container-fluid h-100">
   <div class="row h-100">
-    <!-- Left Sidebar -->
+   <ng-container   *ngIf="width>=768">
+     <!-- Left Sidebar -->
     <div class="col-12 col-md-4 col-lg-3 p-0 border-end d-none d-md-block"  style="background-color: #000; border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
       <app-chatwindow></app-chatwindow>
     </div>
@@ -9,5 +10,14 @@
     <div class="col-12 col-md-8 col-lg-9 p-0" style="background-color: #000;">
       <router-outlet></router-outlet>
     </div>
+   </ng-container>
+   <ng-container   *ngIf="width<768"> 
+    <!-- Left Sidebar --> 
+      <app-chatwindow></app-chatwindow>
+  
+    <!-- Right Chat Window --> 
+      <router-outlet></router-outlet> 
+   </ng-container>
   </div>
 </div>
+  

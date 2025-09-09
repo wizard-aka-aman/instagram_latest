@@ -1,8 +1,9 @@
-import { AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ServiceService } from 'src/app/service.service';
 import { ChatService } from 'src/app/chatservice.service';
+import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-rightside',
   templateUrl: './rightside.component.html',
@@ -25,10 +26,8 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   noUserSelected = true;
   menuOpenId: string | null = null;
   messageId: number = 0;
-
   @ViewChild('scrollContainer') scrollContainer!: ElementRef;
   emojiPickerIndex: number | null = null;
-
   @HostListener('document:click', ['$event'])
   handleGlobalClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -48,7 +47,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService) {
+  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router) {
     this.user = this.ServiceSrv.getUserName();
     this.router.paramMap.subscribe(params => {
       this.groupName = String(params.get('groupname'));
@@ -139,7 +138,8 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
 
 
   goBack() {
-    this.location.back();
+    // this.location.back();
+    this.route.navigate(['/messages/t']);
   }
   ngOnInit() {
     this.router.paramMap.subscribe(params => {

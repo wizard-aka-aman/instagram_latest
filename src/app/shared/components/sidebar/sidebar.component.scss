@@ -2,7 +2,6 @@
   width: 300px;
   height: 100vh;
   position: fixed;
-  // border-right: 1px solid #dbdbdb;
   background-color: #000000;
   z-index: 1000;
   top: 0;
@@ -31,13 +30,46 @@
   min-width: 24px;
   text-align: center;
 }
-textarea::placeholder{
+
+textarea::placeholder {
   color: rgb(255, 255, 255) !important;
 }
-.instagramloading{
-  animation: ghumna .5s linear infinite  ;
+
+.instagramloading {
+  animation: ghumna 0.5s linear infinite;
 }
- @keyframes ghumna {
+
+.horizontal-bar {
+  display: flex;
+  overflow-x: auto;   /* horizontal scroll enable */
+  white-space: nowrap;
+  gap: 15px;          /* links ke beech space */
+  padding: 10px;
+  background-color: #000;
+  border-bottom: 1px solid #333;
+  scrollbar-width: thin;      /* Firefox */
+}
+
+.horizontal-bar::-webkit-scrollbar {
+  height: 6px;        /* Chrome/Edge ke liye scrollbar height */
+}
+
+.horizontal-bar::-webkit-scrollbar-thumb {
+  background: #666;   /* scrollbar ka color */
+  border-radius: 10px;
+}
+
+.horizontal-bar a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #111;
+  flex-shrink: 0; /* prevent wrapping */
+}
+
+@keyframes ghumna {
   from {
     transform: rotate(0deg);
   }
@@ -45,13 +77,60 @@ textarea::placeholder{
     transform: rotate(360deg);
   }
 }
+
+/* ✅ Responsive Sidebar -> Bottom Navbar */
 @media (max-width: 768px) {
-  .ms-sidebar {
-    margin-left: 0 !important;
-    width: 100% !important;
+  .bottom-sidebar {
+  position: fixed !important;
+  bottom: 0; 
+  width: 100vw !important;
+  background-color: #000;  /* black bar */ 
+  z-index: 1000;
+  display: flex; 
+  padding: 8px 0;
+  overflow-x: scroll;
+  height: 55px; /* fixed height */
+  
+}
+ .left-sidebar { 
+    display: flex !important;   /* force enable */ 
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100vw !important;
+    position: fixed !important;
+    height: auto !important;
   }
 
-  .left-sidebar {
-    display: none !important; // hide on small screens
+  /* Hide the logo on small screens */
+  .left-sidebar .pt-2,
+  .left-sidebar .logo {
+    display: none !important;
+  }
+
+  /* Nav in bottom bar -> row */
+  .left-sidebar .nav { 
+    gap: 0 !important;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  /* Each nav-link becomes column (icon above text) */
+  .left-sidebar .nav-link {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .left-sidebar .nav-link span {
+    display: block !important;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  /* Hide "More" section in bottom bar */
+  .left-sidebar .pt-5 {
+    display: none !important;
   }
 }

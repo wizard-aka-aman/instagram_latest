@@ -19,7 +19,7 @@
      
 
   <!-- Comments Section (Instagram Style) -->
-<div class="flex-grow-1 overflow-auto p-3" style="font-size: 15px;">
+<div class="flex-grow-1 overflow-auto p-3" style="font-size: 15px; height: 50vh; overflow-y: auto;">
   <div *ngFor="let comment of ListComment" class="d-flex align-items-start mb-3">
     <!-- User Profile Picture -->
     <img [src]="getProfileImage(comment.profilePicture)" 
