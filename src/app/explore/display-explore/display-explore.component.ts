@@ -23,15 +23,6 @@ export class DisplayExploreComponent implements OnInit {
         console.log(err);
       }
     })
-
-    for (let index = 5; index < 50; index++) {
-      this.posts.push({
-        id : index,
-        type : 'video',
-        src : `https://randomuser.me/api/portraits/men/${index}.jpg`
-      })
-      
-    }
   }
    getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
