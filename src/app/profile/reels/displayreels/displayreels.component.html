@@ -75,7 +75,7 @@
 
 <!-- reels Grid -->
 <div class="container mt-3  pb-5">
-  <div *ngIf="activeTab === 'reels' && ( isPublic|| alreadyFollowing )" class="row g-2">
+  <div *ngIf="activeTab === 'reels' && ( isPublic|| alreadyFollowing || loggedInUserName == username)" class="row g-2">
     <div class="col-6 col-sm-6 col-md-3 post-wrapper " *ngFor="let reel of reels">
       <video [src]="reel.url" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" ></video>
       <!-- Overlay -->

@@ -26,13 +26,17 @@ const routes: Routes = [
         path: 'reels',
         loadChildren: () => import('./reels/reels.module').then(e => e.ReelsModule)
     },
-    {
-        path: 'messages',
-        loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
-    },
+    // {
+    //     path: 'messages',
+    //     loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
+    // },
     {
         path: 'notifications',
         loadChildren: () => import('./notification/notification.module').then(e => e.NotificationModule)
+    },
+    {
+        path: 'explore',
+        loadChildren: () => import('./explore/explore.module').then(e => e.ExploreModule)
     },
     {
         path: 'stories/:username',

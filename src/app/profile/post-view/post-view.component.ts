@@ -68,7 +68,7 @@ export class PostViewComponent implements OnInit {
         console.log(err);
       }
     })
-      this.service.GetPostByIdWithUserNameAsync(id, this.username).subscribe({
+      this.service.GetPostByIdWithUserNameAsync(id, this.username,this.LoggedInUser).subscribe({
       next: (data: any) => {
         console.log(data);
         this.user.userName = data.userName

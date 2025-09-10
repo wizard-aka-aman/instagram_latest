@@ -24,8 +24,8 @@ import { AuthInterceptor } from './interceptor/auth.interceptor';
     FormsModule,
     SharedModule, 
     HttpClientModule, 
-    BrowserAnimationsModule, // 👈 Required for toast animations
-    ToastrModule.forRoot(),  // 👈 Global config 
+    BrowserAnimationsModule, 
+    ToastrModule.forRoot(),  
 ],
   providers: [
     {

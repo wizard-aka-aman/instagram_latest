@@ -75,7 +75,7 @@
 
 <!-- Posts Grid -->
 <div class="container mt-3 pb-5">
-  <div *ngIf="activeTab === 'posts' && ( isPublic|| alreadyFollowing )" class="row g-2">
+  <div *ngIf="activeTab === 'posts' && ( isPublic|| alreadyFollowing || loggedInUserName == username )" class="row g-2">
     <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
       <img [src]="'data:image/jpeg;base64,'+post.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >
       <!-- Overlay -->

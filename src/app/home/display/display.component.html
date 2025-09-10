@@ -31,7 +31,7 @@
 
         <!-- Post Header -->
         <div class="card-header d-flex align-items-center  " routerLink="/{{post.userName}}" style="background-color: black; color: white; cursor: pointer;">
-          <img *ngIf="post.profilePicture" routerLink="/{{post.userName}}"
+          <img  routerLink="/{{post.userName}}"
                [src]="getProfileImage(post.profilePicture)"
                class="rounded-circle me-2"
                width="40" height="40" />
@@ -39,7 +39,7 @@
         </div>
 
         <!-- Post Image -->
-        <img (dblclick)="Like(post)" class="card-img-top"
+        <img class="card-img-top"
              [src]="getProfileImage(post.imageUrl)"
              alt="Post image" />
 

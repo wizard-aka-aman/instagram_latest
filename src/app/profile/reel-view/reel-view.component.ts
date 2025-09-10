@@ -74,7 +74,7 @@ export class ReelViewComponent implements OnInit {
       }
     })
 
-    this.service.GetReelByPublicId(id).subscribe({
+    this.service.GetReelByPublicId(id,this.LoggedInUser).subscribe({
       next: (data: any) => {
         console.log(data);
         this.user.userName = data.userName

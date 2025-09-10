@@ -140,7 +140,8 @@
         <!-- Buttons -->
         <button class="btn border text-white" (click)="ClearPreviewStory()"  data-bs-dismiss="modal">X</button>
         <button style="display: none;" class="btn border text-white" (click)="ClearPreviewStory()"  #storyModal data-bs-dismiss="modal">X</button>
-        <button *ngIf="previewUrlStory && !isNextStepStory" class="btn text-primary" (click)="NextModalStory()">Next</button>
+ 
+        <button *ngIf="previewUrlStory && !isNextStepStory " class="btn btn-primary mt-3 float-end" (click)="UploadFinalStory()" >Post</button>
         <button *ngIf="isNextStepStory" class="btn text-primary" (click)="ResetModalStory()">Back</button>
       </div>
       
@@ -151,7 +152,7 @@
         <div *ngIf="previewUrlStory && isNextStepStory && !postSharedStory && !isCompletedLoadingStory" class="d-md-flex gap-2 p-3">
           <div class="flex-shrink-0 d-flex justify-content-center align-items-center">
             <img [src]="previewUrlStory" alt="Preview" class="img-fluid rounded" style="max-width: 300px;" />
-            <button *ngIf="previewUrlStory && isNextStepStory " class="btn btn-primary mt-3 float-end" (click)="UploadFinalStory()" >Post</button>
+            
           </div> 
         </div>
          

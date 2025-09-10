@@ -109,8 +109,8 @@ export class ServiceService {
   GetAllPostByUsername(username: string) {
     return this.http.get(`${this.BaseUrl}/Posts/${username}`);
   }
-  GetPostByIdWithUserNameAsync(postId: number, username: string) {
-    return this.http.get(`${this.BaseUrl}/Posts/post/${postId}/${username}`);
+  GetPostByIdWithUserNameAsync(postId: number, username: string,loggedInUsername:string) {
+    return this.http.get(`${this.BaseUrl}/Posts/post/${postId}/${username}/${loggedInUsername}`);
   }
   LikePost(item: any) {
     return this.http.post(`${this.BaseUrl}/Posts/like`, item);
@@ -187,8 +187,8 @@ export class ServiceService {
   GetReelsByUsername(username: string) {
     return this.http.get(`${this.BaseUrl}/api/Videos/GetReelByUsername/${username}`)
   }
-  GetReelByPublicId(publicid: string) {
-    return this.http.get(`${this.BaseUrl}/api/Videos/GetReelByPublicid/${publicid}`)
+  GetReelByPublicId(publicid: string,loggedInUsername:string) {
+    return this.http.get(`${this.BaseUrl}/api/Videos/GetReelByPublicid/${publicid}/${loggedInUsername}`)
   }
   LikeReel(item:any){
     return this.http.post(`${this.BaseUrl}/api/Videos/LikeReel`, item)
@@ -237,5 +237,8 @@ export class ServiceService {
   }
   DeleteRequest(from:string,to:string){
     return this.http.delete(`${this.BaseUrl}/api/Requested/DeleteRequest/${from}/${to}`);
+  }
+  Get10Posts(username:string){
+    return this.http.get(`${this.BaseUrl}/Posts/Get10Posts/${username}`)
   }
 }
