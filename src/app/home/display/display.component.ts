@@ -42,6 +42,7 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   searchResults: any[] = []; 
   showDropdown = false;
   debounceTimer: any;
+   AllFollowingResults :any[]=[]
   constructor(private serviceSrv : ServiceService,private toastr : ToastrService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
@@ -50,7 +51,14 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
     this.scrollPosition = window.scrollY; // save scroll position
   }
   ngOnInit(): void {
-    
+    this.serviceSrv.GetFollowing(this.loggedInUser).subscribe({
+      next: (data:any) => {
+         this.AllFollowingResults = data
+      },
+      error: (error) => {
+        console.error(error);
+        }
+    })
     this.serviceSrv.GetLoggedInUserStory(this.loggedInUser).subscribe({
       next: (data:any) => { 
         this.loggedInUserStory = data;
@@ -391,6 +399,7 @@ openLikesModal(post: any) {
   }
   AddPostId(post:any){
     this.setPostId = post.postId;
+     this.searchResults =this.AllFollowingResults
   }
   
 }

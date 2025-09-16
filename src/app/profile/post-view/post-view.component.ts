@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
 import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-post-view',
   templateUrl: './post-view.component.html',
@@ -23,7 +24,8 @@ export class PostViewComponent implements OnInit {
     imageUrl: '',
     commentsCount: '',
     likesCount: '',
-    createdAt: ''
+    createdAt: '',
+    postId: 0
   };
   likeAndUnLike = {
     postUsername: '',
@@ -41,15 +43,24 @@ export class PostViewComponent implements OnInit {
   ListLike: any[] = []
   ListComment :any[]= []
   isSavedPost =false;
+    searchText: string = '';
+    searchQuery = '';
+  searchResults: any[] = []; 
+  showDropdown = false;
+  debounceTimer: any;
+   AllFollowingResults :any[]=[]
+   setPostId :number=0
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: ServiceService,
     private location: Location,
+    private toastr : ToastrService
   ) { }
 
   ngOnInit(): void {
+    
     this.LoggedInUser = this.service.getUserName();
     this.route.paramMap.subscribe((params: any) => {
       this.username = params.get('username')!;
@@ -57,6 +68,14 @@ export class PostViewComponent implements OnInit {
       this.getPostById(this.postid);
 
     });
+    this.service.GetFollowing(this.LoggedInUser).subscribe({
+      next: (data:any) => {
+         this.AllFollowingResults = data
+      },
+      error: (error) => {
+        console.error(error);
+        }
+    })
   }
 
   getPostById(id: number) {
@@ -78,6 +97,7 @@ export class PostViewComponent implements OnInit {
         this.singlepost.imageUrl = data.imageUrl
         this.singlepost.likesCount = data.likesCount
         this.singlepost.createdAt = data.createdAt
+        this.singlepost.postId = data.postId
         this.ListComment = data.comments
         if (data.likes.length == 0) {
           this.zeroLike = true;
@@ -212,5 +232,60 @@ export class PostViewComponent implements OnInit {
       }
     })
   }
+ performSearch(query: string) {
+    if (!query || query.trim().length === 0) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
 
+    this.service.SearchUsers(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res;
+        this.showDropdown = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.searchResults = [];
+        this.showDropdown = false;
+      }
+    });
+  }
+   DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.performSearch(this.searchQuery);
+    }, 300); // ⏱ 300ms delay
+  }
+  ClearSearchQuery() {
+    this.searchQuery = ""; 
+    this.searchResults = [];
+    this.showDropdown = false;
+  }
+  SendPost(user:string, ){
+    const sendform= {
+      "groupName": this.LoggedInUser,
+      "user": user,
+      "postId": this.setPostId
+    }
+    this.service.SendPost(sendform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.toastr.success(data.message)
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+      }
+    })
+  }
+  AddPostId(){
+    this.setPostId = this.singlepost.postId;
+     this.searchResults =this.AllFollowingResults
+  }
 }

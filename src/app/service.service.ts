@@ -8,8 +8,8 @@ import { isNgTemplate } from '@angular/compiler';
 })
 export class ServiceService {
 
-   public BaseUrl :string= 'https://xatavop939.bsite.net';
-  // public BaseUrl: string = 'https://localhost:7246';
+  //  public BaseUrl :string= 'https://xatavop939.bsite.net';
+  public BaseUrl: string = 'https://localhost:7246';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   private isSeenNoti = new BehaviorSubject<boolean>(true);

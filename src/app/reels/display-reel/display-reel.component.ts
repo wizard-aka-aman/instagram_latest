@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -26,7 +27,14 @@ export class DisplayReelComponent implements OnInit {
     followerUsername: '',
     followingUsername: ''
   }
-  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute, private eRef: ElementRef) {
+  searchText: string = '';
+  searchQuery = '';
+  searchResults: any[] = []; 
+  showDropdown = false;
+  debounceTimer: any;
+  setReelPublicId:string =""
+  AllFollowingResults:any[]=[]
+  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute, private eRef: ElementRef ,private toastr : ToastrService) {
     this.LoggedInUser = this.serviceSrv.getUserName();
 
     this.route.paramMap.subscribe((params: any) => {
@@ -45,6 +53,15 @@ export class DisplayReelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+     this.serviceSrv.GetFollowing(this.LoggedInUser).subscribe({
+      next: (data:any) => {
+        // this.searchResults = data;
+        this.AllFollowingResults = data;
+      },
+      error: (error) => {
+        console.error(error);
+        }
+    })
     this.serviceSrv.GetProfileByUserName(this.LoggedInUser).subscribe({
       next: (data: any) => {
         console.log(data);
@@ -322,4 +339,61 @@ export class DisplayReelComponent implements OnInit {
     event.preventDefault();
     
   }
+  AddPublicId(reel:any){
+ this.setReelPublicId = reel.publicid;
+ this.searchResults =this.AllFollowingResults
+  }
+   performSearch(query: string) {
+    if (!query || query.trim().length === 0) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
+
+    this.serviceSrv.SearchUsers(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res;
+        this.showDropdown = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.searchResults = [];
+        this.showDropdown = false;
+      }
+    });
+  }
+   DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.performSearch(this.searchQuery);
+    }, 300); // ⏱ 300ms delay
+  }
+  ClearSearchQuery() {
+    this.searchQuery = ""; 
+    this.searchResults = [];
+    this.showDropdown = false;
+  }
+  SendPost( user:string){
+    const sendform= {
+      "groupName": this.LoggedInUser,
+      "user": user, 
+      "reelPublicId": this.setReelPublicId
+    }
+    this.serviceSrv.SendPost(sendform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.toastr.success(data.message)
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+      }
+    })
+  }
+
 }

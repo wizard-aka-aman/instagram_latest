@@ -55,10 +55,10 @@
     <!-- Message Bubble -->
     <div class="d-inline-block fs-small px-2 py-1 rounded-5 text-break position-relative"
          [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}">
-      <span *ngIf="msg.postLink == null">{{ msg.message }}</span>
+      <span *ngIf="msg.postLink == null && msg.reelPublicId == null" >{{ msg.message }}</span>
 
       <!-- Post / Reel -->
-  <div *ngIf="msg.postLink != null"
+  <div *ngIf="msg.postLink != null || msg.reelPublicId !=null"
      class="card shadow-sm border-0 rounded-3" style="max-width: 350px; background-color: transparent;">
   
   <!-- Header: profile image + username -->
@@ -77,6 +77,15 @@
          class="card-img-top rounded-3" 
          alt="media preview"
          style="object-fit: cover; max-height: 300px;" />
+  </ng-container>
+  <ng-container  *ngIf="msg.reelPublicId">
+    <video [src]="msg.mediaUrl" routerLink="/{{msg.usernameOfPostReel}}/reel/{{msg.reelPublicId}}"
+           class="post-media"
+           muted
+           loop
+           playsinline class="card-img-top rounded-3" 
+         style="object-fit: cover; max-height: 300px;">
+    </video>
   </ng-container>
 
   <!-- Body -->

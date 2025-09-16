@@ -4,6 +4,7 @@ import { log } from 'console';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
 import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-reel-view',
   templateUrl: './reel-view.component.html',
@@ -25,7 +26,8 @@ export class ReelViewComponent implements OnInit {
     url: '',
     commentsCount: '',
     likesCount: '',
-    createdAt: ''
+    createdAt: '',
+    publicid :''
   };
   likeAndUnLike = {
     LikedBy: '',
@@ -41,13 +43,21 @@ export class ReelViewComponent implements OnInit {
   zeroComment = true;
   ListLike: any[] = []
   ListComment: any[] = []
-  isSavedPost = false;
+  isSavedPost = false; 
+  searchText: string = '';
+  searchQuery = '';
+  searchResults: any[] = []; 
+  showDropdown = false;
+  debounceTimer: any;
+   AllFollowingResults :any[]=[]
+   setReelPublicId :string=''
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: ServiceService,
-    private location: Location
+    private location: Location,
+    private toastr : ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -60,7 +70,14 @@ export class ReelViewComponent implements OnInit {
       
       
       this.getReelById(this.publicid);
-
+this.service.GetFollowing(this.LoggedInUser).subscribe({
+      next: (data:any) => {
+         this.AllFollowingResults = data
+      },
+      error: (error) => {
+        console.error(error);
+        }
+    })
     });
   }
 
@@ -93,6 +110,7 @@ export class ReelViewComponent implements OnInit {
 
         this.singlepost.likesCount = data.likesCount
         this.singlepost.createdAt = data.createdAt
+         this.singlepost.publicid = data.publicid
         this.ListComment = data.comments
         if (data.likes.length == 0) {
           this.zeroLike = true;
@@ -225,5 +243,60 @@ export class ReelViewComponent implements OnInit {
       }
     })
   }
+ performSearch(query: string) {
+    if (!query || query.trim().length === 0) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
 
+    this.service.SearchUsers(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res;
+        this.showDropdown = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.searchResults = [];
+        this.showDropdown = false;
+      }
+    });
+  }
+   DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.performSearch(this.searchQuery);
+    }, 300); // ⏱ 300ms delay
+  }
+  ClearSearchQuery() {
+    this.searchQuery = ""; 
+    this.searchResults = [];
+    this.showDropdown = false;
+  }
+  SendPost(user:string, ){
+    const sendform= {
+      "groupName": this.LoggedInUser,
+      "user": user, 
+      "reelPublicId": this.setReelPublicId
+    }
+    this.service.SendPost(sendform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.toastr.success(data.message)
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+      }
+    })
+  }
+  AddPostId(){
+    this.setReelPublicId = this.singlepost.publicid;
+     this.searchResults =this.AllFollowingResults
+  }
 }

@@ -174,10 +174,10 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
           message,
           postLink : postlink,
           profilePicture:profilepicture,
-          usernameofpostreel,
+          usernameOfPostReel:usernameofpostreel,
           postId : postid,
-          publicid,
-          reelurl,
+          reelPublicId:publicid,
+          mediaUrl:reelurl,
           sentAt: new Date()
         });
         console.log(this.messages);

@@ -47,7 +47,7 @@
     <i style="cursor: pointer;" *ngIf="!isLikedByMe" (click)="Like()" class="fa-regular fa-heart fs-4"></i>
     <i style="cursor: pointer; color: #ff4242;" *ngIf="isLikedByMe" class="fa-solid fa-heart fs-4" (click)="UnLike()"></i>
     <i class="fa-regular fa-comment fs-4" style="cursor: pointer;"   (click)="FocusComment()" ></i>
-    <i class="fa-regular fa-paper-plane fs-4" style="cursor: pointer;"></i>
+    <i class="fa-regular fa-paper-plane fs-4"  data-bs-toggle="modal" data-bs-target="#HomeSent" style="cursor: pointer;" (click)="AddPostId()"  ></i>
     <i *ngIf="!isSavedPost" class="fa-regular fa-bookmark fs-4 ms-auto" (click)="AddSaved()" style="cursor: pointer;"></i>
     <i *ngIf="isSavedPost"  class="fa-solid fa-bookmark fs-4 ms-auto" (click)="RemoveSaved()"  style="cursor: pointer;"></i>
   </div>
@@ -115,3 +115,39 @@
 </div>
 
 
+
+<!-- Sent Modal -->
+<div class="modal fade" id="HomeSent" tabindex="-1" aria-labelledby="SentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+    <div class="modal-content custom-modal">
+
+      <!-- Header -->
+      <div class="modal-header border-0 d-flex justify-content-between align-items-center">
+        <h5 class="modal-title fw-semibold">Share</h5>
+        <button type="button" (click)="ClearSearchQuery()" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Search Bar -->
+      <div class=" d-flex justify-content-center align-items-center">
+        <div class="input-group  w-50 border-rounded mb-3">
+          <span class="fa-solid mt-1 text-white border-rounded fa-magnifying-glass input-group-text border-0"
+            style="background-color: rgb(0, 0, 0) !important;"></span>
+          <input type="text" (input)="DeBounce()" class="form-control w-50  border-rounded" [(ngModel)]="searchQuery"
+            placeholder="Search...">
+        </div>
+      </div>
+
+      <!-- Dropdown Results -->
+
+      <!-- Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
+        <div *ngFor="let user of searchResults " class="d-flex align-items-center px-3 py-2 user-row"  style="cursor: pointer;" (click)="SendPost(user.userName)" data-bs-dismiss="modal" aria-label="Close" >
+
+          <img [src]="getProfileImage(user.profilePicture)" alt="User" class="rounded-circle me-2" width="48"
+            height="48" style="object-fit: cover;" />
+          <span class="fw-semibold text-white">{{ user.userName }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
