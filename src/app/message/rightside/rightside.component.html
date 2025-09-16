@@ -55,19 +55,38 @@
     <!-- Message Bubble -->
     <div class="d-inline-block fs-small px-2 py-1 rounded-5 text-break position-relative"
          [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}">
-      {{ msg.message }}
+      <span *ngIf="msg.postLink == null">{{ msg.message }}</span>
 
       <!-- Post / Reel -->
-  <div *ngIf="msg.messageType === 'post' || msg.messageType === 'reel'" 
-       class="card shadow-sm border-0" style="max-width: 300px;">
-    <img *ngIf="msg.mediaUrl" [src]="msg.mediaUrl" class="card-img-top" alt="media preview">
-    <div class="card-body p-2">
-      <p class="card-text mb-1"><strong>{{ msg.sender }}</strong>: {{ msg.message }}</p>
-      <a *ngIf="msg.postLink" [href]="msg.postLink" target="_blank" class="btn btn-sm btn-outline-primary">
-        View {{ msg.messageType | titlecase }}
-      </a>
+  <div *ngIf="msg.postLink != null"
+     class="card shadow-sm border-0 rounded-3" style="max-width: 350px; background-color: transparent;">
+  
+  <!-- Header: profile image + username -->
+  <div class="d-flex align-items-center p-2">
+    <img [src]="getProfileImage(msg.profilePicture)"  routerLink="/{{msg.usernameOfPostReel}}" 
+         class="rounded-circle me-2 " 
+         style="width: 40px; height: 40px; object-fit: cover;cursor: pointer;" />
+    <div>
+      <strong style="color: white;">{{ msg.usernameOfPostReel }}</strong>
     </div>
   </div>
+
+  <!-- Media preview (if exists) -->
+  <ng-container *ngIf="msg.postLink">
+    <img [src]="getProfileImage(msg.postLink)"   routerLink="/{{msg.usernameOfPostReel}}/p/{{msg.postId}}"
+         class="card-img-top rounded-3" 
+         alt="media preview"
+         style="object-fit: cover; max-height: 300px;" />
+  </ng-container>
+
+  <!-- Body -->
+  <div class="card-body p-2">
+    <p class="card-text mb-1 text-white">
+      {{ msg.message }}
+    </p>
+  </div>
+</div>
+
 
 
 

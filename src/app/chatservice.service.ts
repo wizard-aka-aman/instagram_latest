@@ -10,20 +10,20 @@ import { ServiceService } from './service.service';
 export class ChatService {
   private hubConnection!: signalR.HubConnection;
 
-  private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
-  // public baseUrl: string = 'https://localhost:7246';
+  // private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
+  public baseUrl: string = 'https://localhost:7246';
   
   constructor(private http: HttpClient,private service : ServiceService) { }
 
-  public async startConnection(groupName: string, onReceive: (messageId: number, sender: string, user: string, message: string) => void): Promise<void> {
+  public async startConnection(groupName: string, onReceive: (messageId: number, sender: string, user: string, message: string,postlink?:string ,profilepicture?:string,usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string) => void): Promise<void> {
   const sender = this.service.getUserName(); // helper method if needed
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(`${this.baseUrl}/chatHub`, { withCredentials: true })
     .withAutomaticReconnect()
     .build();
 
-  this.hubConnection.on("ReceiveMessage", (messageId: number, sender: string, groupName: string, message: string) => {
-    onReceive(messageId, sender, groupName, message);
+  this.hubConnection.on("ReceiveMessage", (messageId: number, sender: string, groupName: string, message: string,postlink?:string ,profilepicture?:string,usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string) => {
+    onReceive(messageId, sender, groupName, message,postlink,profilepicture,usernameofpostreel,postid,publicid ,reelurl);
   });
 
   try {
@@ -38,10 +38,10 @@ export class ChatService {
 
 
 
-  public sendMessage(groupName: string, user: string, message: string, DateTime: any) {
+  public sendMessage(groupName: string, user: string, message: string, DateTime: any,postlink?:string, profilepicture?:string, usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string) {
 
     if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      this.hubConnection.invoke("SendMessage", groupName, user, message);
+      this.hubConnection.invoke("SendMessage", groupName, user, message,postlink,profilepicture,usernameofpostreel,postid,publicid ,reelurl);
     } else {
       console.warn("SignalR not connected. Message not sent.");
     }

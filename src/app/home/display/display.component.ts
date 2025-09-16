@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 @Component({
   selector: 'app-display',
@@ -33,7 +34,7 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   }
    newComments: { [postId: string]: string } = {}; // Har post ke liye alag comment
    private scrollPosition = 0;
-
+  setPostId :number=0
   @ViewChildren('commentInput') commentInputs!: QueryList<ElementRef>;
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   searchText: string = '';
@@ -41,7 +42,7 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   searchResults: any[] = []; 
   showDropdown = false;
   debounceTimer: any;
-  constructor(private serviceSrv : ServiceService) {
+  constructor(private serviceSrv : ServiceService,private toastr : ToastrService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
   @HostListener('window:scroll', [])
@@ -365,6 +366,31 @@ openLikesModal(post: any) {
     this.debounceTimer = setTimeout(() => { 
       this.performSearch(this.searchQuery);
     }, 300); // ⏱ 300ms delay
+  }
+  ClearSearchQuery() {
+    this.searchQuery = ""; 
+    this.searchResults = [];
+    this.showDropdown = false;
+  }
+  SendPost(user:string, ){
+    const sendform= {
+      "groupName": this.loggedInUser,
+      "user": user,
+      "postId": this.setPostId
+    }
+    this.serviceSrv.SendPost(sendform).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.toastr.success(data.message)
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+      }
+    })
+  }
+  AddPostId(post:any){
+    this.setPostId = post.postId;
   }
   
 }

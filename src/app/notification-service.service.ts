@@ -5,8 +5,8 @@ import * as signalR from '@microsoft/signalr';
   providedIn: 'root'
 })
 export class NotificationServiceService { private hubConnection!: signalR.HubConnection;
-  private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
-  // private baseUrl = 'https://localhost:7246'; // local server as needed
+  // private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
+  private baseUrl = 'https://localhost:7246'; // local server as needed
 
   constructor( ) {}
 

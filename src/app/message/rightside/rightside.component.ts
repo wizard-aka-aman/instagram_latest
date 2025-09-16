@@ -148,25 +148,40 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     });
 
     this.user = this.ServiceSrv.getUserName();
-    this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message) => {
+    this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
       const isForThisChat = messageGroup === this.groupName || sender === this.groupName;
       console.log({
         id: messageId,
         groupName: messageGroup,
         sender,
         message,
-        sentAt: new Date()
+        postlink,
+        profilepicture,
+        usernameofpostreel,
+        postid,
+        publicid,
+        reelurl
       });
 
       if (isForThisChat) {
+        console.log("insideif");
+        
         this.messageId = messageId;
         this.messages.push({
           id: messageId,
           groupName: messageGroup,
           sender,
           message,
+          postLink : postlink,
+          profilePicture:profilepicture,
+          usernameofpostreel,
+          postId : postid,
+          publicid,
+          reelurl,
           sentAt: new Date()
         });
+        console.log(this.messages);
+        
         this.shouldScrollToBottom = true;
       }
     });
@@ -228,10 +243,10 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     this.emojiPickerIndex = this.emojiPickerIndex === index ? null : index;
   }
 
-  send() {
+  send(postlink?: string, profilepicture?: string, usernameofpostreel?: string,postid? :number,publicid?:string ,reelurl?:string) {
     if (this.newMessage.trim()) {
       const DateTime = new Date(); 
-      this.chatService.sendMessage(this.user, this.groupName, this.newMessage, DateTime.toLocaleString());
+      this.chatService.sendMessage(this.user, this.groupName, this.newMessage, DateTime.toLocaleString(),postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl);
       this.FunctionGetSaveRecentMessage(); 
       this.newMessage = '';
       this.shouldScrollToBottom = true; 

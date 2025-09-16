@@ -51,7 +51,7 @@
               <i style="cursor: pointer;" *ngIf="!post.isLikedByMe" (click)="Like(post)" class="fa-regular fa-heart fs-4"></i>
               <i style="cursor: pointer; color: #ff4242;" *ngIf="post.isLikedByMe" class="fa-solid fa-heart fs-4" (click)="UnLike(post)"></i>
               <i class="fa-regular fa-comment fs-4 ms-3" (click)="FocusComment(post)" style="cursor: pointer;"></i> 
-              <i class="fa-regular fa-paper-plane fs-4 ms-3"  data-bs-toggle="modal" data-bs-target="#HomeSent" style="cursor: pointer;"></i>
+              <i class="fa-regular fa-paper-plane fs-4 ms-3"  data-bs-toggle="modal" data-bs-target="#HomeSent" style="cursor: pointer;" (click)="AddPostId(post)"></i>
             </div>
 
             <div>
@@ -164,7 +164,7 @@
       <!-- Header -->
       <div class="modal-header border-0 d-flex justify-content-between align-items-center">
         <h5 class="modal-title fw-semibold">Share</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" (click)="ClearSearchQuery()" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
       <!-- Search Bar -->
@@ -181,7 +181,7 @@
 
       <!-- Body -->
       <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
-        <div *ngFor="let user of searchResults " class="d-flex align-items-center px-3 py-2 user-row">
+        <div *ngFor="let user of searchResults " class="d-flex align-items-center px-3 py-2 user-row"  style="cursor: pointer;" (click)="SendPost(user.userName)" data-bs-dismiss="modal" aria-label="Close" >
 
           <img [src]="getProfileImage(user.profilePicture)" alt="User" class="rounded-circle me-2" width="48"
             height="48" style="object-fit: cover;" />
