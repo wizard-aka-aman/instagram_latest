@@ -57,6 +57,18 @@
          [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}">
       {{ msg.message }}
 
+      <!-- Post / Reel -->
+  <div *ngIf="msg.messageType === 'post' || msg.messageType === 'reel'" 
+       class="card shadow-sm border-0" style="max-width: 300px;">
+    <img *ngIf="msg.mediaUrl" [src]="msg.mediaUrl" class="card-img-top" alt="media preview">
+    <div class="card-body p-2">
+      <p class="card-text mb-1"><strong>{{ msg.sender }}</strong>: {{ msg.message }}</p>
+      <a *ngIf="msg.postLink" [href]="msg.postLink" target="_blank" class="btn btn-sm btn-outline-primary">
+        View {{ msg.messageType | titlecase }}
+      </a>
+    </div>
+  </div>
+
 
 
       <!-- Reaction Display -->

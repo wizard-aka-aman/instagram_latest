@@ -84,29 +84,45 @@
     <p>Follow to see their photos and videos.</p>  
   </div> 
   <div *ngIf="isSavedAvailable" class="row g-2">
-    <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
-      <img [src]="'data:image/jpeg;base64,'+post.posts.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >
-      <!-- Overlay -->
-      <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.posts.postId)"  
-          >
-        <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ post.posts.likesCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ post.posts.commentsCount }}</span>
-        </div>
+    <div class="post-grid mb-3">
+  <div class="post-card" *ngFor="let post of fullDetailPost">
+    <img [src]="'data:image/jpeg;base64,'+post.posts.imageUrl"
+         alt="Post"
+         class="post-image">
+
+    <!-- Overlay -->
+    <div class="overlay d-flex justify-content-center align-items-center"
+         (click)="openPostPage(post.posts.postId)">
+      <div class="text-white d-flex gap-3 fs-5 fw-bold">
+        <span><i class="fas fa-heart"></i> {{ post.posts.likesCount }}</span>
+        <span><i class="fas fa-comment"></i> {{ post.posts.commentsCount }}</span>
       </div>
     </div>
-    <div class="col-12 col-sm-6 col-md-4 post-wrapper" *ngFor="let reel of savedReels">
-      <div class="position-relative">
-        <video [src]="reel.cloudinaryDB.url" class="w-100"  style="border-radius: 8px;"></video>
-       <div class="overlay d-flex justify-content-center align-items-center" (click)="openReelPage(reel.cloudinaryDB.publicId)"  
-          >
-        <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ reel.cloudinaryDB.likeCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ reel.cloudinaryDB.commentCount }}</span>
-        </div>
-      </div>
+  </div>
+</div>
+
+    <div class="post-grid mb-3">
+  <div class="post-card" *ngFor="let reel of savedReels">
+
+    <!-- Video -->
+    <video [src]="reel.cloudinaryDB.url"
+           class="post-media"
+           muted
+           loop
+           playsinline>
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay d-flex justify-content-center align-items-center"
+         (click)="openReelPage(reel.cloudinaryDB.publicId)">
+      <div class="text-white d-flex gap-3 fs-5 fw-bold">
+        <span><i class="fas fa-heart"></i> {{ reel.cloudinaryDB.likeCount }}</span>
+        <span><i class="fas fa-comment"></i> {{ reel.cloudinaryDB.commentCount }}</span>
       </div>
     </div>
+  </div>
+</div>
+
   </div>   
  
 </div>

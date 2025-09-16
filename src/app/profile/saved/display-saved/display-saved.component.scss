@@ -65,3 +65,58 @@ img.object-fit-cover {
     justify-content: center;
   }
 }
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* responsive columns */
+  gap: 15px; /* spacing between posts */
+}
+
+.post-card {
+  position: relative;
+  aspect-ratio: 1 / 1; /* square grid box */
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000; /* black background behind media */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-media {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* pura dikhayega, cut nahi karega */
+  display: block;
+  border-radius: 8px;
+}
+
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* keeps images uniform */
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.post-card:hover .overlay {
+  opacity: 1;
+}
+
+@media (max-width: 650px) {
+  .post-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) !important; 
+  }
+}

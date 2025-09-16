@@ -75,19 +75,25 @@
 
 <!-- Posts Grid -->
 <div class="container mt-3 pb-5">
-  <div *ngIf="activeTab === 'posts' && ( isPublic|| alreadyFollowing || loggedInUserName == username )" class="row g-2">
-    <div class="col-12 col-sm-6 col-md-4 post-wrapper " *ngFor="let post of fullDetailPost">
-      <img [src]="'data:image/jpeg;base64,'+post.imageUrl"    alt="Post"   class="w-100 h-100 postimage " style="object-fit: fill;" >
-      <!-- Overlay -->
-      <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.postId)"  
-          >
-        <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
-        </div>
+ <div *ngIf="activeTab === 'posts' && (isPublic || alreadyFollowing || loggedInUserName == username)" 
+     class="post-grid mb-3">
+  
+  <div class="post-card" *ngFor="let post of fullDetailPost">
+    <img [src]="'data:image/jpeg;base64,' + post.imageUrl" 
+         alt="Post" 
+         class="post-image">
+    
+    <!-- Overlay -->
+    <div class="overlay d-flex justify-content-center align-items-center"
+         (click)="openPostPage(post.postId)">
+      <div class="text-white d-flex gap-3 fs-5 fw-bold">
+        <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
+        <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
       </div>
     </div>
-  </div>  
+  </div>
+</div>
+  
   <div *ngIf="!isPostAvailable && loggedInUserName == username " class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
     <p class="fw-bold fs-2" >Share Photos</p>

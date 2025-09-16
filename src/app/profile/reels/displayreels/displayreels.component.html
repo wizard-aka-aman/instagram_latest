@@ -75,19 +75,29 @@
 
 <!-- reels Grid -->
 <div class="container mt-3  pb-5">
-  <div *ngIf="activeTab === 'reels' && ( isPublic|| alreadyFollowing || loggedInUserName == username)" class="row g-2">
-    <div class="col-6 col-sm-6 col-md-3 post-wrapper " *ngFor="let reel of reels">
-      <video [src]="reel.url" alt="Post" class="w-100 h-100 postimage " style="object-fit: fill;" ></video>
-      <!-- Overlay -->
-      <div class="overlay d-flex justify-content-center align-items-center" (click)="OpenReelPage(reel.publicId)"  
-          >
-        <div class="text-white d-flex gap-3 fs-5 fw-bold">
-          <span><i class="fas fa-heart"></i> {{ reel.likeCount }}</span>
-          <span><i class="fas fa-comment"></i> {{ reel.commentCount }}</span>
-        </div>
+  <div *ngIf="activeTab === 'reels' && (isPublic || alreadyFollowing || loggedInUserName == username)" 
+     class="post-grid mb-3">
+  
+  <div class="post-card" *ngFor="let reel of reels">
+    <!-- Reel Video -->
+    <video [src]="reel.url"
+           class="post-media"
+           muted
+           loop
+           playsinline>
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay d-flex justify-content-center align-items-center"
+         (click)="OpenReelPage(reel.publicId)">
+      <div class="text-white d-flex gap-3 fs-5 fw-bold">
+        <span><i class="fas fa-heart"></i> {{ reel.likeCount }}</span>
+        <span><i class="fas fa-comment"></i> {{ reel.commentCount }}</span>
       </div>
     </div>
-  </div>  
+  </div>
+</div>
+
   <div *ngIf="!isPostAvailable && loggedInUserName == username" class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
     <p class="fw-bold fs-2" >Share Reels</p>

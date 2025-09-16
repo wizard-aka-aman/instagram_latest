@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ServiceService } from 'src/app/service.service';
-
 @Component({
   selector: 'app-display',
   templateUrl: './display.component.html',
@@ -37,6 +36,11 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
 
   @ViewChildren('commentInput') commentInputs!: QueryList<ElementRef>;
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
+  searchText: string = '';
+    searchQuery = '';
+  searchResults: any[] = []; 
+  showDropdown = false;
+  debounceTimer: any;
   constructor(private serviceSrv : ServiceService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
@@ -49,7 +53,7 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
     this.serviceSrv.GetLoggedInUserStory(this.loggedInUser).subscribe({
       next: (data:any) => { 
         this.loggedInUserStory = data;
-        console.log();
+        console.log(data);
         if(this.loggedInUserStory.displayStories.length >0){
           this.isStoryAvailable = true;
         }
@@ -332,6 +336,35 @@ openLikesModal(post: any) {
       this.nextStory();
     }, 5000);
   }
-  
+    performSearch(query: string) {
+    if (!query || query.trim().length === 0) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
+
+    this.serviceSrv.SearchUsers(query).subscribe({
+      next: (res: any) => {
+        this.searchResults = res;
+        this.showDropdown = true;
+      },
+      error: (err) => {
+        console.error(err);
+        this.searchResults = [];
+        this.showDropdown = false;
+      }
+    });
+  }
+   DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.performSearch(this.searchQuery);
+    }, 300); // ⏱ 300ms delay
+  }
   
 }

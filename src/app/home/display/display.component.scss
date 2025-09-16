@@ -223,3 +223,48 @@ input::placeholder{
   }
 }
  
+.custom-modal {
+  background-color: #121212;
+  color: white;
+  border-radius: 12px;
+}
+
+.modal-header {
+  background-color: #1a1a1a;
+}
+
+.search-box {
+  background-color: #1f1f1f;
+  border-radius: 8px;
+}
+
+.search-box input {
+  color: white;
+}
+
+.user-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.user-row:hover {
+  background-color: #1f1f1f;
+}
+.search-box input {
+  background-color: #262626;
+  color: white;
+  border: 1px solid #444;
+}
+
+.search-dropdown {
+  background-color: #262626;
+  color: white;
+}
+
+.search-item:hover {
+  background-color: #383838 !important;
+  cursor: pointer;
+}
+input::placeholder{
+  color: white !important;
+}

@@ -7,19 +7,25 @@
 
 @media (min-width: 768px) {
   .explore-container {
-    grid-template-columns: repeat(4, 2fr);
+    grid-template-columns: repeat(4, 2fr) !important;
+  }
+}
+@media (min-width: 344px) {
+  .explore-container {
+    background-color: aqua;
+     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 @media (min-width: 992px) {
   .explore-container {
-    grid-template-columns: repeat(4, 2fr);
+    grid-template-columns: repeat(5, 2fr) !important;
   }
 }
 
 @media (min-width: 1200px) {
   .explore-container {
-    grid-template-columns: repeat(5, 2fr);
+    grid-template-columns: repeat(6, 2fr) !important;
   }
 }
 
