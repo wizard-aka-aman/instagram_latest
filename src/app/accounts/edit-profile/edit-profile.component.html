@@ -71,7 +71,7 @@
       <label class="col-sm-3 col-form-label text-end">Profile Type</label>
       <div class="col-sm-9">
         <select class="form-select" [(ngModel)]="user.isPublic" name="isPublic">
-          <option value="">Select</option>
+          <option disabled value="">Select</option>
           <option [ngValue]="true" >Public</option>
           <option [ngValue]="false" >Private</option>
           <!-- <option>Prefer not to say</option> -->

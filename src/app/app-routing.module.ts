@@ -58,6 +58,10 @@ const routes: Routes = [
         path: ':username/reel/:publicid',
         component: ReelViewComponent
     } 
+    ,{
+        path:'**',
+         component: PagenotfoundComponent
+    }
 ];
 
 @NgModule({

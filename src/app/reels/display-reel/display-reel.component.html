@@ -23,7 +23,7 @@
             class="fa-regular fa-heart fs-4"></i>
           <i style="cursor: pointer; color: #ff4242;" *ngIf="reel.isLikedLoggedInUser" class="fa-solid fa-heart fs-4"
             (click)="UnLike(reel)"></i>
-          <p class="mb-4 text-center">{{ reel.likesCount }}</p>
+          <p class="mb-4 text-center"  data-bs-toggle="modal" data-bs-target="#ReelHomeLikes" style="cursor: pointer;">{{ reel.likesCount }}</p>
           <p class="mb-4 text-center" style="cursor: pointer;" (click)="toggleComments(reel, $event)">
             <i class="fa-regular fa-comment"></i><br>{{ reel.commentsCount }}
           </p>
@@ -116,6 +116,37 @@
           <span class="fw-semibold text-white">{{ user.userName }}</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Likes Modal -->
+ <div class="modal fade" id="ReelHomeLikes" tabindex="-1" aria-labelledby="ReelHomeLikes" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="ReelHomeLikes" style="font-weight: 600;">Likes</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+        <!-- Loop Over Likes -->
+        <div *ngFor="let like of reels" class="d-flex align-items-center justify-content-between px-3 py-2 hover-effect">
+
+          <!-- Profile Info -->
+          <div  class="d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close" style="cursor: pointer;" [routerLink]="['/', like.userName]">
+            <img [src]="getProfileImage(like.likes.profilePicture)" alt="User" class="rounded-circle" width="45" height="45" style="object-fit: cover;" />
+            <span class="fw-bold text-white">{{ like.likes.userName }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
   </div>
 </div>

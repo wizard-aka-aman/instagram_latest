@@ -83,7 +83,7 @@
     <p class="fw-bold fs-2 mt-3" >This account is private</p>
     <p>Follow to see their photos and videos.</p>  
   </div> 
-  <div *ngIf="isSavedAvailable" class="row g-2">
+  <div *ngIf="isSavedAvailable && (isPublic || alreadyFollowing || loggedInUserName == username)" class="row g-2">
     <div class="post-grid mb-3">
   <div class="post-card" *ngFor="let post of fullDetailPost">
     <img [src]="'data:image/jpeg;base64,'+post.posts.imageUrl"

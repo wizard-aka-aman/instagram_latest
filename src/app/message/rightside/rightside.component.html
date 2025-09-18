@@ -76,7 +76,7 @@
     <img [src]="getProfileImage(msg.postLink)"   routerLink="/{{msg.usernameOfPostReel}}/p/{{msg.postId}}"
          class="card-img-top rounded-3" 
          alt="media preview"
-         style="object-fit: cover; max-height: 300px;" />
+         style="object-fit: cover; max-height: 300px;width: 200px;" />
   </ng-container>
   <ng-container  *ngIf="msg.reelPublicId">
     <video [src]="msg.mediaUrl" routerLink="/{{msg.usernameOfPostReel}}/reel/{{msg.reelPublicId}}"
@@ -84,7 +84,7 @@
            muted
            loop
            playsinline class="card-img-top rounded-3" 
-         style="object-fit: cover; max-height: 300px;">
+         style="object-fit: cover; max-height: 500px; width: 200px;">
     </video>
   </ng-container>
 

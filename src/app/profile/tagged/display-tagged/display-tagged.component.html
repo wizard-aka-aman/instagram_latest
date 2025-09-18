@@ -74,7 +74,7 @@
 <div class="container mt-3">
  
 
-  <div *ngIf="activeTab === 'tagged' " class="text-center mt-5">
+  <div *ngIf="activeTab === 'tagged' && loggedInUserName != username && ( isPublic||  alreadyFollowing )" class="text-center mt-5">
     <i class="fa-regular fs-1  fa-user"></i>
     <p class="fw-bold fs-2" >Photos of you</p>
     <p> When people tag you in photos, they'll appear here</p>
