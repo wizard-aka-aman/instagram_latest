@@ -34,6 +34,7 @@ export class DisplayReelComponent implements OnInit {
   debounceTimer: any;
   setReelPublicId:string =""
   AllFollowingResults:any[]=[]
+  selectedLikes :any[]=[]
   constructor(private serviceSrv: ServiceService, private route: ActivatedRoute, private eRef: ElementRef ,private toastr : ToastrService) {
     this.LoggedInUser = this.serviceSrv.getUserName();
 
@@ -395,5 +396,8 @@ export class DisplayReelComponent implements OnInit {
       }
     })
   }
-
+  ToogleLike(reel:any){ 
+    this.selectedLikes = reel.likes;
+    
+  }
 }
