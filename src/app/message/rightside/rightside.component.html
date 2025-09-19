@@ -40,7 +40,7 @@
       <span class="emoji fs-6">{{ msg.reaction }}</span>
     </div>
      <!-- 3-dot Menu Button -->
-<div class="menu position-relative" *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
+<div class="menu position-relative"  *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
   <i class="fa-solid fa-ellipsis-vertical"></i>
 
   <!-- Dropdown -->
@@ -113,8 +113,15 @@
 
     <!-- Emoji Picker -->
     <div *ngIf="emojiPickerIndex === msg.id" class="emoji-picker-container position-absolute bg-light rounded shadow p-2">
-      <span class="emoji" *ngFor="let emoji of emojis" (click)="addEmojiToMessage(msg.id, emoji)">
+      <span *ngIf="msg.reaction" >
+        <span class="emoji" *ngFor="let emoji of emojis"   (click)="addEmojiToMessage(msg.id, emoji)">
         {{ emoji }}
+      </span>
+      </span>
+      <span *ngIf="!msg.reaction">
+        <span class="emoji" *ngFor="let emoji of emojisWithoutRemove" (click)="addEmojiToMessage(msg.id, emoji)">
+        {{ emoji }}
+      </span>
       </span>
     </div>
 

@@ -9,11 +9,11 @@
      [routerLink]="['/messages/t', chat.username]"
      routerLinkActive="active"
      style="cursor: pointer;">
-    <div class="d-flex align-items-center gap-2">
+    <div class="d-flex align-items-center gap-2 text-truncate" style="max-width: 300px;" >
       <img [src]="getProfileImage(chat.profilePicture)" class="rounded-circle" width="45" height="45" />
       <div class="text-truncate">
         <strong class="fw-light">{{ chat.fullName }}</strong><br />
-        <small style="color: rgb(145, 145, 145);" >{{ chat.lastMessage }}- {{chat.lastMessageDateTime | date :'short'}}</small>
+        <small  style="color: rgb(145, 145, 145);" >{{ chat.lastMessage }}- {{chat.lastMessageDateTime | date :'short'}}</small>
       </div>
     </div>
   </a>

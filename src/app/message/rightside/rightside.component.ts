@@ -22,6 +22,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   user = '';
   message = '';
   emojis: string[] = ['😀', '😂', '😍', '😢', '👍', '🔥', "remove"];
+  emojisWithoutRemove: string[] = ['😀', '😂', '😍', '😢', '👍', '🔥'];
   shouldScrollToBottom: boolean = true;
   noUserSelected = true;
   menuOpenId: string | null = null;
@@ -56,34 +57,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       } else {
         this.noUserSelected = false;
       }
-      this.chatList = this.ServiceSrv.getChatList();
-      for (let index = 0; index < this.chatList.length; index++) {
-        if (this.chatList[index].username === this.groupName) {
-          this.profilePicture = this.chatList[index].profilePicture;
-          this.fullName = this.chatList[index].fullName
-          break;
-        }
-      }
-      if (!this.chatList || this.chatList.length === 0) {
-        this.ServiceSrv.GetRecentMessage(this.user).subscribe({
-          next: (data: any) => {
-            this.ServiceSrv.setChatList(data);
-            this.chatList = data;
-            for (let index = 0; index < this.chatList.length; index++) {
-              if (this.chatList[index].username === this.groupName) {
-                this.profilePicture = this.chatList[index].profilePicture;
-                this.fullName = this.chatList[index].fullName
-                break;
-              }
-            }
-          },
-          error: (error: any) => {
-            console.error(error);
-          }
-        })
-      }
-
-
+      this.chatList = this.ServiceSrv.getChatList(); 
     });
     console.log("groupname : " + this.groupName);
     console.log("user : " + this.user);
@@ -189,35 +163,30 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   }
   loadChatData() {
     this.chatList = this.ServiceSrv.getChatList();
-
-    for (let index = 0; index < this.chatList.length; index++) {
-      if (this.chatList[index].username === this.groupName) {
-        this.profilePicture = this.chatList[index].profilePicture;
-        this.fullName = this.chatList[index].fullName;
-        break;
-      }
-    }
-
-    if (!this.chatList || this.chatList.length === 0) {
-      this.ServiceSrv.GetRecentMessage(this.user).subscribe({
-        next: (data: any) => {
-          this.ServiceSrv.setChatList(data);
-          this.chatList = data;
-          for (let index = 0; index < this.chatList.length; index++) {
-            if (this.chatList[index].username === this.groupName) {
-              this.profilePicture = this.chatList[index].profilePicture;
-              this.fullName = this.chatList[index].fullName;
-              break;
-            }
+  
+    this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
+          next: (data: any) => {
+            console.log(data);
+            this.profilePicture = data.profilePicture;
+            this.username = data.userName
+            this.fullName = data.fullName
+          },
+          error: (error: any) => {
+            console.log(error);
           }
-        },
-        error: (error: any) => console.error(error)
-      });
-    }
+        })
     // 👇 Load chat messages
     this.chatService.PersonalChat(this.groupName, this.user).subscribe((msgs: any) => {
       this.messages = msgs;
       console.log(msgs);
+        this.ServiceSrv.SeenMessages(this.groupName,this.user).subscribe({
+          next: (data: any) => {
+            console.log(data);
+          },
+          error: (error: any) => {
+            console.log(error);
+          }
+        })
       this.shouldScrollToBottom = true; // Scroll on initial load
       const conn = this.chatService.connection;
       if (conn) {

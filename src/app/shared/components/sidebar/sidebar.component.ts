@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ChatService } from 'src/app/chatservice.service';
 import { NotificationServiceService } from 'src/app/notification-service.service';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
@@ -39,7 +40,7 @@ export class SidebarComponent {
   descripton : string = "" 
   isSeen : boolean = false;
 
-  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService) {
+  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService , private chatService: ChatService) {
     this.username = this.Service.getUserName();
   }
 
@@ -79,6 +80,21 @@ export class SidebarComponent {
         console.log(err);
       },
     })
+    // this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+    //    console.log({
+    //     id: messageId,
+    //     groupName: messageGroup,
+    //     sender,
+    //     message,
+    //     postlink,
+    //     profilepicture,
+    //     usernameofpostreel,
+    //     postid,
+    //     publicid,
+    //     reelurl
+    //   });
+       
+    // });
   }
     markSeen() {
     // this.notiService.markAllSeen();
