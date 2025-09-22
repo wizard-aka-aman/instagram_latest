@@ -15,7 +15,6 @@ notifications: any[] = [];
 
   ngOnInit(): void {
     
-    this.AllNoti();
     this.serviceSrv.SeenNotification(this.loggedInUser).subscribe({
       next:(data:any)=>{
         console.log(data);
@@ -24,6 +23,7 @@ notifications: any[] = [];
         console.log(err); 
       }
     })
+    this.AllNoti();
   }
   AllNoti(){
     this.serviceSrv.GetAllNotifications(this.loggedInUser).subscribe({

@@ -8,8 +8,8 @@ import { isNgTemplate } from '@angular/compiler';
 })
 export class ServiceService {
 
-   public BaseUrl :string= 'https://xatavop939.bsite.net';
-  // public BaseUrl: string = 'https://localhost:7246';
+  //  public BaseUrl :string= 'https://xatavop939.bsite.net';
+  public BaseUrl: string = 'https://localhost:7246';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   private isSeenNoti = new BehaviorSubject<boolean>(true);
@@ -244,5 +244,7 @@ export class ServiceService {
   SendPost(item:any){
     return this.http.post(`${this.BaseUrl}/api/Chat/sendpost`,item);
   }
-  
+  SeenMessages(groupName:string ,recieve:string){
+    return this.http.get(`${this.BaseUrl}/api/Chat/seen/${groupName}/${recieve}`);
+  }
 }

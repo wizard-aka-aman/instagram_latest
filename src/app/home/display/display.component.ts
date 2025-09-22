@@ -66,7 +66,6 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
         if(this.loggedInUserStory.displayStories.length >0){
           this.isStoryAvailable = true;
         }
-        console.log(data);
       },
       error: (error) => {
         console.error(error);

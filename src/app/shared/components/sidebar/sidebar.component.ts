@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatService } from 'src/app/chatservice.service';
+import { MessageServiceService } from 'src/app/message-service.service';
 import { NotificationServiceService } from 'src/app/notification-service.service';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
@@ -12,7 +13,7 @@ import { CLIENT_RENEG_LIMIT } from 'tls';
 })
 export class SidebarComponent {
   username: string = "";
-
+  isMessage :boolean = false
   fullDetailPost: any;
   posts: any[] = [];
   previewUrl: string | ArrayBuffer | null = null;
@@ -40,7 +41,7 @@ export class SidebarComponent {
   descripton : string = "" 
   isSeen : boolean = false;
 
-  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService , private chatService: ChatService) {
+  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService , private chatService: ChatService , private MessageService:MessageServiceService) {
     this.username = this.Service.getUserName();
   }
 
@@ -80,21 +81,31 @@ export class SidebarComponent {
         console.log(err);
       },
     })
-    // this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
-    //    console.log({
-    //     id: messageId,
-    //     groupName: messageGroup,
-    //     sender,
-    //     message,
-    //     postlink,
-    //     profilepicture,
-    //     usernameofpostreel,
-    //     postid,
-    //     publicid,
-    //     reelurl
-    //   });
+    this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+       console.log({
+        id: messageId,
+          groupName: messageGroup,
+          sender,
+          message,
+          postLink : postlink,
+          profilePicture:profilepicture,
+          usernameOfPostReel:usernameofpostreel,
+          postId : postid,
+          reelPublicId:publicid,
+          mediaUrl:reelurl,
+          sentAt: new Date()
+      });
+      this.MessageService.SetIsMessage(true);
        
-    // });
+    });
+    this.MessageService.isMessage$.subscribe({
+      next:(data:any)=>{
+        this.isMessage = data;
+      },
+      error:(err:any)=>{
+        console.log(err);
+      },
+    })
   }
     markSeen() {
     // this.notiService.markAllSeen();

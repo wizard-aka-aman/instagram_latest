@@ -81,7 +81,7 @@
               style="box-shadow: none; font-size: 14px;"
               placeholder="Add a comment..."
             />
-            <button *ngIf="newComments[post.postId]?.trim()"  class="btn border-0 text-primary fw-bold" (click)="addComment(post)"  >Post</button>
+            <button *ngIf="newComments[post.postId]?.trim()" style="padding: 0 !important;" class="btn border-0 text-primary fw-bold" (click)="addComment(post)"  >Post</button>
           </div>
            
         </div>

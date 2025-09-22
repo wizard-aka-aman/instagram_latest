@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { ServiceService } from 'src/app/service.service';
 import { ChatService } from 'src/app/chatservice.service';
 import { EventEmitter } from '@angular/core';
+import { MessageServiceService } from 'src/app/message-service.service';
 @Component({
   selector: 'app-rightside',
   templateUrl: './rightside.component.html',
@@ -14,7 +15,6 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   newMessage: string = "";
   preventAutoScroll = false;
   username!: string;
-  chatList: any;
   profilePicture: any;
   fullName: string = ""
   messages: any[] = [];
@@ -48,7 +48,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router) {
+  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router , private MessageService : MessageServiceService) {
     this.user = this.ServiceSrv.getUserName();
     this.router.paramMap.subscribe(params => {
       this.groupName = String(params.get('groupname'));
@@ -57,10 +57,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       } else {
         this.noUserSelected = false;
       }
-      this.chatList = this.ServiceSrv.getChatList(); 
     });
-    console.log("groupname : " + this.groupName);
-    console.log("user : " + this.user);
 
   }
 
@@ -116,6 +113,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     this.route.navigate(['/messages/t']);
   }
   ngOnInit() {
+    this.MessageService.SetIsMessage(false);
     this.router.paramMap.subscribe(params => {
       this.groupName = String(params.get('groupname'));
       this.loadChatData();
@@ -136,10 +134,11 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
         publicid,
         reelurl
       });
+      if(sender == this.user){
+      this.MessageService.SetIsMessage(true);
+    } 
 
-      if (isForThisChat) {
-        console.log("insideif");
-        
+      if (isForThisChat) {        
         this.messageId = messageId;
         this.messages.push({
           id: messageId,
@@ -154,15 +153,12 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
           mediaUrl:reelurl,
           sentAt: new Date()
         });
-        console.log(this.messages);
-        
         this.shouldScrollToBottom = true;
       }
     });
  
   }
   loadChatData() {
-    this.chatList = this.ServiceSrv.getChatList();
   
     this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
           next: (data: any) => {
@@ -219,6 +215,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       this.FunctionGetSaveRecentMessage(); 
       this.newMessage = '';
       this.shouldScrollToBottom = true; 
+      
     }
 
   }
@@ -258,14 +255,6 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
           next: (data: any) => {
             console.log(data);
             this.ServiceSrv.setChatList(data);
-            this.chatList = data;
-            for (let index = 0; index < this.chatList.length; index++) {
-              if (this.chatList[index].username === this.groupName) {
-                this.profilePicture = this.chatList[index].profilePicture;
-                this.fullName = this.chatList[index].fullName;
-                break;
-              }
-            }
           },
           error: (error: any) => console.error(error)
         });

@@ -10,8 +10,8 @@ import { ServiceService } from './service.service';
 export class ChatService {
   private hubConnection!: signalR.HubConnection;
 
-  private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
-  // public baseUrl: string = 'https://localhost:7246';
+  // private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
+  public baseUrl: string = 'https://localhost:7246';
   
   constructor(private http: HttpClient,private service : ServiceService) { }
 

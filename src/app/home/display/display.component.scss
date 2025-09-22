@@ -76,12 +76,13 @@ img.rounded-circle {
   overflow: hidden;
 }
 
-.post-card img.card-img-top {
-  width: 100% !important;
-  height: auto !important;
-  object-fit: contain !important;  /* full image without crop */
-  max-height: none !important;     /* remove limit so full image shows */
-  background-color: #000;          /* empty space black dikhe */
+ 
+
+.card-img-top {
+  width: 100% !important;          /* Responsive width */
+  max-height:500px !important;    /* Limit height */
+  object-fit: contain !important;    /* Crop instead of stretching */
+  border-radius: 8px !important;   /* Optional, for rounded corners */
 }
 
 .post-card .card-header {
