@@ -34,6 +34,7 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   }
    newComments: { [postId: string]: string } = {}; // Har post ke liye alag comment
    private scrollPosition = 0;
+   TotalPost =0
   setPostId :number=0
   @ViewChildren('commentInput') commentInputs!: QueryList<ElementRef>;
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
@@ -42,14 +43,16 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
   searchResults: any[] = []; 
   showDropdown = false;
   debounceTimer: any;
-   AllFollowingResults :any[]=[]
+   AllFollowingResults :any[]=[] 
+   pageNumber = 1;
+   pageSize = 5;
+   loading = false;
+  @ViewChildren('postCard') postCards!: QueryList<ElementRef>;
+  observer!: IntersectionObserver;
   constructor(private serviceSrv : ServiceService,private toastr : ToastrService) {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
-  @HostListener('window:scroll', [])
-  onScroll(): void {
-    this.scrollPosition = window.scrollY; // save scroll position
-  }
+ 
   ngOnInit(): void {
     this.serviceSrv.GetFollowing(this.loggedInUser).subscribe({
       next: (data:any) => {
@@ -79,20 +82,10 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
       error: (error) => {
         console.error(error);
         }
-    }) 
-
-    this.serviceSrv.DisplayPostHome(this.loggedInUser).subscribe({
-      next: (data:any) => { 
-        data.forEach((post: any) => {
-          post.isLikedByMe =this.isLike(post.likes); 
-        })
-        this.posts = data; 
-        console.log(this.posts);
-      },
-      error: (error) => {
-        console.log(error);
-        }
-    })
+    })  
+    
+     this.getPosts(); // first 5 load
+     
      // Restore saved scroll position when component initializes
     setTimeout(() => {
       window.scrollTo({ top: this.scrollPosition, behavior: 'auto' });
@@ -116,12 +109,65 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
     })
   } 
 
+  ngAfterViewInit() {
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        // check if element visible
+        if (entry.isIntersecting) {
+          const index = Number((entry.target as HTMLElement).getAttribute('data-index'));
+          // agar last ya second-last visible hai
+          if (index >= this.posts.length - 2) {
+            if(this.TotalPost != this.posts.length){
+                this.getPosts();
+            }
+          }
+        }
+      });
+    }, { threshold: 0.5 }); // 50% visible hone par trigger
+
+    // attach observer
+    this.postCards.changes.subscribe((cards: QueryList<ElementRef>) => {
+      cards.forEach((card, i) => {
+        card.nativeElement.setAttribute('data-index', i.toString());
+        this.observer.observe(card.nativeElement);
+      });
+    });
+  }
+
 
     ngOnDestroy(): void {
     // Save position before leaving
     localStorage.setItem('homeScroll', this.scrollPosition.toString());
   }
+getPosts() {
+  if (this.loading) return; // multiple calls avoid karo
+  this.loading = true;
 
+  this.serviceSrv.DisplayPostHome(this.loggedInUser, this.pageNumber, this.pageSize)
+    .subscribe({
+      next: (data: any) => { 
+        this.TotalPost = data.total
+        data.item1.forEach((post: any) => {
+          post.isLikedByMe = this.isLike(post.likes);
+        });
+
+        if (this.pageNumber === 1) {
+          this.posts = data.item1; // first time replace
+        } else {
+          this.posts = [...this.posts, ...data.item1]; // baaki append
+        }
+        console.log(this.posts);
+        
+
+        this.pageNumber++; // next page
+        this.loading = false;
+      },
+      error: (err) => {
+        console.log(err);
+        this.loading = false;
+      }
+    });
+}
 
  getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
@@ -130,15 +176,6 @@ export class DisplayComponent implements OnInit, OnDestroy ,AfterViewInit {
     return 'data:image/jpeg;base64,' + image;
   }
 
-
-  ngAfterViewInit() {
-    window.scrollBy({ 
-      top: 200, 
-      left: 0, 
-      behavior: 'smooth'   // optional for smooth scrolling
-    });
- 
-  }
 
 
   TimeSincePost(postDateTimeString: string): string {

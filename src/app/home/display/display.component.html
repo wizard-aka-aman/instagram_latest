@@ -27,7 +27,7 @@
   <div class="row justify-content-start">
     <div class="col-md-6">
  
-      <div class="card mb-4 post-card " style="background-color: black; color: white; border-bottom: 2px solid rgb(83, 83, 83);" *ngFor="let post of posts">
+      <div class="card mb-4 post-card " style="background-color: black; color: white; border-bottom: 2px solid rgb(83, 83, 83);" #postCard *ngFor="let post of posts">
 
         <!-- Post Header -->
         <div class="card-header d-flex align-items-center  " routerLink="/{{post.userName}}" style="background-color: black; color: white; cursor: pointer;">
@@ -86,6 +86,9 @@
            
         </div>
       </div>
+      <div *ngIf="loading" class="text-center text-white my-3">
+  <div class="spinner-border text-light"></div>
+</div>
       <!-- LOOP END -->
 
     </div>

@@ -1,0 +1,73 @@
+<!-- src/app/user-dashboard/user-dashboard.component.html -->
+<div class="container mt-4" style="max-width: 750px;">
+
+  <!-- Pending Requests -->
+  <h4 class="mb-3">Pending Requests</h4>
+  <div class="requests-wrapper">
+    <div class="request-card" *ngFor="let request of pendingRequests">
+      <div class="card shadow-sm d-flex justify-content-center align-items-center p-3 text-center border-1 border-danger border h-100" style="background-color: rgb(0, 0, 0); color: white;">
+        <img [src]="getProfileImage(request.profilePictureOfReqTo)" class="rounded-circle mb-2 img-fluid"
+             style="width :50px; height: 50px; object-fit: contain;" alt="profile">
+        <h6>{{ request.userNameOfReqTo }}</h6>
+        <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap"> 
+          <button class="btn btn-outline-danger btn-sm" (click)="RemoveRequest(request)" >Remove Requested</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Previous Stories -->
+  <div class="d-flex justify-content-around align-items-center mb-3">
+    <h4 class=" ">Previous Stories</h4> 
+    <div class="btn btn-primary" (click)="Next()" >Next</div>
+  </div>
+<div class="stories-wrapper ">
+  <div class="story-card mx-2" *ngFor="let story of previousStories" >
+    <div class="card story-card-fixed mx-2"  data-bs-toggle="modal" data-bs-target="#storylikemodalStory"  (click)="displayLike(story)" style="background-color: rgb(0, 0, 0); color: white;">
+      <img [src]="getProfileImage(story.imageUrl)" class="card-img-top story-img"   alt="story">
+      <div class="card-body">
+        <p class="card-text">{{ story.expirationTime | date : 'medium'}}</p> 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<!-- View Modal -->
+<div class="modal fade" id="storylikemodalStory" tabindex="-1" aria-labelledby="storylikeLabelmodal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="storylikeLabelmodal" style="font-weight: 600;">Views</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+       
+      <ng-container *ngIf="displayLikeUser as seenList">
+  <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+      *ngFor="let view of seenList" 
+      data-bs-dismiss="modal" aria-label="Close"
+      style="cursor: pointer;"
+      [routerLink]="['/', view.seenByUsername]">
+    <img [src]="getProfileImage(view.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+    <div>
+      <div class="fw-bold text-white">{{ view.seenByUsername }}</div> 
+    </div>
+  </div>
+  <div class="" *ngIf="seenList.length ==0" >
+    <div class="text-center text-white p-4">
+      <h5> No one has viewed this story yet</h5>
+    </div>
+  </div>
+</ng-container>
+
+
+    </div>
+  </div>
+</div>

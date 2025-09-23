@@ -46,6 +46,17 @@
       </div>
       
     </div> 
+    <div *ngIf="loggedInUserName == username"
+     class="d-flex mt-5 justify-content-start align-items-center w-100 scroll-container"
+     style="max-width: 800px;">
+  
+  <div class="me-3" *ngFor="let img of imageList">
+    <img [src]="img" alt="Add Post"
+      class="scroll-image">
+  </div>
+
+</div>
+
 
     
 

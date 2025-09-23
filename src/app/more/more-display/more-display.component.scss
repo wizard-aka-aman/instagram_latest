@@ -1,0 +1,48 @@
+/* Common horizontal scroll style */
+.requests-wrapper,
+.stories-wrapper {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 10px; 
+}
+
+/* Scrollbar styles */
+.requests-wrapper::-webkit-scrollbar,
+.stories-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.requests-wrapper::-webkit-scrollbar-thumb,
+.stories-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
+/* Each request card */
+.request-card {
+  flex: 0 0 auto;
+  width: 220px;
+  scroll-snap-align: start;
+}
+
+/* Each story card */
+.story-card {
+  flex: 0 0 auto;
+  width: 200px;
+  scroll-snap-align: start;
+}
+
+.story-card img {
+  object-fit: cover;
+  height: 150px;
+}
+ 
+
+.story-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important; /* maintain aspect ratio, fill box */
+  border-radius: 8px; /* optional, thoda rounded look */
+}
+

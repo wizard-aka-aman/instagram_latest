@@ -8,8 +8,8 @@ import { isNgTemplate } from '@angular/compiler';
 })
 export class ServiceService {
 
-  //  public BaseUrl :string= 'https://xatavop939.bsite.net';
-  public BaseUrl: string = 'https://localhost:7246';
+   public BaseUrl :string= 'https://xatavop939.bsite.net';
+  // public BaseUrl: string = 'https://localhost:7246';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   private isSeenNoti = new BehaviorSubject<boolean>(true);
@@ -214,8 +214,8 @@ export class ServiceService {
   GetFiveReel(username:string){
     return this.http.get(`${this.BaseUrl}/api/Videos/GetAllFive/${username}`)
   }
-  DisplayPostHome(username:string){
-    return this.http.get(`${this.BaseUrl}/api/Story/DisplayPostHome/${username}`)
+  DisplayPostHome(username:string,pageNumber:number,pageSize:number){
+    return this.http.get(`${this.BaseUrl}/api/Story/DisplayPostHome/${username}?pageNumber=${pageNumber}&pageSize=${pageSize}`)
   }
   GetAllNotifications(username:string){
     return this.http.get(`${this.BaseUrl}/api/Notification/getAllNotification/${username}`)
@@ -246,5 +246,11 @@ export class ServiceService {
   }
   SeenMessages(groupName:string ,recieve:string){
     return this.http.get(`${this.BaseUrl}/api/Chat/seen/${groupName}/${recieve}`);
+  }
+  GetAllRequestedDto(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Requested/GetAllRequestDto/${username}`);
+  }
+  GetAllPersonalStories(username:string,pageNumber:number,pageSize:number){
+    return this.http.get(`${this.BaseUrl}/api/Story/GetAllPersonalStories/${username}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
 }
