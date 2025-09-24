@@ -16,6 +16,9 @@ export class ChatService {
   constructor(private http: HttpClient,private service : ServiceService) { }
 
   public async startConnection(groupName: string, onReceive: (messageId: number, sender: string, user: string, message: string,postlink?:string ,profilepicture?:string,usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string) => void): Promise<void> {
+     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
+    return; // already connected
+  }
   const sender = this.service.getUserName(); // helper method if needed
   this.hubConnection = new signalR.HubConnectionBuilder()
     .withUrl(`${this.baseUrl}/chatHub`, { withCredentials: true })
@@ -34,7 +37,7 @@ export class ChatService {
   } catch (err) {
     console.error("SignalR Connection Error:", err);
   }
-}
+  }
 
 
 

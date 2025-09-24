@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 
@@ -23,7 +24,7 @@ export class EditProfileComponent implements OnInit {
   username: string = "";
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
-  constructor(private ServiceSrv: ServiceService,private toastr: ToastrService) {
+  constructor(private ServiceSrv: ServiceService,private toastr: ToastrService,private route:Router) {
     this.username = this.ServiceSrv.getUserName();
   }
 
@@ -115,6 +116,15 @@ export class EditProfileComponent implements OnInit {
       }
     })
   }
-
+logout(){
+    const pakka = confirm("Sure you want to Logout?");
+    if (pakka) {
+      localStorage.removeItem('jwt');
+      this.route.navigateByUrl("/")
+      setTimeout(() => {
+        window.location.reload()
+      }, 200);
+    }
+}
  
 }

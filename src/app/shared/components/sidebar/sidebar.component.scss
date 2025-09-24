@@ -77,7 +77,11 @@ textarea::placeholder {
     transform: rotate(360deg);
   }
 }
-
+@media screen and (max-width: 768px) {
+  .display-none-ok {
+  display: none !important;
+} 
+}
 /* ✅ Responsive Sidebar -> Bottom Navbar */
 @media (max-width: 768px) {
   .bottom-sidebar {
@@ -133,4 +137,17 @@ textarea::placeholder {
   .left-sidebar .pt-5 {
     display: none !important;
   }
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .nav-link-margin{
+    margin-left: 40px !important;
+    margin-right: 40px !important;
+  }
+}
+.nav-link-margin{
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }

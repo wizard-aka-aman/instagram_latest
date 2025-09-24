@@ -17,7 +17,10 @@ export class ChatwindowComponent implements OnInit {
   searchResults: any[] = []; 
   showDropdown = false;
   debounceTimer: any;
-  constructor(private route: ActivatedRoute, private service: ServiceService) { }
+  constructor(private route: ActivatedRoute, private service: ServiceService) { 
+
+   
+  }
 
   ngOnInit() {
     this.loggedInUser = this.service.getUserName()
@@ -29,6 +32,26 @@ export class ChatwindowComponent implements OnInit {
       },
       error: (error: any) => {
         console.error(error);
+      }
+
+    })
+     this.service.chatListRefresh$.subscribe({
+      next : (data:any)=>{
+        console.log(data);
+        
+        this.service.GetRecentMessage(this.loggedInUser).subscribe({
+          next: (data: any) => {
+            console.log(data); 
+            this.chatList = data;
+            this.service.setChatList(data);
+          },
+          error: (error: any) => {
+            console.error(error);
+          }
+    })
+      },
+      error:(error:any)=>{
+        console.log(error);
       }
 
     })

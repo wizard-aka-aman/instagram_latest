@@ -1,5 +1,7 @@
 <div class="left-sidebar d-none d-md-flex flex-column flex-shrink-0" style="width: 250px;">
   <!-- Logo -->
+
+
   <div class=" pt-2 ps-2">
     <img src="../../assets/instalogo.png" alt="Instagram" class=" img-fluid logo" style="width: 250px; height: 70px;" />
   </div>
@@ -7,55 +9,68 @@
   <!-- Navigation -->
   <nav class="nav flex-column gap-2 bottom-sidebar  ">
     <a  class="nav-link d-flex align-items-center" routerLink="/">
-      <i class="fa-solid fa-house fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Home"></i>
+      <i class="fa-solid fa-house fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Home"></i>
       <span class=" d-xl-inline">Home</span>
     </a>
     <a class="nav-link d-flex align-items-center " routerLink="/search">
-      <i class="fa-solid fa-magnifying-glass fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Search" ></i>
+      <i class="fa-solid fa-magnifying-glass fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Search" ></i>
       <span class=" d-xl-inline">Search</span>
     </a>
     <a class="nav-link d-flex align-items-center " routerLink="/explore">
-      <i class="fa-regular fa-compass fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Explore" ></i>
+      <i class="fa-regular fa-compass fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Explore" ></i>
       <span class=" d-xl-inline">Explore</span>
     </a>
     <a class="nav-link d-flex align-items-center " routerLink="/reels">
-      <i class="fa-solid fa-film fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Reels" ></i>
+      <i class="fa-solid fa-film fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Reels" ></i>
       <span class=" d-xl-inline">Reels</span>
     </a>
     <a class="nav-link d-flex align-items-center " routerLink="/messages/t" style="position: relative;">
-      <i class="fa-solid fa-message fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Messages" ></i>
+      <i class="fa-solid fa-message fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Messages" ></i>
       <i *ngIf="isMessage" class="fa-solid fa-circle" style="color: #ff0000;position: absolute; top: 10px; left: 43px; font-size: 10px;" ></i>
       <span class=" d-xl-inline">Messages</span>
     </a>
-    <a class="nav-link d-flex align-items-center " routerLink="/notifications" style="position: relative;">
-      <i class="fa-solid fa-bell fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications"></i>
+    <div class="display-none-ok">
+      <a class="nav-link d-flex align-items-center " routerLink="/notifications" style="position: relative;">
+      <i class="fa-solid fa-bell fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications"></i>
       <i *ngIf="!isSeen" class="fa-solid fa-circle" style="color: #ff0000;position: absolute; top: 10px; left: 43px; font-size: 10px;" ></i>
       <span class=" d-xl-inline">Notifications</span>
     </a>
-    <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#createModal" >
-      <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" ></i>
-      <span class=" d-xl-inline">Create</span>
-    </a>
-    <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#storyModal" >
-      <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Story" ></i>
-      <span class=" d-xl-inline">Story</span>
-    </a>
-    <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#reelModal" >
-      <i class="fa-solid fa-square-plus fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Reel" ></i>
-      <span class=" d-xl-inline">Upload Reel</span>
-    </a>
+    </div>
+    <div class="display-none-ok">
+
+      <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#createModal" >
+        <i class="fa-solid fa-square-plus fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" ></i>
+        <span class=" d-xl-inline">Create</span>
+      </a>
+      </div>
+      <div class="display-none-ok">
+        
+        <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#storyModal" >
+          <i class="fa-solid fa-square-plus fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Story" ></i>
+          <span class=" d-xl-inline">Story</span>
+        </a>
+      </div>
+      <div class="display-none-ok">
+
+        <a class="nav-link d-flex align-items-center " data-bs-toggle="modal" data-bs-target="#reelModal" >
+          <i class="fa-solid fa-square-plus fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Reel" ></i>
+          <span class=" d-xl-inline">Upload Reel</span>
+        </a>
+      </div>
     <a class="nav-link d-flex align-items-center " routerLink="/{{username}}">
-      <i class="fa-solid fa-user fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile" ></i>
+      <i class="fa-solid fa-user fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile" ></i>
       <span class=" d-xl-inline">Profile</span>
     </a>
-    <a class="nav-link d-flex align-items-center " (click)="logout()" >
-      <i class="fa-solid fa-arrow-right-from-bracket fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" ></i>
-      <span class=" d-xl-inline">Logout</span>
-    </a>
+    <div class="display-none-ok">
+      <a class="nav-link d-flex align-items-center " (click)="logout()" >
+        <i class="fa-solid fa-arrow-right-from-bracket fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout" ></i>
+        <span class=" d-xl-inline">Logout</span>
+      </a>
+    </div>
     
     <!-- More --> 
       <a class="nav-link d-flex align-items-center" routerLink="/more">
-        <i class="fa-solid fa-bars fs-5 me-3 ms-4" data-bs-toggle="tooltip" data-bs-placement="top" title="More"></i>
+        <i class="fa-solid fa-bars fs-5 me-3 ms-4 me-3" data-bs-toggle="tooltip" data-bs-placement="top" title="More"></i>
         <span class=" d-xl-inline">More</span>
       </a> 
   </nav>

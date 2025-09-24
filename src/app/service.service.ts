@@ -15,6 +15,10 @@ export class ServiceService {
   private isSeenNoti = new BehaviorSubject<boolean>(true);
   isSeenNoti$ = this.isSeenNoti.asObservable();
   postRefresh$ = this.postRefreshSubject.asObservable();
+
+  chatListRefreshSubject = new BehaviorSubject<boolean>(false);
+  chatListRefresh$ = this.chatListRefreshSubject.asObservable();
+  
   constructor(private http: HttpClient) {
 
   }

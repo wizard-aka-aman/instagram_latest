@@ -1,4 +1,25 @@
-<div class=" " >
+   <!-- Topbar for Mobile -->
+<div class="mobile-topbar d-md-none">
+  <img src="../../assets/instalogo.png" alt="Instagram" class="img-fluid" />
+  <div class="d-flex">
+    <div class="">
+      <div class="dropdown" >
+        <i class="fa-solid fa-square-plus fs-1" data-bs-toggle="dropdown" aria-expanded="false"   data-bs-placement="top" title="Reel" ></i>
+        <ul class="dropdown-menu" style="background-color: rgb(37, 37, 37); color: white; width: auto;">
+          <li style="padding-left: 25px;height: 35px; color: white;"  data-bs-toggle="modal" data-bs-target="#createModal" >Create Post</li>
+          <li style="padding-left: 25px;height: 35px; color: white; " data-bs-toggle="modal" data-bs-target="#storyModal">Story</li>
+          <li style="padding-left: 25px;height: 35px; color: white;"  data-bs-toggle="modal" data-bs-target="#reelModal">Upload Reel</li>
+        </ul>
+    </div>
+      
+    </div>
+    <div class="" >
+      <i class="fa-solid fa-bell fs-1  mx-4" routerLink="/notifications" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications"></i>
+  </div>
+  
+  </div>
+</div>
+<div class="story-top-bar   " >
    <!-- Story Avatars -->
   <div class="d-flex overflow-auto story-scroll py-2 m-4" style="width: calc(100vw - 30vw);"  >
 
@@ -10,7 +31,7 @@
 
     <div class="circle-image me-3 " *ngIf="!isStoryAvailable" style="position: relative;"> 
       <img src="../../../assets/instagram_loading_seen.png"  width="100" height="100" alt="" srcset=""> 
-      <i style="position: absolute;bottom: 17px;right: 10px;z-index: 1000 !important;" class="fa-solid fa-circle-plus"></i>
+      <i style="position: absolute;bottom: 17px;right: 10px;" class="fa-solid fa-circle-plus"></i>
       <img [src]="getProfileImage(loggedInUserStory?.profilePicture)"   data-bs-toggle="modal" data-bs-target="#storyModal"  class="story-avatar rounded-circle me-3 " width="88" height="88">
       <div   class="text-center small">Add Story</div> 
     </div>

@@ -21,7 +21,7 @@
   <!-- Previous Stories -->
   <div class="d-flex justify-content-around align-items-center mb-3">
     <h4 class=" ">Previous Stories</h4> 
-    <div class="btn btn-primary" (click)="Next()" >Next</div>
+    <div class="btn btn-primary " [ngClass]="pageNumber==totalPages || this.totalPages==0 ? 'disabled' : ''" (click)="Next()" >Next</div>
   </div>
 <div class="stories-wrapper ">
   <div class="story-card mx-2" *ngFor="let story of previousStories" >

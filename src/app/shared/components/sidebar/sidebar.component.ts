@@ -13,7 +13,7 @@ import { CLIENT_RENEG_LIMIT } from 'tls';
 })
 export class SidebarComponent {
   username: string = "";
-  isMessage :boolean = false
+  isMessage: boolean = false
   fullDetailPost: any;
   posts: any[] = [];
   previewUrl: string | ArrayBuffer | null = null;
@@ -33,81 +33,118 @@ export class SidebarComponent {
   postSharedStory = false;
   postSharedReel = false;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
-  @ViewChild('storyModal') storyModal!: ElementRef<HTMLInputElement>; 
+  @ViewChild('storyModal') storyModal!: ElementRef<HTMLInputElement>;
   @ViewChild('reelModal') reelModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
-  @ViewChild('fileInputStory') fileInputStory!: ElementRef<HTMLInputElement>; 
+  @ViewChild('fileInputStory') fileInputStory!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputReel') fileInputReel!: ElementRef<HTMLInputElement>;
-  descripton : string = "" 
-  isSeen : boolean = false;
+  descripton: string = ""
+  isSeen: boolean = false;
 
-  constructor(private Service: ServiceService, private route: Router,private notiService: NotificationServiceService , private chatService: ChatService , private MessageService:MessageServiceService) {
+  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService, private MessageService: MessageServiceService) {
     this.username = this.Service.getUserName();
   }
 
   ngOnInit(): void {
-     
-    this.notiService.startConnection(this.username, (sender, messageGroup, message) =>  { 
-      console.log( messageGroup,this.username );
-      
-    }).then(() => { 
-       console.log("then wala chala");
+
+    this.notiService.startConnection(this.username, (sender, messageGroup, message) => {
+      console.log(messageGroup, this.username);
+
+    }).then(() => {
+      console.log("then wala chala");
     });
-   
+
     // this.notiService.startConnection(localStorage.getItem('jwt')?? ""); // app load hote hi SignalR connect
-     this.Service.isSeenNoti$.subscribe({
-      next:(data:any)=>{
+    this.Service.isSeenNoti$.subscribe({
+      next: (data: any) => {
         console.log(data);
-        
+
         this.isSeen = data;
       },
     })
-      this.Service.GetAllNotifications(this.username).subscribe({
-      next:(data:any)=>{
+    this.Service.GetAllNotifications(this.username).subscribe({
+      next: (data: any) => {
         console.log(data);
-        this.isSeen = data.every((e:any)=> e.isSeen)
+        this.isSeen = data.every((e: any) => e.isSeen)
         console.log(this.isSeen);
       },
-      error:(err:any)=>{
+      error: (err: any) => {
         console.log(err);
       },
     })
 
     this.Service.isSeenNoti$.subscribe({
-      next:(data:any)=>{
+      next: (data: any) => {
         this.isSeen = data;
       },
-      error:(err:any)=>{
+      error: (err: any) => {
         console.log(err);
       },
     })
-    this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
-       console.log({
+    this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel, postid, publicid, reelurl) => {
+      console.log({
         id: messageId,
-          groupName: messageGroup,
-          sender,
-          message,
-          postLink : postlink,
-          profilePicture:profilepicture,
-          usernameOfPostReel:usernameofpostreel,
-          postId : postid,
-          reelPublicId:publicid,
-          mediaUrl:reelurl,
-          sentAt: new Date()
+        groupName: messageGroup,
+        sender,
+        message,
+        postLink: postlink,
+        profilePicture: profilepicture,
+        usernameOfPostReel: usernameofpostreel,
+        postId: postid,
+        reelPublicId: publicid,
+        mediaUrl: reelurl,
+        sentAt: new Date()
       });
       this.MessageService.SetIsMessage(true);
-       
+
+
+      this.Service.GetRecentMessage(this.username).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          this.Service.setChatList(data);
+          // 👇 Check if sender already in chat list
+          const existing = this.Service.getChatList()?.find((c: any) => c.username === sender);
+          console.log(existing);
+          if (!existing) {
+            // Not in chat list → save to RecentMessages and refresh
+            const recentForm = {
+              SenderUsername: this.username,
+              ReceiverUsername: messageGroup,
+              Message: message
+            };
+
+            this.Service.SaveRecentMessage(recentForm).subscribe({
+              next: () => {
+                this.Service.GetRecentMessage(this.username).subscribe({
+                  next: (data: any) => {
+                    this.Service.setChatList(data); // update global state
+                    this.Service.chatListRefreshSubject.next(true); // trigger refresh
+                  },
+                  error: (err) => console.error(err)
+                });
+              },
+              error: (err) => console.error(err)
+            });
+          }
+        },
+        error: (error: any) => {
+          console.error(error);
+        }
+      })
     });
+
+
+
     this.MessageService.isMessage$.subscribe({
-      next:(data:any)=>{
+      next: (data: any) => {
         this.isMessage = data;
       },
-      error:(err:any)=>{
+      error: (err: any) => {
         console.log(err);
       },
     })
   }
-    markSeen() {
+  markSeen() {
     // this.notiService.markAllSeen();
   }
   logout() {
@@ -126,9 +163,9 @@ export class SidebarComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
-      fData.append('Caption', "asdasd"); 
-      fData.append('UserName', this.username); 
-      fData.append('imageFile', file); 
+      fData.append('Caption', "asdasd");
+      fData.append('UserName', this.username);
+      fData.append('imageFile', file);
       console.log(fData);
 
       console.log(file);
@@ -152,14 +189,14 @@ export class SidebarComponent {
 
   handleFileUploadStory(event: Event) {
     console.log("strorrryrrryryy");
-    
+
     const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (file) {
-      fData.append('Caption', "asdasd");  
-      fData.append('UserName', this.username);  
-      fData.append('imageFile', file); 
+      fData.append('Caption', "asdasd");
+      fData.append('UserName', this.username);
+      fData.append('imageFile', file);
       console.log(fData);
 
       console.log(file);
@@ -182,12 +219,12 @@ export class SidebarComponent {
   }
   handleFileUploadReel(event: Event) {
     console.log("Relll upload ");
-    
+
     const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file) { 
-      fData.append('file', file); 
+    if (file) {
+      fData.append('file', file);
       console.log(fData);
 
       console.log(file);
@@ -201,14 +238,14 @@ export class SidebarComponent {
         // reader.onload = () => {
         //   console.log(reader.result);
 
-          this.previewUrlReel = "a";  // ✅ base64 image preview 
+        this.previewUrlReel = "a";  // ✅ base64 image preview 
         // };
 
         // reader.readAsDataURL(file); // Start reading the file
       }
-    } 
+    }
   }
-    
+
   triggerFileInputPost() {
     console.log("sidebar post");
     this.fileInputPost.nativeElement.click();
@@ -264,14 +301,14 @@ export class SidebarComponent {
     this.caption = ""
   }
   ClearPreviewStory() {
-    this.previewUrlStory = null; 
+    this.previewUrlStory = null;
     this.isNextStepStory = false;
     this.selectedFileStory = null!;
     this.fileInputStory.nativeElement.value = ''; // ✅ Reset file input
     this.postSharedStory = false;
   }
   ClearPreviewReel() {
-    this.previewUrlReel = null; 
+    this.previewUrlReel = null;
     this.isNextStepReel = false;
     this.selectedFileReel = null!;
     this.fileInputReel.nativeElement.value = ''; // ✅ Reset file input
@@ -313,7 +350,7 @@ export class SidebarComponent {
       return;
     }
 
-    const fData = new FormData(); 
+    const fData = new FormData();
     fData.append('Username', this.username);
     fData.append('imageFile', this.selectedFileStory);
 
@@ -338,19 +375,19 @@ export class SidebarComponent {
       return;
     }
 
-    const fData = new FormData(); 
+    const fData = new FormData();
     fData.append('username', this.username);
     fData.append('description', this.descripton);
     fData.append('file', this.selectedFileReel);
 
     this.Service.postReel(fData).subscribe({
-      next: (res :any) => {
+      next: (res: any) => {
         console.log(res);
         this.ClearPreviewReel();
         this.postSharedReel = true;
         this.isCompletedLoadingReel = false;
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.error(err);
         this.closeReel();
         this.isCompletedLoadingReel = false;

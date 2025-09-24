@@ -11,3 +11,12 @@ form {
     border-radius: 10px;
   }
 }
+
+.display-none-ok{
+  display: none !important;
+}
+@media screen and (max-width: 768px) {
+  .display-none-ok{
+    display: block !important;
+  }
+}

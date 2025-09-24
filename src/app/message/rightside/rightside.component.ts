@@ -120,7 +120,33 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     });
 
     this.user = this.ServiceSrv.getUserName();
-    this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+
+    const conn = this.chatService.connection;
+  if (conn) {
+    conn.on("ReceiveMessage", (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+      // yaha pe sirf messages ko push karna hai
+      if (messageGroup === this.groupName || sender === this.groupName) {
+       this.messages.push({
+          id: messageId,
+          groupName: messageGroup,
+          sender,
+          message,
+          postLink : postlink,
+          profilePicture:profilepicture,
+          usernameOfPostReel:usernameofpostreel,
+          postId : postid,
+          reelPublicId:publicid,
+          mediaUrl:reelurl,
+          sentAt: new Date()
+        });
+        this.shouldScrollToBottom = true;
+      }
+    });
+  }
+
+
+
+    /*this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
       const isForThisChat = messageGroup === this.groupName || sender === this.groupName;
       console.log({
         id: messageId,
@@ -155,12 +181,13 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
         });
         this.shouldScrollToBottom = true;
       }
-    });
+    }); */
  
   }
   loadChatData() {
   
-    this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
+    if(this.groupName != null &&this.groupName!= undefined && this.groupName != "null" ){
+      this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
           next: (data: any) => {
             console.log(data);
             this.profilePicture = data.profilePicture;
@@ -171,6 +198,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
             console.log(error);
           }
         })
+    }
     // 👇 Load chat messages
     this.chatService.PersonalChat(this.groupName, this.user).subscribe((msgs: any) => {
       this.messages = msgs;

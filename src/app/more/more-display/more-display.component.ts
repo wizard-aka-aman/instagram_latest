@@ -75,7 +75,9 @@ export class MoreDisplayComponent implements OnInit {
     })
   }
   Next(){
-   if(this.pageNumber==this.totalPages){
+   if(this.pageNumber==this.totalPages || this.totalPages==0){
+    console.log(this.totalPages);
+    
     return;
    }
    else{
