@@ -224,7 +224,7 @@
         <div *ngIf="previewUrlReel && isNextStepReel && !postSharedReel && !isCompletedLoadingReel" class="d-md-flex gap-2 p-3">
           <div class="flex-shrink-0 d-flex justify-content-center align-items-center">
            
-             <video  *ngIf="previewUrlReel" [src]="previewUrlReel" controls width="400"></video>
+             <video  *ngIf="previewUrlReel" [src]="previewUrlReel" controls width="250" height="250"></video>
           </div> 
            <div class="flex-grow-1 text-start mt-3 mt-md-0 ">
             <label class="my-2" for="caption">Description:</label>
@@ -252,7 +252,7 @@
 
         <!-- Preview Only -->
         <div *ngIf="previewUrlReel && !isNextStepReel" class="mt-3">
-          <video   [src]="this.previewUrlReel" controls width="400"></video>
+          <video   [src]="this.previewUrlReel" controls width="250" height="250"></video>
         </div>
 
       </div>
@@ -262,4 +262,4 @@
 
 <input type="file" accept="image/*" style="display:none" #fileInputPost (change)="handleFileUploadPost($event)" />
 <input type="file" accept="image/*" style="display:none" #fileInputStory (change)="handleFileUploadStory($event)" />
-<input type="file" accept="videos/*" style="display:none" #fileInputReel (change)="handleFileUploadReel($event)" />
+<input type="file" accept="video/*" style="display:none" #fileInputReel  (change)="handleFileUploadReel($event)" />

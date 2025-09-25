@@ -1,5 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ChatService } from 'src/app/chatservice.service';
 import { MessageServiceService } from 'src/app/message-service.service';
 import { NotificationServiceService } from 'src/app/notification-service.service';
@@ -18,14 +20,14 @@ export class SidebarComponent {
   posts: any[] = [];
   previewUrl: string | ArrayBuffer | null = null;
   previewUrlStory: string | ArrayBuffer | null = null;
-  previewUrlReel: string | ArrayBuffer | null = null;
+previewUrlReel: SafeUrl | null = null;
+  selectedFileReel: File | null = null;
   isNextStep: boolean = false;
   isNextStepStory: boolean = false;
   isNextStepReel: boolean = false;
   caption: string = '';
   selectedFile!: File;
-  selectedFileStory!: File;
-  selectedFileReel!: File;
+  selectedFileStory!: File;   
   isCompletedLoading = false;
   isCompletedLoadingStory = false;
   isCompletedLoadingReel = false;
@@ -41,7 +43,7 @@ export class SidebarComponent {
   descripton: string = ""
   isSeen: boolean = false;
 
-  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService, private MessageService: MessageServiceService) {
+  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService,private sanitizer: DomSanitizer, private MessageService: MessageServiceService , private toastr:ToastrService) {
     this.username = this.Service.getUserName();
   }
 
@@ -98,6 +100,7 @@ export class SidebarComponent {
       this.MessageService.SetIsMessage(true);
 
 
+      
       this.Service.GetRecentMessage(this.username).subscribe({
         next: (data: any) => {
           console.log(data);
@@ -105,13 +108,16 @@ export class SidebarComponent {
           // 👇 Check if sender already in chat list
           const existing = this.Service.getChatList()?.find((c: any) => c.username === sender);
           console.log(existing);
-          if (!existing) {
+          if (!existing && this.username !== messageGroup) {
             // Not in chat list → save to RecentMessages and refresh
             const recentForm = {
               SenderUsername: this.username,
               ReceiverUsername: messageGroup,
               Message: message
             };
+            console.log(recentForm);
+            console.log("sidebar");
+            
 
             this.Service.SaveRecentMessage(recentForm).subscribe({
               next: () => {
@@ -159,9 +165,14 @@ export class SidebarComponent {
   }
 
   handleFileUploadPost(event: Event) {
+    
     const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    if (!file!.type.startsWith('image/')) {
+        this.toastr.warning(`File ${file!.name} is not a valid image.`);
+        return;
+      }
     if (file) {
       fData.append('Caption', "asdasd");
       fData.append('UserName', this.username);
@@ -188,11 +199,16 @@ export class SidebarComponent {
   }
 
   handleFileUploadStory(event: Event) {
+    
     console.log("strorrryrrryryy");
 
     const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    if (!file!.type.startsWith('image/')) {
+        this.toastr.warning(`File ${file!.name} is not a valid image.`);
+        return;
+      }
     if (file) {
       fData.append('Caption', "asdasd");
       fData.append('UserName', this.username);
@@ -218,33 +234,28 @@ export class SidebarComponent {
     }
   }
   handleFileUploadReel(event: Event) {
-    console.log("Relll upload ");
-
-    const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (file) {
-      fData.append('file', file);
-      console.log(fData);
 
-      console.log(file);
+    if (!file) return;
 
-
-      if (file) {
-        this.selectedFileReel = file; // ✅ Save file for later use in upload
-        // const reader = new FileReader();
-
-        // ✅ This callback is called *after* file is fully read
-        // reader.onload = () => {
-        //   console.log(reader.result);
-
-        this.previewUrlReel = "a";  // ✅ base64 image preview 
-        // };
-
-        // reader.readAsDataURL(file); // Start reading the file
-      }
+    // ✅ check only video
+    if (!file.type.startsWith('video/')) {
+      this.toastr.warning(`File ${file.name} is not a valid video.`);
+      return;
     }
+
+    // save file for later upload
+    this.selectedFileReel = file;
+
+    // generate safe preview url
+    const objectUrl = URL.createObjectURL(file);
+    this.previewUrlReel = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+
+    console.log("Video file:", file);
+    console.log("Preview URL:", this.previewUrlReel);
   }
+
 
   triggerFileInputPost() {
     console.log("sidebar post");

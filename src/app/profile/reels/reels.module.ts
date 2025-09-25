@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     ReelsRoutingModule,
     FormsModule
-  ]
+  ],
+   exports: [ DisplayreelsComponent]
 })
 export class ReelsModule { }

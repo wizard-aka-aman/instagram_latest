@@ -17,7 +17,7 @@
      
     <div class="search-item d-flex align-items-center  p-2  " 
      routerLink="/{{groupName}}" >
-      <img [src]="getProfileImage(profilePicture)" class="rounded-circle mx-3" width="40" height="40" style="object-fit: cover;" />
+      <img [src]="getProfileImage(profilePicture) || 'assets/avatar.png'" class="rounded-circle mx-3" width="40" height="40" style="object-fit: cover;" />
       <div>
         <div class="fw-bold text-white">{{ groupName }}</div>
         <div class=" small">{{ fullName }}</div>

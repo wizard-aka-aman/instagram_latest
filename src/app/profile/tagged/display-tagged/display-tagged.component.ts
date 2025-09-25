@@ -15,7 +15,7 @@ export class DisplayTaggedComponent implements OnInit {
   followers: number = 0;
   following: number = 0;
   bio: string = "";
-  avatarUrl: string = '';
+  avatarUrl: string = 'assets/avatar.png';
   plusIconUrl: string = 'assets/plus.png';
   activeTab = 'tagged';
   isPostAvailable = false;

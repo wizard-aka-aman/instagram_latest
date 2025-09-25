@@ -24,17 +24,7 @@ export class ChatwindowComponent implements OnInit {
 
   ngOnInit() {
     this.loggedInUser = this.service.getUserName()
-    this.service.GetRecentMessage(this.loggedInUser).subscribe({
-      next: (data: any) => {
-        console.log(data); 
-        this.chatList = data;
-        this.service.setChatList(data);
-      },
-      error: (error: any) => {
-        console.error(error);
-      }
-
-    })
+    
      this.service.chatListRefresh$.subscribe({
       next : (data:any)=>{
         console.log(data);

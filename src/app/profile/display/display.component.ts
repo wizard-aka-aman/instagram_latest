@@ -37,7 +37,6 @@ export class DisplayComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
-  imageList:any;
   constructor(private Service: ServiceService, private route: ActivatedRoute , private router: Router) {
     this.email = this.Service.getEmail();
   } 

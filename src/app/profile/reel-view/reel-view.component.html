@@ -13,7 +13,7 @@
 
     <!-- User Info -->
     <div class="d-flex align-items-center gap-2 p-3 border-bottom">
-      <img [src]="user.profilePicture " class="rounded-circle" width="40" height="40" />
+      <img [src]="user.profilePicture || 'assets/avatar.png' " class="rounded-circle" width="40" height="40" />
       <strong>{{ user.userName }}</strong> 
     </div>
      

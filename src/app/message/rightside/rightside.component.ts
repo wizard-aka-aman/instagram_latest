@@ -198,19 +198,10 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
             console.log(error);
           }
         })
-    }
     // 👇 Load chat messages
     this.chatService.PersonalChat(this.groupName, this.user).subscribe((msgs: any) => {
       this.messages = msgs;
       console.log(msgs);
-        this.ServiceSrv.SeenMessages(this.groupName,this.user).subscribe({
-          next: (data: any) => {
-            console.log(data);
-          },
-          error: (error: any) => {
-            console.log(error);
-          }
-        })
       this.shouldScrollToBottom = true; // Scroll on initial load
       const conn = this.chatService.connection;
       if (conn) {
@@ -227,6 +218,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
         });
       }
     });
+     }
   }
 
 
@@ -271,6 +263,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     })
   }
   FunctionGetSaveRecentMessage() {
+    if(this.user !== this.groupName){
     const recentform = {
         SenderUsername: this.user,
         ReceiverUsername: this.groupName,
@@ -292,7 +285,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       }
     })
   }
-
+  }
 }
 
 

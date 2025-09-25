@@ -3,7 +3,7 @@
     <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4">
       <!-- Profile Image -->
       <div>
-        <img [src]="avatarUrl"  data-bs-toggle="modal" data-bs-target="#profileModal"  alt="Profile" class="rounded-circle border"
+        <img [src]="avatarUrl || 'assets/avatar.png'"  data-bs-toggle="modal" data-bs-target="#profileModal"  alt="Profile" class="rounded-circle border"
           style="width: 120px; height: 120px; object-fit: cover;">
       </div>
 
@@ -36,7 +36,9 @@
     </div>
   </div>
 
-  <div class="my-4"> </div>
+  <div class="my-4"> 
+    <!-- <app-displayreels></app-displayreels> -->
+  </div>
 
   <!-- New Post Section --> 
     <div *ngIf="loggedInUserName == username " class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
@@ -45,20 +47,7 @@
           style="width: 80px; height: 80px; border-radius: 50%;">
       </div>
       
-    </div> 
-    <div *ngIf="loggedInUserName == username"
-     class="d-flex mt-5 justify-content-start align-items-center w-100 scroll-container"
-     style="max-width: 800px;">
-  
-  <div class="me-3" *ngFor="let img of imageList">
-    <img [src]="img" alt="Add Post"
-      class="scroll-image">
-  </div>
-
-</div>
-
-
-    
+    </div>    
 
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2" *ngIf="loggedInUserName != username && ( isPublic|| alreadyFollowing ) || loggedInUserName == username">
@@ -121,7 +110,6 @@
     <p class="fw-bold fs-2 mt-3" >This account is private</p>
     <p>Follow to see their photos and videos.</p>  
   </div>
-
 </div>
 
 <!-- Bootstrap profile Modal -->
@@ -156,18 +144,25 @@
 
         <!-- Loop Over Likes -->
         
-         <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-      *ngFor="let like of follower" 
-      data-bs-dismiss="modal" aria-label="Close"
-      [routerLink]="['/', like.userName]"
-       
-    >
-      <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
-      <div>
-        <div class="fw-bold text-white">{{ like.userName }}</div>
-        <div class=" small">{{ like.fullName }}</div>
-      </div>
+         <ng-template #elseBlock>
+            <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+              *ngFor="let like of follower" 
+              data-bs-dismiss="modal" aria-label="Close"
+              [routerLink]="['/', like.userName]"
+              
+            >
+              <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+              <div>
+                <div class="fw-bold text-white">{{ like.userName }}</div>
+                <div class=" small">{{ like.fullName }}</div>
+              </div>
+           </div>
+         </ng-template>
+
+    <div  *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlock" class="search-item d-flex align-items-center gap-2 p-2 hover-effect">
+        <div class="fw-bold text-white">ID is Private</div>
     </div>
+
 
       </div>
 
@@ -188,7 +183,8 @@
       <!-- Modal Body -->
       <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
 
-        <!-- Loop Over Likes -->
+        <ng-template #elseBlockfollowing>
+          <!-- Loop Over Likes -->
           <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
       *ngFor="let like of followingdata" 
       data-bs-dismiss="modal" aria-label="Close"
@@ -200,6 +196,10 @@
         <div class="fw-bold text-white">{{ like.userName }}</div>
         <div class=" small">{{ like.fullName }}</div>
       </div>
+    </div>
+        </ng-template>
+    <div  *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlockfollowing" class="search-item d-flex align-items-center gap-2 p-2 hover-effect">
+        <div class="fw-bold text-white">ID is Private</div>
     </div>
 
 

@@ -6,7 +6,7 @@
   <div class="requests-wrapper">
     <div class="request-card" *ngFor="let request of pendingRequests">
       <div class="card shadow-sm d-flex justify-content-center align-items-center p-3 text-center border-1 border-danger border h-100" style="background-color: rgb(0, 0, 0); color: white;">
-        <img [src]="getProfileImage(request.profilePictureOfReqTo)" class="rounded-circle mb-2 img-fluid"
+        <img [src]="getProfileImage(request.profilePictureOfReqTo) || 'assets/avatar.png'" class="rounded-circle mb-2 img-fluid"
              style="width :50px; height: 50px; object-fit: contain;" alt="profile">
         <h6>{{ request.userNameOfReqTo }}</h6>
         <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap"> 

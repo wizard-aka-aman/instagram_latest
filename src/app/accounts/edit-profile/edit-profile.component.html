@@ -1,7 +1,7 @@
 <div class="container py-5" style="max-width: 600px;">
   <!-- Profile Image Section -->
   <div class="d-flex align-items-center mb-4">
-    <img [src]="user.profilePicture" alt="Profile" class="rounded-circle me-3 border"
+    <img [src]="user.profilePicture || 'assets/avatar.png'" alt="Profile" class="rounded-circle me-3 border"
          style="width: 60px; height: 60px; object-fit: cover;">
     <div>
       <h6 class="mb-1">{{ user.userName }}</h6>

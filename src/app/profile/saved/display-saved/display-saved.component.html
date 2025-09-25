@@ -86,7 +86,7 @@
   <div *ngIf="isSavedAvailable && (isPublic || alreadyFollowing || loggedInUserName == username)" class="row g-2">
     <div class="post-grid mb-3">
   <div class="post-card" *ngFor="let post of fullDetailPost">
-    <img [src]="'data:image/jpeg;base64,'+post.posts.imageUrl"
+    <img [src]="getProfileImage(post.posts.imageUrl)"
          alt="Post"
          class="post-image">
 
