@@ -36,9 +36,7 @@
     </div>
   </div>
 
-  <div class="my-4"> 
-    <!-- <app-displayreels></app-displayreels> -->
-  </div>
+
 
   <!-- New Post Section --> 
     <div *ngIf="loggedInUserName == username " class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
@@ -52,28 +50,28 @@
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2" *ngIf="loggedInUserName != username && ( isPublic|| alreadyFollowing ) || loggedInUserName == username">
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'posts'}" (click)="activeTab = 'posts'">
+    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'posts'}" (click)="activeTab = 'posts'">
       <i class="fa-solid fa-table-cells"></i> POSTS
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'reels'}" routerLink="/{{username}}/reels" >
+    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'reels'}"  (click)="activeTab = 'reels'" >
       <i class="fa-solid fa-film"></i> REELS
     </a>
   </li>
   <li class="nav-item" *ngIf="loggedInUserName == username">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'saved'}" routerLink="/{{username}}/saved" >
+    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'saved'}" (click)="activeTab = 'saved'" >
       <i class="fa-solid fa-bookmark"></i> SAVED
     </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link text-white" [ngClass]="{active: activeTab === 'tagged'}"  routerLink="/{{username}}/tagged"  >
+    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'tagged'}"  (click)="activeTab = 'tagged'"  >
       <i class="fa-solid fa-user-tag"></i> TAGGED
     </a>
   </li>
 </ul>
 
-<!-- Posts Grid -->
+<!-- Posts Grid     -->
 <div class="container mt-3 pb-5">
  <div *ngIf="activeTab === 'posts' && (isPublic || alreadyFollowing || loggedInUserName == username)" 
      class="post-grid mb-3">
@@ -93,19 +91,28 @@
     </div>
   </div>
 </div>
+<div class="" *ngIf="activeTab === 'reels'">
+  <app-displayreels [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-displayreels> 
+</div>
+<div class="" *ngIf="activeTab === 'saved'">
+  <app-display-saved [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-display-saved> 
+</div>
+<div class="" *ngIf="activeTab === 'tagged'">
+  <app-display-tagged [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-display-tagged> 
+</div>
   
-  <div *ngIf="!isPostAvailable && loggedInUserName == username " class="text-center py-2 " >
+  <div *ngIf="!isPostAvailable && loggedInUserName == username && activeTab=='posts'" class="text-center py-2 " >
     <i class="fa-solid fs-1 fa-table-cells"></i>
     <p class="fw-bold fs-2" >Share Photos</p>
     <p> When you share photos, they will appear on your profile.</p> 
 
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"  >Share your first photo</button>
   </div>
-  <div *ngIf="!isPostAvailable && loggedInUserName != username && ( isPublic|| alreadyFollowing )" class="text-center py-2 " >
+  <div *ngIf="!isPostAvailable && loggedInUserName != username && ( isPublic|| alreadyFollowing ) && activeTab === 'posts'" class="text-center py-2 " >
     <i class="fa-solid fa-camera  fs-1"></i>
     <p class="fw-bold fs-2 mt-3" >No Posts Yet</p>  
   </div>
-  <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing )" class="text-center py-2 " >
+  <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) && activeTab === 'posts'" class="text-center py-2 " >
     <i class="fa-solid fa-lock  fs-1"></i>
     <p class="fw-bold fs-2 mt-3" >This account is private</p>
     <p>Follow to see their photos and videos.</p>  

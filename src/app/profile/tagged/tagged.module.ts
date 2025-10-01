@@ -12,6 +12,7 @@ import { DisplayTaggedComponent } from './display-tagged/display-tagged.componen
   imports: [
     CommonModule,
     TaggedRoutingModule
-  ]
+  ],
+  exports: [ DisplayTaggedComponent]
 })
 export class TaggedModule { }

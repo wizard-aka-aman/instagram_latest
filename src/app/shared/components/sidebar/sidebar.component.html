@@ -175,7 +175,7 @@
         </div>
 
         <!-- Initial Upload UI -->
-        <div *ngIf="!previewUrlStory && !postSharedStory" class="py-5">
+        <div *ngIf="!previewUrlStory && !postSharedStory && !isCompletedLoadingStory" class="py-5">
           <i class="fa-solid fa-photo-film mb-3" style="font-size: 100px;"></i>
           <p class="fs-4">Drag photos and videos here </p>
           <button class="btn fw-bold btn-primary" (click)="triggerFileInputStory()">Upload Story</button>

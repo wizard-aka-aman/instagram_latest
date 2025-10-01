@@ -170,33 +170,43 @@ export class DisplayReelComponent implements OnInit {
     this.likeAndUnLike.Publicid = this.publicid;
     this.likeAndUnLike.LikedBy = this.LoggedInUser;
     console.log(this.likeAndUnLike);
+    // ✅ Update local reel immediately
+        reel.isLikedLoggedInUser = true;
+        reel.likesCount += 1;
 
     this.serviceSrv.LikeReel(this.likeAndUnLike).subscribe({
       next: (data: any) => {
         console.log(data);
-        // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = true;
-        reel.likesCount += 1;
       },
       error: (err: any) => {
         console.log(err);
+        // ✅ Update local reel immediately
+        reel.isLikedLoggedInUser = false;
+        reel.likesCount -= 1;
       }
     })
   }
-  UnLike(reel: any) {
+  UnLike(reel: any,isLikedLoggedInUser:boolean) {
+    if (!isLikedLoggedInUser) {
+      return;
+    }
     console.log("unlike");
     this.likeAndUnLike.Publicid = this.publicid;
     this.likeAndUnLike.LikedBy = this.LoggedInUser;
     console.log(this.likeAndUnLike);
+      // ✅ Update local reel immediately
+        reel.isLikedLoggedInUser = false;
+        reel.likesCount -= 1;
     this.serviceSrv.UnLikeReel(this.likeAndUnLike).subscribe({
       next: (data: any) => {
         console.log(data);
-        // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = false;
-        reel.likesCount -= 1;
+      
       },
       error: (err: any) => {
         console.log(err);
+          // ✅ Update local reel immediately
+        reel.isLikedLoggedInUser = true;
+        reel.likesCount += 1;
       }
     })
   }
@@ -230,9 +240,6 @@ export class DisplayReelComponent implements OnInit {
       commentText: reel.newComment,
       userName: this.LoggedInUser
     };
-
-    this.serviceSrv.CommentReel(commentPayload).subscribe({
-      next: (data: any) => {
         reel.comments.push({
           ...commentPayload,
           profilePicture: this.profilePicture
@@ -243,10 +250,18 @@ export class DisplayReelComponent implements OnInit {
           const el = this.chatContainer.nativeElement;
           el.scrollTop = el.scrollHeight;
         }, 150);
-
+    this.serviceSrv.CommentReel(commentPayload).subscribe({
+      next: (data: any) => {
       },
       error: (err: any) => {
         console.error(err);
+        reel.comments.pop();
+        reel.newComment = '';
+        reel.commentsCount -= 1;
+        setTimeout(() => {
+          const el = this.chatContainer.nativeElement;
+          el.scrollTop = el.scrollHeight;
+        }, 150);
       }
     });
   }
@@ -259,14 +274,14 @@ export class DisplayReelComponent implements OnInit {
    followForm.followerUsername = this.LoggedInUser
     followForm.followingUsername = reel.userName;
     console.log(followForm);
-    
+    reel.alreadyFollowing = true ;
     this.serviceSrv.FollowPost(followForm).subscribe({
       next: (res: any) => {
         console.log(res); 
-        reel.alreadyFollowing = true ;
       },
       error: (err) => {
         console.log(err);
+        reel.alreadyFollowing = false ;
       }
     })
     }else{
@@ -274,12 +289,13 @@ export class DisplayReelComponent implements OnInit {
         userNameOfReqFrom: this.LoggedInUser,
         userNameOfReqTo: reel.userName
       }
+      reel.isRequested = true;
       this.serviceSrv.AddRequested(addreq).subscribe({
         next: (res: any) => {
           console.log(res);
-          reel.isRequested = true;
         },
         error: (err) => {
+          reel.isRequested = false;
           console.log(err);
         }
       })
@@ -295,15 +311,17 @@ export class DisplayReelComponent implements OnInit {
       this.followForm.followerUsername = this.LoggedInUser
     this.followForm.followingUsername = reel.userName;
     console.log(this.followForm);
-    
+     reel.alreadyFollowing = false;
+        reel.isRequested = false;
     this.serviceSrv.UnFollowPost(this.followForm).subscribe({
       next: (res: any) => {
         console.log(res);
-        reel.alreadyFollowing = false;
-        reel.isRequested = false;
+       
       },
       error: (err) => {
         console.log(err);
+         reel.alreadyFollowing = true;
+        reel.isRequested = true;
       }
     })
     }
@@ -312,26 +330,29 @@ export class DisplayReelComponent implements OnInit {
      this.followForm.followerUsername = this.LoggedInUser
     this.followForm.followingUsername = reel.userName;
     console.log(this.followForm);
-    
+      reel.alreadyFollowing = false;
+        reel.isRequested = false;
     this.serviceSrv.UnFollowPost(this.followForm).subscribe({
       next: (res: any) => {
         console.log(res);
-        reel.alreadyFollowing = false;
-        reel.isRequested = false;
+      
       },
       error: (err) => {
         console.log(err);
+          reel.alreadyFollowing = true;
+        reel.isRequested = true;
       }
     })
   }
   }
-    RemoveRequest(reel:any){
-    this.serviceSrv.DeleteRequest(this.LoggedInUser,reel.userName).subscribe({
-      next: (data:any) => {
-      console.log(data);
+  RemoveRequest(reel:any){
       reel.isRequested = false;
-      },
-      error: (error) => {
+      this.serviceSrv.DeleteRequest(this.LoggedInUser,reel.userName).subscribe({
+        next: (data:any) => {
+          console.log(data);
+        },
+        error: (error) => {
+        reel.isRequested = true;
         console.error(error);
       }
     })

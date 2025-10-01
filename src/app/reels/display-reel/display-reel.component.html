@@ -22,7 +22,7 @@
           <i style="cursor: pointer;" *ngIf="!reel.isLikedLoggedInUser" (click)="Like(reel,reel.isLikedLoggedInUser)"
             class="fa-regular fa-heart fs-4"></i>
           <i style="cursor: pointer; color: #ff4242;" *ngIf="reel.isLikedLoggedInUser" class="fa-solid fa-heart fs-4"
-            (click)="UnLike(reel)"></i>
+            (click)="UnLike(reel,reel.isLikedLoggedInUser)"></i>
           <p class="mb-4 text-center"  data-bs-toggle="modal" data-bs-target="#ReelHomeLikes" (click)="ToogleLike(reel)" style="cursor: pointer;">{{ reel.likesCount }}</p>
           <p class="mb-4 text-center" style="cursor: pointer;" (click)="toggleComments(reel, $event)">
             <i class="fa-regular fa-comment"></i><br>{{ reel.commentsCount }}

@@ -57,6 +57,7 @@ export class EditProfileComponent implements OnInit {
   }
   onSubmit() {
     console.log(this.user); 
+    if(this.user.fullName.trim() == ""){this.toastr.error("Full Name is required");return}
     this.ServiceSrv.UpdateUserProfile(this.user, this.username).subscribe({
       next: (res: any) => {
         console.log(res);
@@ -65,6 +66,7 @@ export class EditProfileComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
+        this.toastr.error(err.error.errors.Bio[0]);
       }
     })
 

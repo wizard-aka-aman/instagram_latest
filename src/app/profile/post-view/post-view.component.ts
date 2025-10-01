@@ -22,8 +22,8 @@ export class PostViewComponent implements OnInit {
   singlepost = {
     caption: '',
     imageUrl: '',
-    commentsCount: '',
-    likesCount: '',
+    commentsCount: 0,
+    likesCount: 0,
     createdAt: '',
     postId: 0
   };
@@ -32,35 +32,35 @@ export class PostViewComponent implements OnInit {
     likedBy: '',
     postId: 0
   }
-  formAddComment={
-    CommentText :'',
-    UserName : '',
-    PostId : 0
+  formAddComment = {
+    CommentText: '',
+    UserName: '',
+    PostId: 0
   }
   isLikedByMe = false;
   zeroLike = true;
-  zeroComment = true;
   ListLike: any[] = []
-  ListComment :any[]= []
-  isSavedPost =false;
-    searchText: string = '';
-    searchQuery = '';
-  searchResults: any[] = []; 
+  ListComment: any[] = []
+  isSavedPost = false;
+  searchText: string = '';
+  searchQuery = '';
+  searchResults: any[] = [];
   showDropdown = false;
   debounceTimer: any;
-   AllFollowingResults :any[]=[]
-   setPostId :number=0
+  AllFollowingResults: any[] = []
+  setPostId: number = 0
+  loggedInUsernameProfile: string = ""
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: ServiceService,
     private location: Location,
-    private toastr : ToastrService
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
-    
+
     this.LoggedInUser = this.service.getUserName();
     this.route.paramMap.subscribe((params: any) => {
       this.username = params.get('username')!;
@@ -68,30 +68,15 @@ export class PostViewComponent implements OnInit {
       this.getPostById(this.postid);
 
     });
-    this.service.GetFollowing(this.LoggedInUser).subscribe({
-      next: (data:any) => {
-         this.AllFollowingResults = data
-      },
-      error: (error) => {
-        console.error(error);
-        }
-    })
+
   }
 
   getPostById(id: number) {
-    this.service.IsSaved(this.LoggedInUser,this.postid).subscribe({
-      next: (res: any) => {
-        this.isSavedPost = res;
-      },
-      error: (err: any) => {
-        console.log(err);
-      }
-    })
-      this.service.GetPostByIdWithUserNameAsync(id, this.username,this.LoggedInUser).subscribe({
+    this.service.GetPostByIdWithUserNameAsync(id, this.username, this.LoggedInUser).subscribe({
       next: (data: any) => {
         console.log(data);
         this.user.userName = data.userName
-        this.user.profilePicture =  data.profilePicture
+        this.user.profilePicture = data.profilePicture
         this.singlepost.caption = data.caption
         this.singlepost.commentsCount = data.commentsCount
         this.singlepost.imageUrl = data.imageUrl
@@ -99,29 +84,25 @@ export class PostViewComponent implements OnInit {
         this.singlepost.createdAt = data.createdAt
         this.singlepost.postId = data.postId
         this.ListComment = data.comments
-        if (data.likes.length == 0) {
+        this.isSavedPost = data.isSaved
+        this.loggedInUsernameProfile = data.loggedInUsernameProfile
+        if (data.likesCount == 0) {
           this.zeroLike = true;
         }
         else {
           this.zeroLike = false;
         }
-        if (data.comments.length == 0) {
-          this.zeroComment = true;
-        }
-        else {
-          this.zeroComment = false;
-        }
         this.isLikedByMe = this.isLike(data.likes);
         console.log(this.isLikedByMe);
         console.log(this.ListComment);
-        
+
       },
       error: (err: any) => {
         console.log(err);
       }
     });
   }
-  isLike(data: any): boolean { 
+  isLike(data: any): boolean {
     this.ListLike = data
 
 
@@ -139,100 +120,142 @@ export class PostViewComponent implements OnInit {
     return 'data:image/jpeg;base64,' + image;
   }
   addComment() {
-    this.formAddComment.CommentText = this.newComment;
+    if (!this.newComment.trim()) return; // empty comment ignore
+
+    const tempComment = {
+      userName: this.LoggedInUser,
+      profilePicture: this.loggedInUsernameProfile,
+      commentText: this.newComment,
+      commentedAt: new Date().toISOString()
+    };
+
+    // ✅ Pehle UI me add kar do
+    this.ListComment.unshift(tempComment);
+    this.singlepost.commentsCount++;
+
+    const oldComment = this.newComment;
+    this.newComment = ""; // clear input
+
+    this.formAddComment.CommentText = oldComment;
     this.formAddComment.PostId = this.postid;
-    this.formAddComment.UserName = this.LoggedInUser; 
+    this.formAddComment.UserName = this.LoggedInUser;
+
     this.service.AddComment(this.formAddComment).subscribe({
       next: (data: any) => {
-        console.log(data);
-        this.newComment = ""
-        this.getPostById(this.postid)
+        console.log("Comment added:", data);
+        // success: kuch karne ki zarurat nahi (UI already updated)
       },
       error: (err: any) => {
         console.log(err);
-      }        
-    }) 
-    }
-  
+        // ❌ rollback
+        this.ListComment.shift(); // remove last added temp comment
+        this.singlepost.commentsCount--;
+      }
+    });
+  }
+
+
 
   closePost() {
     this.location.back();
   }
   Like() {
-    console.log("like");
+    if (this.isLikedByMe) return; // agar already like hai to dobara call na kare
+
+    this.isLikedByMe = true;
+    this.singlepost.likesCount++; // ✅ pehle UI update
+
     this.likeAndUnLike.postId = this.postid;
     this.likeAndUnLike.likedBy = this.LoggedInUser;
     this.likeAndUnLike.postUsername = this.username;
-    console.log(this.likeAndUnLike);
 
     this.service.LikePost(this.likeAndUnLike).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.getPostById(this.postid);
-        // this.isLikedByMe = true;
+      next: () => {
+        // ✅ success → kuch karne ki zarurat nahi (UI already updated)
       },
-      error: (err: any) => {
-        console.log(err);
+      error: () => {
+        // ❌ fail → rollback
+        this.isLikedByMe = false;
+        this.singlepost.likesCount--;
       }
-    })
+    });
   }
+
   UnLike() {
-    console.log("unlike");
+    if (!this.isLikedByMe) return; // agar already unlike hai to dobara call na kare
+
+    this.isLikedByMe = false;
+    this.singlepost.likesCount--; // ✅ pehle UI update
+
     this.likeAndUnLike.postId = this.postid;
     this.likeAndUnLike.likedBy = this.LoggedInUser;
     this.likeAndUnLike.postUsername = this.username;
-    console.log(this.likeAndUnLike);
+
     this.service.UnLikePost(this.likeAndUnLike).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.getPostById(this.postid);
-        // this.isLikedByMe = false;
+      next: () => {
+        // ✅ success → kuch karne ki zarurat nahi (UI already updated)
       },
-      error: (err: any) => {
-        console.log(err);
+      error: () => {
+        // ❌ fail → rollback
+        this.isLikedByMe = true;
+        this.singlepost.likesCount++;
       }
-    })
+    });
   }
-  FocusComment(){
-      setTimeout(() => {
-    this.comment.nativeElement.focus();
-  }, 0);
+
+
+  FocusComment() {
+    setTimeout(() => {
+      this.comment.nativeElement.focus();
+    }, 0);
   }
-  AddSaved(){
+  AddSaved() {
+    if (this.isSavedPost) return; // already saved hai to dobara mat karo
+
+    this.isSavedPost = true; // ✅ pehle UI update
+
     const savedform = {
       postId: this.postid,
       UserName: this.LoggedInUser,
-    }; 
-    console.log(savedform);
-    
+    };
+
     this.service.AddedToSaved(savedform).subscribe({
       next: (data: any) => {
-        console.log(data);
-        this.getPostById(this.postid);
+        console.log("Saved:", data);
+        // success → kuch karne ki zarurat nahi (UI already updated)
       },
       error: (err: any) => {
         console.log(err);
+        // ❌ rollback
+        this.isSavedPost = false;
       }
-    })
+    });
   }
-  RemoveSaved(){
-   const savedform = {
+
+  RemoveSaved() {
+    if (!this.isSavedPost) return; // agar already unsaved hai to dobara mat karo
+
+    this.isSavedPost = false; // ✅ pehle UI update
+
+    const savedform = {
       postId: this.postid,
       UserName: this.LoggedInUser,
-    }; 
-    console.log(savedform);
-    
+    };
+
     this.service.RemovedFromSaved(savedform).subscribe({
       next: (data: any) => {
-        console.log(data);
-        this.getPostById(this.postid);
+        console.log("Removed from saved:", data);
+        // success → kuch karne ki zarurat nahi (UI already updated)
       },
       error: (err: any) => {
         console.log(err);
+        // ❌ rollback
+        this.isSavedPost = true;
       }
-    })
+    });
   }
- performSearch(query: string) {
+
+  performSearch(query: string) {
     if (!query || query.trim().length === 0) {
       this.searchResults = [];
       this.showDropdown = false;
@@ -251,24 +274,24 @@ export class PostViewComponent implements OnInit {
       }
     });
   }
-   DeBounce() { 
+  DeBounce() {
     // Clear previous timer
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
 
     // Set new timer
-    this.debounceTimer = setTimeout(() => { 
+    this.debounceTimer = setTimeout(() => {
       this.performSearch(this.searchQuery);
     }, 300); // ⏱ 300ms delay
   }
   ClearSearchQuery() {
-    this.searchQuery = ""; 
+    this.searchQuery = "";
     this.searchResults = [];
     this.showDropdown = false;
   }
-  SendPost(user:string, ){
-    const sendform= {
+  SendPost(user: string,) {
+    const sendform = {
       "groupName": this.LoggedInUser,
       "user": user,
       "postId": this.setPostId
@@ -284,8 +307,25 @@ export class PostViewComponent implements OnInit {
       }
     })
   }
-  AddPostId(){
-    this.setPostId = this.singlepost.postId;
-     this.searchResults =this.AllFollowingResults
+  AddPostId() {
+    if (this.AllFollowingResults.length == 0) {
+
+      this.service.GetFollowing(this.LoggedInUser).subscribe({
+        next: (data: any) => {
+          this.AllFollowingResults = data
+          this.setPostId = this.singlepost.postId;
+          this.searchResults = this.AllFollowingResults
+        },
+        error: (error) => {
+          console.error(error);
+          this.setPostId = this.singlepost.postId;
+          this.searchResults = this.AllFollowingResults
+        }
+      })
+    } else {
+      this.setPostId = this.singlepost.postId;
+      this.searchResults = this.AllFollowingResults
+    }
+
   }
 }

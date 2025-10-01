@@ -2,7 +2,7 @@
   <h4 class="mb-3">Notifications</h4>
 
   <ul class="list-group w-100 w-md-75 mt-5">
-    <li *ngFor="let n of notifications"
+    <li *ngFor="let n of notifications" #NotificationList
         class="list-group-item d-flex justify-content-between align-items-center  
         mb-3 border-0 border-bottom"
         style="background-color: black; color: white; cursor: pointer;">
@@ -41,8 +41,8 @@
 
         <!-- Confirm/Delete buttons -->
         <div *ngIf="n.notificationText == 'Requested to follow you.'" class="ms-2">
-          <button class="btn btn-primary btn-sm me-1" (click)="ConfirmFollow(n.loggedInUserName)">Confirm</button>
-          <button class="btn btn-secondary btn-sm" (click)="RemoveRequest(n.loggedInUserName)">Delete</button>
+          <button class="btn btn-primary btn-sm me-1" (click)="ConfirmFollow(n.loggedInUserName , n)">Confirm</button>
+          <button class="btn btn-secondary btn-sm" (click)="RemoveRequest(n.loggedInUserName ,n)">Delete</button>
         </div>
       </div>
     </li>

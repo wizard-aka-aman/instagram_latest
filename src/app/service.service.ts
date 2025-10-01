@@ -221,8 +221,8 @@ export class ServiceService {
   DisplayPostHome(username:string,pageNumber:number,pageSize:number){
     return this.http.get(`${this.BaseUrl}/api/Story/DisplayPostHome/${username}?pageNumber=${pageNumber}&pageSize=${pageSize}`)
   }
-  GetAllNotifications(username:string){
-    return this.http.get(`${this.BaseUrl}/api/Notification/getAllNotification/${username}`)
+  GetAllNotifications(username:string,pageNumber:number,pageSize:number){
+    return this.http.get(`${this.BaseUrl}/api/Notification/getAllNotification/${username}?pageNumber=${pageNumber}&pageSize=${pageSize}`)
   }
   SeenNotification(username:string){
     return this.http.get(`${this.BaseUrl}/api/Notification/SeenNotification/${username}`)

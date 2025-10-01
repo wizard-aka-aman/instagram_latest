@@ -9,6 +9,8 @@ import { RouterModule } from '@angular/router';
 import { ReelViewComponent } from './reel-view/reel-view.component'; 
 import { DisplayreelsComponent } from './reels/displayreels/displayreels.component';
 import { ReelsModule } from "./reels/reels.module";
+import { SavedModule } from "./saved/saved.module";
+import { TaggedModule } from "./tagged/tagged.module";
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import { ReelsModule } from "./reels/reels.module";
     ProfileRoutingModule,
     FormsModule,
     RouterModule,
-    ReelsModule
+    ReelsModule,
+    SavedModule,
+    TaggedModule
 ]
 })
 export class ProfileModule { }

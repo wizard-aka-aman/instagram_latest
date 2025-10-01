@@ -42,7 +42,9 @@ previewUrlReel: SafeUrl | null = null;
   @ViewChild('fileInputReel') fileInputReel!: ElementRef<HTMLInputElement>;
   descripton: string = ""
   isSeen: boolean = false;
-
+  totalPages = 0;
+  pageNumber = 1;
+  pageSize = 10;
   constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService,private sanitizer: DomSanitizer, private MessageService: MessageServiceService , private toastr:ToastrService) {
     this.username = this.Service.getUserName();
   }
@@ -64,10 +66,10 @@ previewUrlReel: SafeUrl | null = null;
         this.isSeen = data;
       },
     })
-    this.Service.GetAllNotifications(this.username).subscribe({
+    this.Service.GetAllNotifications(this.username,this.pageNumber,this.pageSize).subscribe({
       next: (data: any) => {
         console.log(data);
-        this.isSeen = data.every((e: any) => e.isSeen)
+        this.isSeen = data.item1.every((e: any) => e.isSeen)
         console.log(this.isSeen);
       },
       error: (err: any) => {
@@ -365,10 +367,10 @@ previewUrlReel: SafeUrl | null = null;
     fData.append('Username', this.username);
     fData.append('imageFile', this.selectedFileStory);
 
+    this.ClearPreviewStory();
     this.Service.PostStory(fData).subscribe({
       next: (res) => {
         console.log(res);
-        this.ClearPreviewStory();
         this.postSharedStory = true;
         this.isCompletedLoadingStory = false;
       },

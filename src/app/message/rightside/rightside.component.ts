@@ -185,7 +185,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
  
   }
   loadChatData() {
-  
+  this.newMessage = '';
     if(this.groupName != null &&this.groupName!= undefined && this.groupName != "null" ){
       this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
           next: (data: any) => {
@@ -271,10 +271,8 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       }
     this.ServiceSrv.SaveRecentMessage(recentform).subscribe({
       next: (data: any) => {
-        console.log(data);
         this.ServiceSrv.GetRecentMessage(this.user).subscribe({
           next: (data: any) => {
-            console.log(data);
             this.ServiceSrv.setChatList(data);
           },
           error: (error: any) => console.error(error)

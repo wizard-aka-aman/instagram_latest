@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     SavedRoutingModule
-  ]
+  ],
+  exports: [ DisplaySavedComponent]
 })
 export class SavedModule { }

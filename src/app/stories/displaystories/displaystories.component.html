@@ -8,7 +8,6 @@
   <!-- Prev User Button -->
   <button 
     class="btn text-white fs-1 position-absolute start-0 translate-middle-y z-3 "
-    style="top: 50%;" 
     (click)="prevUser()"
     *ngIf="currentUserIndex > 0">
     ‹
@@ -120,7 +119,6 @@
   <!-- Next User Button -->
   <button 
     class="btn text-white fs-1 position-absolute end-0 translate-middle-y z-3 "
-    style="top: 50%;" 
     (click)="nextUser()"
     *ngIf="currentUserIndex < usersWithStories.length - 1">
     ›
@@ -169,7 +167,7 @@
 
     <!-- Prev Button -->
     <button
-      class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
+      class="position-absolute top-75 start-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
       (click)="personalprevStory()"
       *ngIf="personalcurrentStoryIndex > 0">
       ‹
@@ -177,7 +175,7 @@
 
     <!-- Next Button -->
     <button
-      class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
+      class="position-absolute top-75 end-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
       (click)="personalnextStory()"
       *ngIf="personalcurrentStoryIndex < myPersonalStories[0].displayStories.length - 1">
       ›

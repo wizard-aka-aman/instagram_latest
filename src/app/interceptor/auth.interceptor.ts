@@ -12,18 +12,17 @@ import { ServiceService } from '../service.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private http: HttpClient;
+
   loggedInUser :string ="";
-  constructor(private httpBackend : HttpBackend , private serviceSrv : ServiceService) {
-    
-    // Interceptor bypass karne wala HttpClient
-    this.http = new HttpClient(this.httpBackend);
+  constructor(private serviceSrv : ServiceService) {
+  
     this.loggedInUser = this.serviceSrv.getUserName();
   }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
      if (request.url.includes('/Follower/follow')) { 
       const userName = (request.body as any).followingUsername;
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
@@ -40,6 +39,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     else if (request.url.includes('/Posts/like')) { 
       const userName = (request.body as any).postUsername;
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo 
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
@@ -57,6 +57,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     else if (request.url.includes('/api/Videos/LikeReel')) {   
       const userName = (request.body as any).LikedBy;
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
@@ -76,6 +77,7 @@ export class AuthInterceptor implements HttpInterceptor {
       })
     }
     else if (request.url.includes('/api/Videos/CommentReel')) {  
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
@@ -98,6 +100,7 @@ export class AuthInterceptor implements HttpInterceptor {
     } 
     else if (request.url.includes('/Posts/comment')) { 
       const userName = (request.body as any).UserName;
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
@@ -117,6 +120,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }else if (request.url.includes('/api/Requested/AddRequested')) { 
       console.log(request);
       const userName = (request.body as any).userNameOfReqTo;
+       this.loggedInUser = this.serviceSrv.getUserName();
       // Yahan dusri API call karo
       const addNotiBody = {
         loggedInUser : this.loggedInUser,
