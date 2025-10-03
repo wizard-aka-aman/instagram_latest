@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
   googleReady = false;
   errorMessages: string[] = [];
   token : string = "";
+  isLoading: boolean = false;
   constructor(private ServiceSrv: ServiceService, private toastr: ToastrService, private router: Router) {
     this.token = localStorage.getItem("jwt") ?? "" ;
     // console.log(this.token); 
@@ -106,6 +107,7 @@ export class AppComponent implements OnInit {
     this.toastr.error('Please fill all the fields');
     return;
   }
+  this.isLoading = true;
     this.loginFormData.Email = this.loginemail;
     this.loginFormData.Password = this.loginpassword;
     this.ServiceSrv.Authlogin(this.loginFormData).subscribe({
@@ -116,9 +118,11 @@ export class AppComponent implements OnInit {
         this.isLoggedIn = true;
         this.loginemail = "";
         this.loginpassword = "";
+        this.isLoading = false;
       },
       error: (err: any) => {
         console.log(err);
+        this.isLoading = false;
         this.toastr.error('Error occurred while logging in', err.error.message);
       }
     })
@@ -128,6 +132,7 @@ export class AppComponent implements OnInit {
     this.toastr.error('Please fill all the fields');
     return;
   }
+  this.isLoading = true;
     this.signUpFormData.Email = this.signupemail;
     this.signUpFormData.UserName = this.signupusername;
     this.signUpFormData.Password = this.signuppassword;
@@ -143,9 +148,11 @@ export class AppComponent implements OnInit {
         this.signuppassword = "";
         this.signupusername = "";
         this.signupname = "";
+        this.isLoading = false;
 
       },
       error: (error: any) => {
+        this.isLoading = false;
         console.log(error);
        if (error.status === 400 && error.error && error.error.errors) {
       const validationErrors = error.error.errors;
