@@ -382,11 +382,16 @@ previewUrlReel: SafeUrl | null = null;
     });
   }
   UploadFinalReel() {
-    this.isCompletedLoadingReel = true;
-    if (!this.selectedFileReel) {
+    if(this.descripton.trim() == ""){
+      this.toastr.error("Give decription first")
+      return;
+    }
+    if (!this.selectedFileReel ) {
       alert('Please provide an image and caption.');
       return;
     }
+    this.isCompletedLoadingReel = true;
+    
 
     const fData = new FormData();
     fData.append('username', this.username);

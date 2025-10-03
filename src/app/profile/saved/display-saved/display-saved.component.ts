@@ -36,9 +36,13 @@ savedReels :any[]=[];
     this.Service.GetAllSavedByUserName(this.username).subscribe({
       next: (data: any) => {
           this.fullDetailPost = data
+          console.log(this.fullDetailPost);
+          
            this.Service.GetAllSavedReel(this.username).subscribe({
       next: (data: any) => {
           this.savedReels = data 
+          console.log(data);
+          
           if(this.savedReels.length +this.fullDetailPost.length ==0){
             this.isSavedAvailable = false;
           }else{
@@ -87,11 +91,11 @@ savedReels :any[]=[];
     }
   }
 
-  openPostPage(postId: number) {
-    this.router.navigate([`/${this.username}/p/${postId}`]);
+  openPostPage(postId: number,username:string) {
+    this.router.navigate([`/${username}/p/${postId}`]);
   }
-  openReelPage(publicid: string) {
-    this.router.navigate([`/${this.username}/reel/${publicid}`]);
+  openReelPage(publicid: string , username:string) {
+    this.router.navigate([`/${username}/reel/${publicid}`]);
   }
     getProfileImage(image: string | null): string {
     if (!image || image === 'null') {

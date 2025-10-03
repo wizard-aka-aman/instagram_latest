@@ -257,4 +257,11 @@ export class ServiceService {
   GetAllPersonalStories(username:string,pageNumber:number,pageSize:number){
     return this.http.get(`${this.BaseUrl}/api/Story/GetAllPersonalStories/${username}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   }
+  DeletePost(postId:number){
+    return this.http.delete(`${this.BaseUrl}/Posts/deletepost/${postId}`);
+  }
+  DeleteReel(publicid:string){
+    return this.http.delete(`${this.BaseUrl}/api/Videos/Deletereel/${publicid}`);
+  }
+  
 }

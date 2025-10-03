@@ -17,7 +17,7 @@
         <img [src]="getProfileImage(post.posts.imageUrl)" alt="Post" class="post-image">
 
         <!-- Overlay -->
-        <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.posts.postId)">
+        <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.posts.postId, post.posts.user.userName)">
           <div class="text-white d-flex gap-3 fs-5 fw-bold">
             <span><i class="fas fa-heart"></i> {{ post.posts.likesCount }}</span>
             <span><i class="fas fa-comment"></i> {{ post.posts.commentsCount }}</span>
@@ -35,7 +35,7 @@
 
         <!-- Overlay -->
         <div class="overlay d-flex justify-content-center align-items-center"
-          (click)="openReelPage(reel.cloudinaryDB.publicId)">
+          (click)="openReelPage(reel.cloudinaryDB.publicId, reel.cloudinaryDB.userName)">
           <div class="text-white d-flex gap-3 fs-5 fw-bold">
             <span><i class="fas fa-heart"></i> {{ reel.cloudinaryDB.likeCount }}</span>
             <span><i class="fas fa-comment"></i> {{ reel.cloudinaryDB.commentCount }}</span>

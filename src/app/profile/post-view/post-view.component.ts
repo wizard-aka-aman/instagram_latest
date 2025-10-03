@@ -222,6 +222,9 @@ export class PostViewComponent implements OnInit {
     this.service.AddedToSaved(savedform).subscribe({
       next: (data: any) => {
         console.log("Saved:", data);
+        if(!data){
+          this.isSavedPost = false;
+        }
         // success → kuch karne ki zarurat nahi (UI already updated)
       },
       error: (err: any) => {
@@ -245,6 +248,9 @@ export class PostViewComponent implements OnInit {
     this.service.RemovedFromSaved(savedform).subscribe({
       next: (data: any) => {
         console.log("Removed from saved:", data);
+        if(!data){
+          this.isSavedPost = true;
+        }
         // success → kuch karne ki zarurat nahi (UI already updated)
       },
       error: (err: any) => {
@@ -325,6 +331,21 @@ export class PostViewComponent implements OnInit {
     } else {
       this.setPostId = this.singlepost.postId;
       this.searchResults = this.AllFollowingResults
+    }
+
+  }
+  DeletePost(){
+    if (confirm("Are you sure you want to delete this post?")) {
+    this.service.DeletePost(this.singlepost.postId).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.closePost();
+        this.toastr.success("Post Deleted Successfully")
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+    }})
     }
 
   }

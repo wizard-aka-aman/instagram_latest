@@ -281,4 +281,19 @@ export class ReelViewComponent implements OnInit {
     }
 
   }
+  DeletePost(){
+    if (confirm("Are you sure you want to delete this reel?")) {
+    this.service.DeleteReel(this.singlepost.publicid).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.closePost();
+        this.toastr.success("Reel Deleted Successfully")
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error("Error Occured!!")
+    }})
+    }
+
+  }
 }

@@ -15,6 +15,7 @@
     <div class="d-flex align-items-center gap-2 p-3 border-bottom">
       <img [src]="user.profilePicture || 'assets/avatar.png' " class="rounded-circle" width="40" height="40" />
       <strong>{{ user.userName }}</strong> 
+      <button class="btn btn-danger ms-2 " *ngIf="LoggedInUser == user.userName" (click)="DeletePost()" style="font-size: 10px;" >Delete</button>
     </div>
      
 
