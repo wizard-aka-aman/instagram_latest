@@ -14,15 +14,30 @@ export class DisplayExploreComponent implements OnInit {
     this.loggedInUser = this.serviceSrv.getUserName();
    }
   ngOnInit(): void {
-    this.serviceSrv.Get10Posts(this.loggedInUser).subscribe({
+    this.serviceSrv.ExploreRefreshFetched$.subscribe({
+      next: (res: boolean) => {
+        if (!res) {
+            this.serviceSrv.Get10Posts(this.loggedInUser).subscribe({
       next: (res: any) => {
         this.posts = res;
+        this.serviceSrv.ExploreRefreshSubject.next(this.posts);
+        this.serviceSrv.ExploreRefreshSubjectFetched.next(true);
         console.log(res);
       },
       error: (err: any) => {
         console.log(err);
       }
     })
+        }else{
+          this.serviceSrv.ExploreRefresh$.subscribe({
+            next: (res: any) => {
+              this.posts = res;
+            },
+          })
+        }
+      }
+    })
+    
   }
    getProfileImage(image: string | null): string {
     if (!image || image === 'null') {

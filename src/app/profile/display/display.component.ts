@@ -47,10 +47,7 @@ export class DisplayComponent implements OnInit {
 
       if (this.username) {
         this.getProfile(this.username);
-       
       }
-
-
     });
 
     // 👇 Subscribe to refresh signal
@@ -77,7 +74,7 @@ export class DisplayComponent implements OnInit {
             }
           })
         }
-         this.GetPost(); // ✅ Add this line to fetch posts again
+        this.GetPost(); // ✅ Add this line to fetch posts again
       },
       error: (error) => {
         console.error(error);
@@ -113,9 +110,28 @@ export class DisplayComponent implements OnInit {
     if (this.loggedInUserName != this.username && !(this.alreadyFollowing || this.isPublic)) {
     }
     else {
-      this.Service.GetAllPostByUsername(this.username).subscribe({
-        next: (data: any) => {
-          console.log(data);
+      if (this.Service.PostRefreshSubject.value.length === 0 || this.loggedInUserName != this.username) {
+        this.Service.GetAllPostByUsername(this.username).subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (data.length == 0) {
+              this.isPostAvailable = false;
+              this.numberposts = data.length;
+            } else {
+              this.numberposts = data.length;
+              this.isPostAvailable = true;
+              this.fullDetailPost = data;
+              if(this.loggedInUserName == this.username){
+                this.Service.PostRefreshSubject.next(data);
+              }
+            }
+          },
+          error: (error) => {
+            console.log(error);
+          }
+        })
+      } else {
+        this.Service.PostRefresh$.subscribe((data: any) => {
           if (data.length == 0) {
             this.isPostAvailable = false;
             this.numberposts = data.length;
@@ -125,11 +141,26 @@ export class DisplayComponent implements OnInit {
             this.isPostAvailable = true;
             this.fullDetailPost = data
           }
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      })
+        });
+      }
+
+      // this.Service.GetAllPostByUsername(this.username).subscribe({
+      //   next: (data: any) => {
+      //     console.log(data);
+      //     if (data.length == 0) {
+      //       this.isPostAvailable = false;
+      //       this.numberposts = data.length;
+      //     } else {
+      //       this.numberposts = data.length;
+      //       this.isPostAvailable = true;
+      //       this.fullDetailPost = data
+      //       this.Service.PostRefreshSubject.next(data);
+      //     }
+      //   },
+      //   error: (error) => {
+      //     console.log(error);
+      //   }
+      // })
     }
   }
   getProfile(username: string) {
@@ -151,7 +182,7 @@ export class DisplayComponent implements OnInit {
           this.isFollowing();
           this.isSeenUserFollwingMe();
         }
-        if(this.loggedInUserName == this.username){
+        if (this.loggedInUserName == this.username) {
           this.GetPost();
         }
       },

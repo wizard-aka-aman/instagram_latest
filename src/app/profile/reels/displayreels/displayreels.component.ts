@@ -11,7 +11,7 @@ import { ServiceService } from 'src/app/service.service';
 export class DisplayreelsComponent implements OnInit {
 
   activeTab = 'reels';
-  reels :any;
+  reels: any;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @Input() isPublic: boolean = false;
@@ -26,9 +26,24 @@ export class DisplayreelsComponent implements OnInit {
 
     this.route.paramMap.subscribe(params => {
       if (this.username) {
-        this.GetAllReels(); // ✅ Add this line to fetch posts again
+        if (this.Service.ReelsRefreshSubject.value.length === 0) {
+          this.GetAllReels();
+        }
       }
     });
+    if(this.loggedInUserName == this.username){
+      this.Service.ReelsRefresh$.subscribe((reels: any[]) => {
+        this.reels = reels;
+        if (reels.length == 0) {
+          this.isPostAvailable = false;
+        }
+        else {
+          this.isPostAvailable = true;
+        }
+      })
+    }else{
+      this.GetAllReels();
+    }
 
     // 👇 Subscribe to refresh signal
     this.Service.postRefresh$.subscribe(refresh => {
@@ -43,10 +58,13 @@ export class DisplayreelsComponent implements OnInit {
       next: (data: any) => {
         console.log(data);
         this.reels = data;
-        if(data.length ==0){
+        if(this.loggedInUserName == this.username){
+          this.Service.ReelsRefreshSubject.next(data);
+        }
+        if (data.length == 0) {
           this.isPostAvailable = false;
         }
-        else{
+        else {
           this.isPostAvailable = true;
         }
       },
@@ -56,7 +74,7 @@ export class DisplayreelsComponent implements OnInit {
     })
 
   }
- 
+
 
   triggerFileInput() {
     this.fileInput.nativeElement.click();
@@ -87,7 +105,7 @@ export class DisplayreelsComponent implements OnInit {
       })
     }
   }
-  OpenReelPage(publicId : string){ 
+  OpenReelPage(publicId: string) {
     this.router.navigate([`/${this.username}/reel/${publicId}`])
   }
   getProfileImage(image: string | null): string {

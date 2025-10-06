@@ -25,10 +25,28 @@ savedReels :any[]=[];
 
   this.route.paramMap.subscribe(params => {
     if (this.username) {
-      this.GetSaved(); // ✅ Add this line to fetch posts again
+      if(this.Service.SavedPostRefreshSubject.value.length ===0){
+        this.GetSaved();
+      }
     }
   });
+  if(this.loggedInUserName == this.username){
 
+    this.Service.SavedPostRefresh$.subscribe(data => {
+      this.fullDetailPost = data;
+    });
+    this.Service.SavedReelRefresh$.subscribe(data => {
+      this.savedReels = data;
+      if(this.savedReels.length +this.fullDetailPost.length ==0){
+        this.isSavedAvailable = false;
+      }else{
+        this.isSavedAvailable = true;
+      }
+    });
+  }else{
+    this.GetSaved();
+  }
+  
 }
 
   GetSaved() {
@@ -36,11 +54,17 @@ savedReels :any[]=[];
     this.Service.GetAllSavedByUserName(this.username).subscribe({
       next: (data: any) => {
           this.fullDetailPost = data
+          if(this.loggedInUserName == this.username){
+            this.Service.SavedPostRefreshSubject.next(this.fullDetailPost);
+          }
           console.log(this.fullDetailPost);
           
            this.Service.GetAllSavedReel(this.username).subscribe({
       next: (data: any) => {
-          this.savedReels = data 
+          this.savedReels = data ;
+          if(this.loggedInUserName == this.username){
+            this.Service.SavedReelRefreshSubject.next(this.savedReels);
+          }
           console.log(data);
           
           if(this.savedReels.length +this.fullDetailPost.length ==0){

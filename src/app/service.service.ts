@@ -16,6 +16,51 @@ export class ServiceService {
   isSeenNoti$ = this.isSeenNoti.asObservable();
   postRefresh$ = this.postRefreshSubject.asObservable();
 
+  HomePostRefreshSubject = new BehaviorSubject<any[]>([]);
+  HomePostRefresh$ = this.HomePostRefreshSubject.asObservable();
+  HomePostRefreshSubjectTotalNumber = new BehaviorSubject<number>(0);
+  HomePostRefreshSubjectTotalNumber$ = this.HomePostRefreshSubjectTotalNumber.asObservable();
+
+  PostRefreshSubject = new BehaviorSubject<any[]>([]);
+  PostRefresh$ = this.PostRefreshSubject.asObservable();
+
+  ReelsRefreshSubject = new BehaviorSubject<any[]>([]);
+  ReelsRefresh$ = this.ReelsRefreshSubject.asObservable();
+
+  SavedPostRefreshSubject = new BehaviorSubject<any[]>([]);
+  SavedPostRefresh$ = this.SavedPostRefreshSubject.asObservable();
+  
+  SavedReelRefreshSubject = new BehaviorSubject<any[]>([]);
+  SavedReelRefresh$ = this.SavedReelRefreshSubject.asObservable();
+
+  GetFollowingRefreshSubject = new BehaviorSubject<any[]>([]);
+  GetFollowingRefresh$ = this.GetFollowingRefreshSubject.asObservable();
+
+  GetFollowingRefreshSubjectFetched = new BehaviorSubject<boolean>(false);
+  GetFollowingRefreshFetched$ = this.GetFollowingRefreshSubjectFetched.asObservable();
+  
+
+  GetLoggedInUserStoryRefreshSubject = new BehaviorSubject<any>({});
+  GetLoggedInUserStoryRefresh$ = this.GetLoggedInUserStoryRefreshSubject.asObservable();
+
+  GetLoggedInUserStoryRefreshSubjectFetched = new BehaviorSubject<boolean>(false);
+  GetLoggedInUserStoryRefreshFetched$ = this.GetLoggedInUserStoryRefreshSubjectFetched.asObservable();
+
+  GetStoryByUsernameRefreshSubject = new BehaviorSubject<any[]>([]);
+  GetStoryByUsernameRefresh$ = this.GetStoryByUsernameRefreshSubject.asObservable();
+
+  GetStoryByUsernameRefreshSubjectFetched = new BehaviorSubject<boolean>(false);
+  GetStoryByUsernameRefreshFetched$ = this.GetStoryByUsernameRefreshSubjectFetched.asObservable();
+
+  ExploreRefreshSubject = new BehaviorSubject<any[]>([]);
+  ExploreRefresh$ = this.ExploreRefreshSubject.asObservable();
+
+  ExploreRefreshSubjectFetched = new BehaviorSubject<boolean>(false);
+  ExploreRefreshFetched$ = this.ExploreRefreshSubjectFetched.asObservable();
+
+
+  
+
   chatListRefreshSubject = new BehaviorSubject<boolean>(false);
   chatListRefresh$ = this.chatListRefreshSubject.asObservable();
   
@@ -27,6 +72,12 @@ export class ServiceService {
   }
   emitPostRefresh() {
     this.postRefreshSubject.next(true);
+  }
+  SetHomePost(value:any){
+    this.HomePostRefreshSubject.next(value);
+  }
+  GetHomePost(){
+    return this.HomePostRefreshSubject.asObservable();
   }
   public decodeJwt(token: string) {
     let value;

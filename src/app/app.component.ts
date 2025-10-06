@@ -123,7 +123,7 @@ export class AppComponent implements OnInit {
       error: (err: any) => {
         console.log(err);
         this.isLoading = false;
-        this.toastr.error('Error occurred while logging in', err.error.message);
+        this.toastr.error('Error occurred while logging in', (err?.error?.errors?.Email[0])?err?.error?.errors?.Email[0]:err?.error?.message);
       }
     })
   }

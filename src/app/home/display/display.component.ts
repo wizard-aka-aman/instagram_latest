@@ -61,8 +61,25 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.loadInitialData();
     this.restoreScrollPosition();
-    this.getPosts();
+
+    this.serviceSrv.HomePostRefresh$.subscribe((posts: any[]) => {
+      this.posts = posts;
+      // ✅ Reset pageNumber based on how many posts are already loaded
+      this.pageNumber = Math.floor(this.posts.length / this.pageSize) + 1;
+
+      // ✅ Re-attach scroll observer whenever posts are restored
+      // setTimeout(() => this.setupInfiniteScroll(), 0);
+    });
+    this.serviceSrv.HomePostRefreshSubjectTotalNumber$.subscribe((total: number) => {
+      this.TotalPost = total;
+    });
+
+
+    if (this.serviceSrv.HomePostRefreshSubject.value.length === 0) {
+      this.getPosts();
+    }
   }
+
 
   ngAfterViewInit() {
     this.setupInfiniteScroll();
@@ -74,27 +91,71 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // ================= INIT =================
   loadInitialData() {
-    this.serviceSrv.GetFollowing(this.loggedInUser).subscribe({
-      next: (data: any) => (this.AllFollowingResults = data),
-      error: (err) => console.error(err)
-    });
+    this.serviceSrv.GetFollowingRefreshFetched$.subscribe({
+      next: (data: boolean) => {
+        if (!data) {
+          this.serviceSrv.GetFollowing(this.loggedInUser).subscribe({
+            next: (data: any) => {
+              this.serviceSrv.GetFollowingRefreshSubject.next(data);
+              this.serviceSrv.GetFollowingRefreshSubjectFetched.next(true);
+              (this.AllFollowingResults = data)
+            },
+            error: (err) => console.error(err)
+          });
+        } else {
+          this.serviceSrv.GetFollowingRefresh$.subscribe({
 
-    this.serviceSrv.GetLoggedInUserStory(this.loggedInUser).subscribe({
-      next: (data: any) => {        
-        this.loggedInUserStory = data;
-        this.isStoryAvailable = data.displayStories?.length > 0;
-      },
-      error: (err) => console.error(err)
-    });
-    
-    this.serviceSrv.GetStoryByUsername(this.loggedInUser).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        
-        (this.storiesGroupedByUser = data)
-      },
-      error: (err) => console.error(err)
-    });
+            next: (data: any) => (this.AllFollowingResults = data),
+
+          })
+        }
+      }
+    })
+
+    this.serviceSrv.GetLoggedInUserStoryRefreshFetched$.subscribe({
+      next: (data: boolean) => {
+        if (!data) {
+          this.serviceSrv.GetLoggedInUserStory(this.loggedInUser).subscribe({
+            next: (data: any) => {
+              this.loggedInUserStory = data;
+              this.serviceSrv.GetLoggedInUserStoryRefreshSubject.next(data);
+              this.serviceSrv.GetLoggedInUserStoryRefreshSubjectFetched.next(true);
+              this.isStoryAvailable = data.displayStories?.length > 0;
+            },
+            error: (err) => console.error(err)
+          });
+        } else {
+          this.serviceSrv.GetLoggedInUserStoryRefresh$.subscribe({
+            next: (data: any) => {
+              this.loggedInUserStory = data;
+              this.isStoryAvailable = data.displayStories?.length > 0;
+            }
+          })
+        }
+      }
+    })
+
+    this.serviceSrv.GetStoryByUsernameRefreshFetched$.subscribe({
+      next: (data: boolean) => {
+        if (!data) {
+          this.serviceSrv.GetStoryByUsername(this.loggedInUser).subscribe({
+            next: (data: any) => {
+              console.log(data);
+              this.serviceSrv.GetStoryByUsernameRefreshSubject.next(data);
+              this.serviceSrv.GetStoryByUsernameRefreshSubjectFetched.next(true);
+              (this.storiesGroupedByUser = data)
+            },
+            error: (err) => console.error(err)
+          });
+        } else {
+          this.serviceSrv.GetStoryByUsernameRefresh$.subscribe({
+            next: (data: any) => {
+              (this.storiesGroupedByUser = data)
+            }
+          })
+        }
+      }
+    })
   }
 
   restoreScrollPosition() {
@@ -126,19 +187,24 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
       .DisplayPostHome(this.loggedInUser, this.pageNumber, this.pageSize)
       .subscribe({
         next: (data: any) => {
-          console.log(data);
-          
+          console.log("API called...", data);
           this.TotalPost = data.total;
+
           data.item1.forEach((post: any) => {
             post.isLikedByMe = this.isLike(post.likes);
           });
 
-          this.posts =
-            this.pageNumber === 1
-              ? data.item1
-              : [...this.posts, ...data.item1];
+          // Append properly
+          const newPosts = this.pageNumber === 1
+            ? data.item1
+            : [...this.posts, ...data.item1];
 
           this.pageNumber++;
+
+          // ✅ Update subject → component auto-updates via subscription
+          this.serviceSrv.HomePostRefreshSubject.next(newPosts);
+          this.serviceSrv.HomePostRefreshSubjectTotalNumber.next(data.total);
+
           this.loading = false;
         },
         error: (err) => {
@@ -147,6 +213,7 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
+
   getProfileImage(image: string | null): string {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
@@ -155,15 +222,31 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setupInfiniteScroll() {
+    // ✅ disconnect old observer to prevent duplicates
+    if (this.observer) {
+      this.observer.disconnect();
+    }
+
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const index = Number((entry.target as HTMLElement).getAttribute('data-index'));
-          if (index >= this.posts.length - 2) { if (this.TotalPost != this.posts.length) { this.getPosts(); } }
+          if (index >= this.posts.length - 2) {
+            if (this.TotalPost != this.posts.length) {
+              this.getPosts();
+            }
+          }
         }
       });
-    }, { threshold: 0.5 }); // 50% visible hone par trigger
+    }, { threshold: 0.5 });
 
+    // ✅ Observe all postCards again
+    this.postCards.forEach((card, i) => {
+      card.nativeElement.dataset.index = i.toString();
+      this.observer.observe(card.nativeElement);
+    });
+
+    // ✅ Re-apply when posts change
     this.postCards.changes.subscribe((cards: QueryList<ElementRef>) => {
       cards.forEach((card, i) => {
         card.nativeElement.dataset.index = i.toString();
@@ -171,6 +254,7 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
+
   // ================= LIKE =================
   Like(post: any) {
     if (post.isLikedByMe) return;
