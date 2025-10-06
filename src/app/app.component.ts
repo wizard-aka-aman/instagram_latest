@@ -114,7 +114,7 @@ export class AppComponent implements OnInit {
       next: (res: any) => {
         console.log(res);
         localStorage.setItem('jwt', res.token);
-        this.toastr.success('You have been logged in successfully');  
+        // this.toastr.success('You have been logged in successfully');  
         this.isLoggedIn = true;
         this.loginemail = "";
         this.loginpassword = "";
