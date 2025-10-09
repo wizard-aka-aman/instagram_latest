@@ -314,5 +314,8 @@ export class ServiceService {
   DeleteReel(publicid:string){
     return this.http.delete(`${this.BaseUrl}/api/Videos/Deletereel/${publicid}`);
   }
+  GetMutual(loggedInUsername:string,displayUsername:string){
+    return this.http.get(`${this.BaseUrl}/Follower/mutual/${loggedInUsername}/${displayUsername}`);
   
+  }
 }

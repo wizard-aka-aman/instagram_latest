@@ -33,6 +33,7 @@ export class DisplayComponent implements OnInit {
   isPublic: boolean = false;
   isRequested: boolean = false;
   isSeenUserFollwingMeVariable: boolean = false;
+  mutualFriends: any[] = [];
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
@@ -181,9 +182,14 @@ export class DisplayComponent implements OnInit {
         if (this.loggedInUserName != this.username) {
           this.isFollowing();
           this.isSeenUserFollwingMe();
+          this.Mutual();
         }
         if (this.loggedInUserName == this.username) {
           this.GetPost();
+          if(this.loggedInUserName == this.username){
+      this.mutualFriends = [];
+      return;
+    }
         }
       },
       error: (error: any) => {
@@ -355,5 +361,21 @@ export class DisplayComponent implements OnInit {
       return 'assets/avatar.png';
     }
     return 'data:image/jpeg;base64,' + image;
+  }
+  Mutual(){
+    if(this.loggedInUserName == this.username){
+      this.mutualFriends = [];
+      return;
+    }
+    this.Service.GetMutual(this.loggedInUserName,this.username).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.mutualFriends = data;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+
+    })
   }
 }

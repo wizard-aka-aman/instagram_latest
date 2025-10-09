@@ -9,11 +9,12 @@ import {
 import { catchError, Observable, throwError } from 'rxjs';
 import { ServiceService } from './service.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-  constructor(private service :ServiceService , private route: Router) {}
+  constructor(private service :ServiceService , private route: Router , private toastr: ToastrService) {}
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = localStorage.getItem("jwt");
@@ -27,10 +28,14 @@ export class TokenInterceptor implements HttpInterceptor {
       });
     }
 
-    return next.handle(authReq).pipe(
+   return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
+        console.log(error);
         if (error.status === 401) {
-        } else if (error.status === 403) {
+          // Token expired or invalid
+          localStorage.removeItem('jwt'); 
+          this.toastr.info('Session expired. Please log in again.'); 
+          window.location.reload();
         }
         return throwError(() => error);
       })
