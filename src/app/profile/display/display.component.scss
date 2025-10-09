@@ -123,4 +123,57 @@ img.object-fit-cover {
   border-radius: 50%;
   flex-shrink: 0;  /* image compress na ho */
 }
-  
+  .story-scroll {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+  .highlight-container {
+  max-width: 800px;
+  overflow: hidden;
+}
+
+.highlight-scroll {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.highlight-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Highlight Circle */
+.highlight-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Add a subtle ring (like Instagram highlights) */
+.highlight-ring {
+  border-radius: 50%;
+  padding: 2px;
+  display: inline-block;
+}
+
+/* For "Add New" icon (no ring) */
+.highlight-add .highlight-avatar {
+  border: 2px dashed #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+}
+
+.highlight-add:hover .highlight-avatar {
+  background-color: #e9ecef;
+}
+
+/* Title under highlight */
+.highlight-item .small {
+  width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -247,6 +247,19 @@ previewUrlReel: SafeUrl | null = null;
       return;
     }
 
+    // ✅ check video duration
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.src = URL.createObjectURL(file);
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(video.src);
+      if (video.duration > 60) {
+        this.toastr.warning(`Video ${file.name} is longer than 60 seconds.`);
+        this.ClearPreviewReel();
+        return;
+      }
+    };
+
     // save file for later upload
     this.selectedFileReel = file;
 
@@ -256,7 +269,8 @@ previewUrlReel: SafeUrl | null = null;
 
     console.log("Video file:", file);
     console.log("Preview URL:", this.previewUrlReel);
-  }
+}
+
 
 
   triggerFileInputPost() {

@@ -318,4 +318,13 @@ export class ServiceService {
     return this.http.get(`${this.BaseUrl}/Follower/mutual/${loggedInUsername}/${displayUsername}`);
   
   }
+  GetHighLight(username:string){
+    return this.http.get(`${this.BaseUrl}/HighLight/get?username=${username}`);
+  }
+  CreateHighLight(item:any){
+    return this.http.post(`${this.BaseUrl}/HighLight/create`,item);
+  }
+  AddImagesinHighLight(item:any){
+    return this.http.post(`${this.BaseUrl}/HighLight/addimages`,item);
+  }
 }

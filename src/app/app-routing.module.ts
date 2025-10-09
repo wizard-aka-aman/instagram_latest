@@ -36,7 +36,7 @@ const routes: Routes = [
     },
     {
         path: 'more',
-        loadChildren:()=> import('./more/more.module').then(e=>e.MoreModule) 
+        loadChildren: () => import('./more/more.module').then(e => e.MoreModule)
     },
     {
         path: 'explore',
@@ -44,6 +44,10 @@ const routes: Routes = [
     },
     {
         path: 'stories/:username',
+        loadChildren: () => import('./stories/stories.module').then(e => e.StoriesModule)
+    },
+    {
+        path: 'stories',
         loadChildren: () => import('./stories/stories.module').then(e => e.StoriesModule)
     },
     {
@@ -57,14 +61,14 @@ const routes: Routes = [
     {
         path: ':username/p/:postid',
         component: PostViewComponent
-    } ,
+    },
     {
         path: ':username/reel/:publicid',
         component: ReelViewComponent
-    } 
-    ,{
-        path:'**',
-         component: PagenotfoundComponent
+    }
+    , {
+        path: '**',
+        component: PagenotfoundComponent
     }
 ];
 

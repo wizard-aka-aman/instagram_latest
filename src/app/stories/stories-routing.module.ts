@@ -7,6 +7,11 @@ const routes: Routes = [
     path: ":storyid",
     component: DisplaystoriesComponent
   },
+  { 
+    path: '',
+    component: DisplaystoriesComponent 
+  }
+
 ];
 
 @NgModule({

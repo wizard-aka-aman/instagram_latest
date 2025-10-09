@@ -63,13 +63,48 @@
 
 
   <!-- New Post Section --> 
-    <div *ngIf="loggedInUserName == username " class="d-flex mt-5 justify-content-start align-items-center w-100" style="max-width: 800px;">
-      <div class="me-3">
-        <img [src]="plusIconUrl" alt="Add Post"
-          style="width: 80px; height: 80px; border-radius: 50%;">
+   <div
+  class="d-flex align-items-center justify-content-start w-100 mt-4 highlight-container"
+>
+  <!-- Add Highlight Button -->
+  <div *ngIf="loggedInUserName == username"
+    class="highlight-add d-flex flex-column align-items-center me-3"
+    data-bs-toggle="modal"
+    data-bs-target="#hightlight"
+  >
+    <img
+      [src]="plusIconUrl"
+      alt="Add Highlight"
+      class="highlight-avatar"
+    />
+    <div class="text-center small mt-1">New</div>
+  </div>
+
+  <!-- Scrollable Highlights -->
+  <div class="highlight-scroll flex-nowrap overflow-auto">
+    <div
+      *ngFor="let high of highlight"
+      class="highlight-item text-center me-3"
+    >
+      <div class="highlight-ring p-1" *ngIf="loggedInUserName == username">
+        <img (click)="onWhichAddImage(high);" data-bs-toggle="modal" data-bs-target="#hightlightimage"  
+          [src]="getProfileImage(high.thumbnailUrl) || 'assets/avatar.png'"
+          class="highlight-avatar"
+          alt="Highlight"
+        />
       </div>
-      
-    </div>    
+      <div class="highlight-ring p-1" *ngIf="loggedInUserName != username">
+        <img (click)="openHighlightStory(high);"
+          [src]="getProfileImage(high.thumbnailUrl) || 'assets/avatar.png'"
+          class="highlight-avatar"
+          alt="Highlight"
+        />
+      </div>
+      <div class="small mt-1 text-truncate">{{ high.title }}</div>
+    </div>
+  </div>
+</div>
+    
 
     <!-- Tabs -->
 <ul class="nav justify-content-center   py-2" *ngIf="loggedInUserName != username && ( isPublic|| alreadyFollowing ) || loggedInUserName == username">
@@ -266,6 +301,148 @@
         <div class=" small">{{ like.fullName }}</div>
       </div>
     </div>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- hightlight Modal -->
+<div class="modal fade" id="hightlight" tabindex="-1" aria-labelledby="hightlightLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Add Highlight</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+       <form (ngSubmit)="onSubmit($event,highlightForm)" #highlightForm="ngForm" enctype="multipart/form-data">
+
+          <!-- Title Input -->
+          <div class="mb-3">
+            <label for="highlightTitle" class="form-label text-white">Title</label>
+            <input
+              type="text"
+              id="highlightTitle"
+              name="title"
+              class="form-control"
+              style="background-color: #1e1e1e; color: white; border: none;"
+              placeholder="Enter highlight title"
+              required
+              ngModel
+            />
+          </div>
+
+          <!-- Image Upload -->
+          <div class="mb-3">
+            <label for="highlightImage" class="form-label text-white">Image</label>
+            <input
+              type="file"
+              id="highlightImage"
+              name="image"
+              class="form-control"
+              style="background-color: #1e1e1e; color: white; border: none;"
+              accept="image/*"
+              (change)="onImageSelected($event)"
+              required
+            />
+          </div>
+
+          <!-- Image Preview -->
+          <div *ngIf="selectedImage" class="mb-3 text-center">
+            <img [src]="selectedImage"  alt="Preview" class="rounded" style="max-width: 100%; height: 150px; object-fit: cover;" />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="text-center">
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              style="background-color: #007bff; border: none; border-radius: 8px;"
+              [disabled]="!highlightForm.form.valid"
+            >
+              Add Highlight
+            </button>
+          </div>
+        </form>
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- hightlightimage Modal -->
+<div class="modal fade" id="hightlightimage" tabindex="-1" aria-labelledby="hightlightimageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Add images in highlight</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+
+       <form (ngSubmit)="onSubmitImages($event,highlightForm)" #highlightImagesForm="ngForm" enctype="multipart/form-data">
+
+          <!-- Title Input -->
+          <div class="mb-3">
+            <label for="highlightTitle" class="form-label text-white">Title</label>
+            <input
+              type="text"
+              id="highlightTitle"
+              name="title"
+              disabled="true"
+              [(ngModel)]="selectedImageTitle"
+              class="form-control"
+              style="background-color: #1e1e1e; color: white; border: none;"
+              required
+              ngModel
+            />
+          </div>
+
+          <!-- Image Upload -->
+          <div class="mb-3">
+            <label for="highlightImage" class="form-label text-white">Image</label>
+            <input
+              type="file"
+              id="highlightImage"
+              name="image"
+              class="form-control"
+              style="background-color: #1e1e1e; color: white; border: none;"
+              accept="image/*"
+              (change)="onImageSelectedImage($event)"
+              required
+            />
+          </div>
+
+          <!-- Image Preview -->
+          <div *ngIf="selectedImage" class="mb-3 text-center">
+            <img [src]="selectedImage"  alt="Preview" class="rounded" style="max-width: 100%; height: 150px; object-fit: cover;" />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="text-center">
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              style="background-color: #007bff; border: none; border-radius: 8px;"
+            >
+              Add Image
+            </button>
+          </div>
+        </form>
 
 
       </div>

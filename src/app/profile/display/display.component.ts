@@ -1,7 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { PagenotfoundComponent } from 'src/app/pagenotfound/pagenotfound.component';
 import { ServiceService } from 'src/app/service.service';
+import { StoryTransferService } from 'src/app/story-transfer.service';
 
 @Component({
   selector: 'app-display',
@@ -34,11 +36,14 @@ export class DisplayComponent implements OnInit {
   isRequested: boolean = false;
   isSeenUserFollwingMeVariable: boolean = false;
   mutualFriends: any[] = [];
+  highlight: any[] = [];
+  selectedImageTitle:string=""
+  selectedImageID:any;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('closeModal') closeModal!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
 
-  constructor(private Service: ServiceService, private route: ActivatedRoute, private router: Router) {
+  constructor(private Service: ServiceService, private route: ActivatedRoute, private router: Router , private toastr : ToastrService , private storyTransfer : StoryTransferService) {
   }
   ngOnInit(): void {
     this.loggedInUserName = this.Service.getUserName();
@@ -50,6 +55,7 @@ export class DisplayComponent implements OnInit {
         this.getProfile(this.username);
       }
     });
+    this.GetHighlight();
 
     // 👇 Subscribe to refresh signal
     this.Service.postRefresh$.subscribe(refresh => {
@@ -378,4 +384,113 @@ export class DisplayComponent implements OnInit {
 
     })
   }
+  GetHighlight(){
+    this.Service.GetHighLight(this.username).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.highlight = data;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    })
+  }
+  selectedImage: string | ArrayBuffer | null |any= null;
+  selectedImageFile: string | ArrayBuffer | null |any= null;
+
+onImageSelected(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => (this.selectedImage = reader.result);
+    reader.readAsDataURL(file);
+  }
+ 
+  if (file) {
+    this.selectedImageFile = file;
+  }
+}
+
+
+  selectedImageImages: string | ArrayBuffer | null |any= null;
+  selectedImageFileImages: string | ArrayBuffer | null |any= null;
+onImageSelectedImage(event: any): void {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => (this.selectedImageImages = reader.result);
+    reader.readAsDataURL(file);
+  }
+ 
+  if (file) {
+    this.selectedImageFileImages = file;
+  }
+}
+
+onSubmit(event :Event,form:any): void {
+  // You can handle form submission logic here
+  console.log('Form submitted');
+   const fData = new FormData();
+   console.log(form.value.title);
+   console.log(this.username);
+   console.log(this.selectedImageFile);
+   
+      fData.append('Title', form.value.title);
+      fData.append('Username', this.username);
+      fData.append('imageFile', this.selectedImageFile);
+    console.log(fData);
+    
+
+  this.Service.CreateHighLight(fData).subscribe({
+    next: (data: any) => {
+      console.log(data);
+      this.GetHighlight();
+    },
+    error: (error) => {
+      console.error(error);
+    }
+  })
+  // Example: send data to backend via service
+}
+
+onSubmitImages(event :Event,form:any): void {
+  // You can handle form submission logic here
+  console.log('Form submitted');
+   const fData = new FormData();
+   console.log(form.value.title);
+   console.log(this.username);
+   console.log(this.selectedImageFile);
+   
+      fData.append('Title', this.selectedImageTitle);
+      fData.append('Username', this.username);
+      fData.append('imageFile', this.selectedImageFileImages);
+      fData.append('id', this.selectedImageID);
+      
+    console.log(fData);
+    
+
+  this.Service.AddImagesinHighLight(fData).subscribe({
+    next: (data: any) => {
+      console.log(data);
+      this.GetHighlight();
+      this.toastr.success("Added Successfully")
+    },
+    error: (error) => {
+      console.error(error);
+      this.toastr.error("Error occur")
+    }
+  })
+  // Example: send data to backend via service
+}
+onWhichAddImage(highligh :any){
+this.selectedImageTitle = highligh.title;
+this.selectedImageID = highligh.id;
+}
+
+openHighlightStory(story: any) {
+  this.storyTransfer.setStory(story);
+  console.log(this.storyTransfer.getStory());
+  
+  this.router.navigate(['/stories', story.username]);
+}
 }

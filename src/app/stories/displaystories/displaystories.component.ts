@@ -1,6 +1,8 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
+import { StoryTransferService } from 'src/app/story-transfer.service';
 
 @Component({
   selector: 'app-displaystories',
@@ -30,10 +32,30 @@ export class DisplaystoriesComponent implements OnInit {
   personalprogress: number = 0;
 
 
-  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute,private router : Router) {
+  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute,private router : Router , private storyTransfer : StoryTransferService,    private location: Location,) {
     this.loggedInUser = this.serviceSrv.getUserName();
   }
   ngOnInit() {
+     
+     const story = this.storyTransfer.getStory();
+     if (story) {
+    this.isMyPersonalStories = false;
+    this.usersWithStories = [
+      {
+        username: story.username,
+        displayStories: story.mediaUrls.map((url: string) => ({
+          imageUrl: url,
+          createdAt: story.createdAt,
+          storyId: story.id
+        }))
+      }
+    ];
+
+    this.openStory(this.usersWithStories[0]);
+    this.storyTransfer.clearStory();
+    return;
+  }
+
     this.route.paramMap.subscribe({
       next: (params) => {
         this.urlUsername = (String)(params.get('username'));
@@ -76,7 +98,6 @@ export class DisplaystoriesComponent implements OnInit {
       console.log("next user if");
     }else{
      console.log("next user else");
-       this.router.navigateByUrl('/');
     }
   }
 
@@ -205,6 +226,8 @@ export class DisplaystoriesComponent implements OnInit {
     this.showModal = false;
     clearInterval(this.storyInterval);
     clearInterval(this.progressInterval);
+
+       this.location.back();
   }
 
 
