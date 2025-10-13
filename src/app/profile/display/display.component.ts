@@ -1,4 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PagenotfoundComponent } from 'src/app/pagenotfound/pagenotfound.component';
@@ -55,7 +56,7 @@ export class DisplayComponent implements OnInit {
         this.getProfile(this.username);
       }
     });
-    this.GetHighlight();
+    
 
     // 👇 Subscribe to refresh signal
     this.Service.postRefresh$.subscribe(refresh => {
@@ -70,6 +71,9 @@ export class DisplayComponent implements OnInit {
       next: (data: any) => {
         console.log(data);
         this.alreadyFollowing = data;
+        if(data){
+        this.GetHighlight();
+        }
         if (!this.alreadyFollowing) {
           this.Service.IsRequested(this.loggedInUserName, this.username).subscribe({
             next: (data: any) => {
@@ -190,8 +194,12 @@ export class DisplayComponent implements OnInit {
           this.isSeenUserFollwingMe();
           this.Mutual();
         }
+        if(this.isPublic){
+          this.GetHighlight();
+        }
         if (this.loggedInUserName == this.username) {
           this.GetPost();
+        this.GetHighlight();
           if(this.loggedInUserName == this.username){
       this.mutualFriends = [];
       return;
@@ -434,8 +442,22 @@ onSubmit(event :Event,form:any): void {
    console.log(form.value.title);
    console.log(this.username);
    console.log(this.selectedImageFile);
+   var title = form.value.title;
+   title = title.trim();
+   if(title == "" && this.selectedImageFile == null){
+    this.toastr.error("title and image can't be empty" , "error");
+    return;
+   }
+   if(title == "" ){
+    this.toastr.error("title and can't be empty" , "error");
+    return;
+   }
+   if(this.selectedImageFile == null){
+    this.toastr.error("image can't be empty" , "error");
+    return;
+   }
    
-      fData.append('Title', form.value.title);
+      fData.append('Title', title);
       fData.append('Username', this.username);
       fData.append('imageFile', this.selectedImageFile);
     console.log(fData);
@@ -445,8 +467,11 @@ onSubmit(event :Event,form:any): void {
     next: (data: any) => {
       console.log(data);
       this.GetHighlight();
+      this.CloseHightLightModal();
+      this.toastr.success("Added Successfully")
     },
     error: (error) => {
+      this.CloseHightLightModal();
       console.error(error);
     }
   })
@@ -460,7 +485,11 @@ onSubmitImages(event :Event,form:any): void {
    console.log(form.value.title);
    console.log(this.username);
    console.log(this.selectedImageFile);
-   
+
+   if(this.selectedImageFileImages == null){
+    this.toastr.error("image can't be empty" , "error");
+    return;
+   }
       fData.append('Title', this.selectedImageTitle);
       fData.append('Username', this.username);
       fData.append('imageFile', this.selectedImageFileImages);
@@ -489,8 +518,43 @@ this.selectedImageID = highligh.id;
 
 openHighlightStory(story: any) {
   this.storyTransfer.setStory(story);
-  console.log(this.storyTransfer.getStory());
   
   this.router.navigate(['/stories', story.username]);
+}
+@ViewChild('highlightForm') highlightForm!: NgForm;
+@ViewChild('highlightImagesForm') highlightImagesForm!: NgForm;
+  @ViewChild('fileInput') fileInputclear!: ElementRef;
+    @ViewChild('fileInputImage') fileInputclearimage!: ElementRef;
+CloseHightLightModal(){
+  this.selectedImage = null;
+  this.selectedImageFile = null;
+  this.highlightForm.resetForm();
+  if (this.fileInputclear) {
+      this.fileInputclear.nativeElement.value = '';
+    }
+}
+CloseHightLightModalImages(){
+  this.selectedImageImages = null;
+  this.selectedImageFileImages = null;
+  this.selectedImageTitle = "";
+  this.selectedImageID = "";
+  this.highlightImagesForm.resetForm();
+  if (this.fileInputclearimage) {
+      this.fileInputclearimage.nativeElement.value = '';
+    }
+}
+DeleteHightLightImage(){
+  this.Service.DeleteHightlight(this.selectedImageID,this.loggedInUserName).subscribe({
+    next: (data: any) => {
+      console.log(data);
+      this.GetHighlight();
+      this.CloseHightLightModalImages();
+      this.toastr.success("Deleted Successfully")
+    },
+    error: (error) => {
+      console.error(error);
+      this.toastr.error("Error occur")
+    }
+  })
 }
 }

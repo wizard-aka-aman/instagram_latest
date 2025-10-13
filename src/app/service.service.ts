@@ -327,4 +327,7 @@ export class ServiceService {
   AddImagesinHighLight(item:any){
     return this.http.post(`${this.BaseUrl}/HighLight/addimages`,item);
   }
+  DeleteHightlight(hightlightId:number,loggedInUsername:string){
+    return this.http.delete(`${this.BaseUrl}/HighLight/delete/${hightlightId}/${loggedInUsername}`);
+  }
 }

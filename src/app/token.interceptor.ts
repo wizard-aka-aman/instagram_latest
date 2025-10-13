@@ -34,8 +34,8 @@ export class TokenInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           // Token expired or invalid
           localStorage.removeItem('jwt'); 
-          this.toastr.info('Session expired. Please log in again.'); 
-          window.location.reload();
+          // this.toastr.info('Session expired. Please log in again.'); 
+          // window.location.reload();
         }
         return throwError(() => error);
       })

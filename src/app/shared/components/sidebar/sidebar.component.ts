@@ -74,6 +74,7 @@ previewUrlReel: SafeUrl | null = null;
       },
       error: (err: any) => {
         console.log(err);
+        this.toastr.error(err.error.message , "Error Occured")
       },
     })
 

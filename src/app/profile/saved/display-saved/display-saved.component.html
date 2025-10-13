@@ -13,8 +13,10 @@
   </div>
   <div *ngIf="isSavedAvailable && (isPublic || alreadyFollowing || loggedInUserName == username)" class="row g-2">
     <div class="post-grid mb-3">
-      <div class="post-card" *ngFor="let post of fullDetailPost">
-        <img [src]="getProfileImage(post.posts.imageUrl)" alt="Post" class="post-image">
+      <div class="post-card" *ngFor="let post of AllSaved">
+        
+        <div *ngIf="post.type == 'post'">
+          <img  [src]="getProfileImage(post.posts.imageUrl)" alt="Post" class="post-image">
 
         <!-- Overlay -->
         <div class="overlay d-flex justify-content-center align-items-center" (click)="openPostPage(post.posts.postId, post.posts.user.userName)">
@@ -23,23 +25,20 @@
             <span><i class="fas fa-comment"></i> {{ post.posts.commentsCount }}</span>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="post-grid mb-3">
-      <div class="post-card" *ngFor="let reel of savedReels">
-
-        <!-- Video -->
-        <video [src]="reel.cloudinaryDB.url" class="post-media" muted loop playsinline>
+        </div>
+        <div *ngIf="post.type == 'reel'">
+          <!-- Video -->
+        <video [src]="post.cloudinaryDB.url" class="post-media" muted loop playsinline>
         </video>
 
         <!-- Overlay -->
         <div class="overlay d-flex justify-content-center align-items-center"
-          (click)="openReelPage(reel.cloudinaryDB.publicId, reel.cloudinaryDB.userName)">
+          (click)="openReelPage(post.cloudinaryDB.publicId, post.cloudinaryDB.userName)">
           <div class="text-white d-flex gap-3 fs-5 fw-bold">
-            <span><i class="fas fa-heart"></i> {{ reel.cloudinaryDB.likeCount }}</span>
-            <span><i class="fas fa-comment"></i> {{ reel.cloudinaryDB.commentCount }}</span>
+            <span><i class="fas fa-heart"></i> {{ post.cloudinaryDB.likeCount }}</span>
+            <span><i class="fas fa-comment"></i> {{ post.cloudinaryDB.commentCount }}</span>
           </div>
+        </div>
         </div>
       </div>
     </div>

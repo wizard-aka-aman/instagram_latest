@@ -177,3 +177,6 @@ img.object-fit-cover {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+input::placeholder{
+  color: rgb(138, 137, 137) !important;
+}

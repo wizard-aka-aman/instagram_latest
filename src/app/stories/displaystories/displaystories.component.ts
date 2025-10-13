@@ -45,7 +45,7 @@ export class DisplaystoriesComponent implements OnInit {
         username: story.username,
         displayStories: story.mediaUrls.map((url: string) => ({
           imageUrl: url,
-          createdAt: story.createdAt,
+          createdAt: this.TimeSincePost(story.createdAt as string),
           storyId: story.id
         }))
       }
@@ -151,7 +151,20 @@ export class DisplaystoriesComponent implements OnInit {
     const diffInMs = currentTime.getTime() - postTime.getTime();
     const diffInHours = diffInMs / (1000 * 60 * 60);
 
-    return diffInHours;
+    return diffInHours.toFixed(1) as unknown as number;
+  }
+   TimeSincePost(postDateTimeString: string): string {
+    const postTime = new Date(postDateTimeString);
+    const currentTime = new Date();
+    const diffMs = currentTime.getTime() - postTime.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if (diffHours < 24) {
+      const diffMinutes = diffMs / (1000 * 60);
+      if (diffMinutes < 1) { return 'Just now'; }
+      else if (diffMinutes < 60) { return `${Math.floor(diffMinutes)} min ago` }
+      else { return `${Math.floor(diffHours)} hr ago` }
+    }
+    else { return postTime.toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }); }
   }
 
   autoPlay() {

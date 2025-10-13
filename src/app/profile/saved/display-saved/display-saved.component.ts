@@ -37,6 +37,19 @@ savedReels :any[]=[];
     });
     this.Service.SavedReelRefresh$.subscribe(data => {
       this.savedReels = data;
+
+      this.AllSaved = [...this.fullDetailPost,...this.savedReels];
+       this.AllSaved = this.AllSaved.sort(
+            (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+          );
+          this.AllSaved = this.AllSaved.map(e => {
+            if(e.posts){
+                e.type = "post"
+            }else{
+                e.type = "reel"
+            }
+            return e;
+          })
       if(this.savedReels.length +this.fullDetailPost.length ==0){
         this.isSavedAvailable = false;
       }else{
@@ -48,7 +61,7 @@ savedReels :any[]=[];
   }
   
 }
-
+AllSaved:any []=[];
   GetSaved() {
      this.fullDetailPost = []
     this.Service.GetAllSavedByUserName(this.username).subscribe({
@@ -66,6 +79,19 @@ savedReels :any[]=[];
             this.Service.SavedReelRefreshSubject.next(this.savedReels);
           }
           console.log(data);
+          this.AllSaved = [...this.fullDetailPost,...this.savedReels];
+           this.AllSaved = this.AllSaved.sort(
+            (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime()
+          );
+          this.AllSaved = this.AllSaved.map(e => {
+            if(e.posts){
+                e.type = "post"
+            }else{
+                e.type = "reel"
+            }
+            return e;
+          })
+          console.log(this.AllSaved);
           
           if(this.savedReels.length +this.fullDetailPost.length ==0){
             this.isSavedAvailable = false;
