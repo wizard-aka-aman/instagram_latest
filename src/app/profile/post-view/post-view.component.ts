@@ -19,6 +19,7 @@ export class PostViewComponent implements OnInit {
     userName: '',
     profilePicture: '',
   };
+  multiplePost : any[]=[]
   singlepost = {
     caption: '',
     imageUrl: '',
@@ -84,6 +85,7 @@ export class PostViewComponent implements OnInit {
         this.singlepost.createdAt = data.createdAt
         this.singlepost.postId = data.postId
         this.ListComment = data.comments
+        this.multiplePost = data.mediaUrl
         this.isSavedPost = data.isSaved
         this.loggedInUsernameProfile = data.loggedInUsernameProfile
         if (data.likesCount == 0) {

@@ -166,40 +166,51 @@ previewUrlReel: SafeUrl | null = null;
       }, 200);
     }
   }
+  previewUrls:any[] = []
+  selectedFiles:any= []
 
   handleFileUploadPost(event: Event) {
-    
-    const fData = new FormData();
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file!.type.startsWith('image/')) {
-        this.toastr.warning(`File ${file!.name} is not a valid image.`);
-        return;
-      }
-    if (file) {
-      fData.append('Caption', "asdasd");
-      fData.append('UserName', this.username);
-      fData.append('imageFile', file);
-      console.log(fData);
+  const input = event.target as HTMLInputElement;
+  const files = input.files;
 
-      console.log(file);
+  if (!files || files.length === 0) return;
+ // Limit to 5 files
+  
+  const fData = new FormData();
+  // this.previewUrls = []; // Clear previous previews
 
-
-      if (file) {
-        this.selectedFile = file; // ✅ Save file for later use in upload
-        const reader = new FileReader();
-
-        // ✅ This callback is called *after* file is fully read
-        reader.onload = () => {
-          // console.log(reader.result);
-
-          this.previewUrl = reader.result;  // ✅ base64 image preview 
-        };
-
-        reader.readAsDataURL(file); // Start reading the file
-      }
+  Array.from(files).forEach((file) => {
+    if (!file.type.startsWith('image/')) {
+      this.toastr.warning(`File ${file.name} is not a valid image.`);
+      return;
     }
-  }
+
+    // Append file and metadata to FormData
+    fData.append('Caption', 'asdasd');
+    fData.append('UserName', this.username);
+    fData.append('imageFile', file);
+
+    // Save the file for later upload if needed
+    this.selectedFiles = [...(this.selectedFiles || []), file];
+
+    // Read file as base64 and push to preview array
+    const reader = new FileReader();
+    console.log(reader);
+    
+    reader.onload = () => {
+      if (reader.result) {
+        this.previewUrls.push(reader.result);
+        this.previewUrl = reader.result;
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  
+  console.log('FormData:', fData);
+  console.log('Selected Files:', this.selectedFiles);
+  console.log(this.previewUrls);
+}
+
 
   handleFileUploadStory(event: Event) {
     
@@ -327,6 +338,8 @@ previewUrlReel: SafeUrl | null = null;
     this.fileInputPost.nativeElement.value = ''; // ✅ Reset file input
     this.postShared = false;
     this.caption = ""
+    this.previewUrls = []
+    this.selectedFiles = []
   }
   ClearPreviewStory() {
     this.previewUrlStory = null;
@@ -345,17 +358,26 @@ previewUrlReel: SafeUrl | null = null;
   }
 
   UploadFinalPost() {
-    this.isCompletedLoading = true;
-    if (!this.selectedFile) {
-      alert('Please provide an image and caption.');
+    if (!this.selectedFiles) {
+      this.toastr.error('Please provide an image and caption.');
       return;
     }
-
+    // Limit to 5 files
+  if (this.selectedFiles.length > 5) {
+    this.toastr.error('You can only upload up to 5 images.');
+    return;
+  }
+    console.log(this.selectedFiles);
+    
+    this.isCompletedLoading = true;
     const fData = new FormData();
     fData.append('Caption', this.caption);
     fData.append('UserName', this.username);
-    fData.append('imageFile', this.selectedFile);
-
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+    fData.append('imageFile', this.selectedFiles[i]); // append each file
+  }
+    console.log(fData);
+    
     this.Service.UploadPost(fData).subscribe({
       next: (res) => {
         console.log(res);

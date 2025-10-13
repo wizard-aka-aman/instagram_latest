@@ -132,6 +132,8 @@ export class DisplayComponent implements OnInit {
               this.numberposts = data.length;
               this.isPostAvailable = true;
               this.fullDetailPost = data;
+              console.log(this.fullDetailPost.mediaUrl);
+              
               if(this.loggedInUserName == this.username){
                 this.Service.PostRefreshSubject.next(data);
               }

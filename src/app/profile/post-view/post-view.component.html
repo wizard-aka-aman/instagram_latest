@@ -2,7 +2,49 @@
   
   <!-- Left: Post Image -->
   <div class="col-md-7 bg-black d-flex align-items-center justify-content-center">
-    <img [src]="getProfileImage(singlepost.imageUrl)" class="img-fluid" style="max-height: 90vh; object-fit: contain;" />
+    <img *ngIf="singlepost.imageUrl != 'multiple'" [src]="getProfileImage(singlepost.imageUrl)" class="img-fluid" style="max-height: 90vh; object-fit: contain;" />
+    <div
+    class="flex-shrink-0 d-flex justify-content-center align-items-center"
+    style="max-width: 300px;"
+  >
+    <!-- Bootstrap Carousel -->
+    <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div
+          *ngFor="let img of multiplePost; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
+          <img
+            [src]="getProfileImage(img)"
+            alt="Preview"
+            class="d-block w-100 rounded"
+            style="object-fit: contain; height: 300px;"
+          />
+        </div>
+      </div>
+
+      <!-- Carousel controls -->
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#previewCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#previewCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
   </div>
   
   <!-- Right: Comments and Info -->

@@ -180,3 +180,8 @@ img.object-fit-cover {
 input::placeholder{
   color: rgb(138, 137, 137) !important;
 }
+.carousel-img {
+  width: 100%;          /* Make the image full width of carousel */
+  height: 300px;        /* Fixed height for uniformity */
+  object-fit: cover;    /* Cover ensures image fills the box without distortion */
+}

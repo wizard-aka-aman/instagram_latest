@@ -137,9 +137,52 @@
      class="post-grid mb-3">
   
   <div class="post-card" *ngFor="let post of fullDetailPost">
-    <img [src]="'data:image/jpeg;base64,' + post.imageUrl" 
+    <img *ngIf="post.imageUrl != 'multiple'" [src]="'data:image/jpeg;base64,' + post.imageUrl" 
          alt="Post" 
          class="post-image">
+
+         <div
+    class="flex-shrink-0 d-flex justify-content-center align-items-center"
+    style="max-width: 300px;"
+  >
+    <!-- Bootstrap Carousel -->
+    <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div
+          *ngFor="let img of post.mediaUrl; let i = index"
+          class="carousel-item"
+          [class.active]="i === 0"
+        >
+          <img
+            [src]="getProfileImage(img)"
+            alt="Preview"
+            class="d-block w-100 rounded"
+            style="object-fit: contain; height: 300px;"
+          />
+        </div>
+      </div>
+
+      <!-- Carousel controls -->
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#previewCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#previewCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
     
     <!-- Overlay -->
     <div class="overlay d-flex justify-content-center align-items-center"

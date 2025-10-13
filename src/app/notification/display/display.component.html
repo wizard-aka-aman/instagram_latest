@@ -25,12 +25,21 @@
       <!-- Right side content -->
       <div class="d-flex align-items-center">
         <!-- Post image -->
-        <img *ngIf="n.postId != null" routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
+        <img *ngIf="n.postId != null && n.postId.imageUrl != 'multiple'" routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
              [src]="getProfileImage(n.postId.imageUrl)" 
              alt="post"
              class="rounded"
              width="60" height="60"
              style="object-fit: cover; border-radius: 8px;">
+             
+        <img *ngIf="n.postId != null && n.postId.imageUrl == 'multiple'" routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
+             [src]="getProfileImage(n.mediaUrl[0])" 
+             alt="post"
+             class="rounded"
+             width="60" height="60"
+             style="object-fit: cover; border-radius: 8px;">
+
+        
 
         <!-- Reel video -->
         <video *ngIf="n.reelId != null" routerLink="/{{n.userName}}/reel/{{n.reelId.publicId}}"
