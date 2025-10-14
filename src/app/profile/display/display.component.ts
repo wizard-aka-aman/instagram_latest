@@ -71,7 +71,7 @@ export class DisplayComponent implements OnInit {
       next: (data: any) => {
         console.log(data);
         this.alreadyFollowing = data;
-        if(data){
+        if(data || this.isPublic){
         this.GetHighlight();
         }
         if (!this.alreadyFollowing) {
@@ -196,16 +196,11 @@ export class DisplayComponent implements OnInit {
           this.isSeenUserFollwingMe();
           this.Mutual();
         }
-        if(this.isPublic){
-          this.GetHighlight();
-        }
         if (this.loggedInUserName == this.username) {
           this.GetPost();
-        this.GetHighlight();
-          if(this.loggedInUserName == this.username){
+        this.GetHighlight(); 
       this.mutualFriends = [];
-      return;
-    }
+      return; 
         }
       },
       error: (error: any) => {

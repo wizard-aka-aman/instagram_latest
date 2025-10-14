@@ -46,7 +46,7 @@ export class DisplaystoriesComponent implements OnInit {
         displayStories: story.mediaUrls.map((url: string) => ({
           imageUrl: url,
           createdAt: this.TimeSincePost(story.createdAt as string),
-          storyId: story.id
+          storyId: -1
         }))
       }
     ];
@@ -133,6 +133,9 @@ export class DisplaystoriesComponent implements OnInit {
   }
 
   markStoryAsSeen(storyId: number) {
+    if(storyId == -1){
+      return;
+    }
     const payload = {
       storyId: storyId,
       seenByUsername: this.loggedInUser

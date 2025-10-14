@@ -26,7 +26,7 @@ export class DisplayreelsComponent implements OnInit {
 
     this.route.paramMap.subscribe(params => {
       if (this.username) {
-        if (this.Service.ReelsRefreshSubject.value.length === 0) {
+        if (this.Service.ReelsRefreshSubject.value.length === 0 && this.loggedInUserName == this.username) {
           this.GetAllReels();
         }
       }
