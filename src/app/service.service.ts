@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of, tap } from 'rxjs';
 import { isNgTemplate } from '@angular/compiler';
 @Injectable({
   providedIn: 'root'
@@ -63,6 +63,8 @@ export class ServiceService {
 
   chatListRefreshSubject = new BehaviorSubject<boolean>(false);
   chatListRefresh$ = this.chatListRefreshSubject.asObservable();
+
+  private mapStories$ = new BehaviorSubject<any[] | null>(null);
   
   constructor(private http: HttpClient) {
 
@@ -329,5 +331,22 @@ export class ServiceService {
   }
   DeleteHightlight(hightlightId:number,loggedInUsername:string){
     return this.http.delete(`${this.BaseUrl}/HighLight/delete/${hightlightId}/${loggedInUsername}`);
+  }
+  GetMapStories(username:string){
+    return this.http.get(`${this.BaseUrl}/api/Story/map-stories/${username}`);
+  
+  }
+  getMapStoriesCached(username: string): Observable<any[]> {
+    const cachedStories = this.mapStories$.value;
+
+    if (cachedStories) {
+      // ✅ Already available in BehaviorSubject → return directly
+      return of(cachedStories);
+    } else {
+      // ✅ Fetch from API → then store in BehaviorSubject
+      return this.GetMapStories(username).pipe(
+        tap((stories:any) => this.mapStories$.next(stories))
+      );
+    }
   }
 }

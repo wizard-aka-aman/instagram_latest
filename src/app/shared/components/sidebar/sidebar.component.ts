@@ -45,11 +45,23 @@ previewUrlReel: SafeUrl | null = null;
   totalPages = 0;
   pageNumber = 1;
   pageSize = 10;
+  latitude = 0 
+  longitude = 0
   constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService,private sanitizer: DomSanitizer, private MessageService: MessageServiceService , private toastr:ToastrService) {
     this.username = this.Service.getUserName();
   }
 
   ngOnInit(): void {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.latitude = position.coords.latitude;
+          this.longitude = position.coords.longitude;
+          console.log("User location:", this.latitude, this.longitude);
+        },
+        (error) => {
+          console.error('Error getting location', error);
+        }
+    );
 
     this.notiService.startConnection(this.username, (sender, messageGroup, message) => {
       console.log(messageGroup, this.username);
@@ -227,6 +239,7 @@ previewUrlReel: SafeUrl | null = null;
       fData.append('Caption', "asdasd");
       fData.append('UserName', this.username);
       fData.append('imageFile', file);
+
       console.log(fData);
 
       console.log(file);
@@ -403,6 +416,8 @@ previewUrlReel: SafeUrl | null = null;
     const fData = new FormData();
     fData.append('Username', this.username);
     fData.append('imageFile', this.selectedFileStory);
+    fData.append('Latitude', this.latitude.toString());
+    fData.append('Longitude', this.longitude.toString());
 
     this.ClearPreviewStory();
     this.Service.PostStory(fData).subscribe({
