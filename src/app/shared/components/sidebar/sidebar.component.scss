@@ -34,6 +34,9 @@
 textarea::placeholder {
   color: rgb(255, 255, 255) !important;
 }
+input::placeholder {
+  color: rgb(255, 255, 255) !important;
+}
 
 .instagramloading {
   animation: ghumna 0.5s linear infinite;
@@ -150,3 +153,4 @@ textarea::placeholder {
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
+ 

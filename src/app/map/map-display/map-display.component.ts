@@ -54,14 +54,14 @@ export class MapDisplayComponent implements OnInit {
     const satellite = L.tileLayer(
       `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
       {
-        maxZoom: 17,
+        maxZoom: 19,
       }
     );
  
     // Add both to map
     this.map = L.map('map', {
       center: [this.selectedLat, this.selectedLon],
-      zoom: 17,
+      zoom: 13,
       layers: [satellite]
     });
 
@@ -81,28 +81,112 @@ export class MapDisplayComponent implements OnInit {
   }
 
   loadStoriesOnMap() {
-    this.serviceSrv.getMapStoriesCached(this.loggedInUser).subscribe((stories: any) => {
-      console.log('Stories (cached/API):', stories);
+   this.serviceSrv.getMapStoriesCached(this.loggedInUser).subscribe((stories: any) => {
+  stories.forEach((story: any) => {
+    const isSeen = story.isSeen === true;
 
-      stories.forEach((story: any) => {
-        const userIcon = L.divIcon({
-          html: `<div style="color: black; text-align: center;">
-                 <img src="${this.getProfileImage(story.imageUrl)}"
-                      style="width: 50px; height: 50px; border-radius: 50%; object-fit: contain;" />
-                 <span>${story.username}</span>
-               </div>`,
-          className: '',
-          iconSize: [80, 50],
-          iconAnchor: [40, 25]
-        });
+    const iconHtml = `
+      <div class="story-marker ${isSeen ? '' : 'pulse'}">
+        <div class="story-image-wrapper">
+          <img src="${this.getProfileImage(story.imageUrl)}"
+               class="story-image ${isSeen ? 'seen' : 'unseen'}" />
+        </div>
+        <span class="story-username">${story.username}</span>
+      </div>
+    `;
 
-        const marker = L.marker([story.latitude, story.longitude], { icon: userIcon }).addTo(this.map);
+    const userIcon = L.divIcon({
+      html: iconHtml,
+      className: '',
+      iconSize: [80, 80],
+      iconAnchor: [40, 40]
+    });
 
-        marker.on('click', () => {
-          this.router.navigate(['/stories', story.username]);
-        });
+    const marker = L.marker([story.latitude, story.longitude], { icon: userIcon }).addTo(this.map);
+
+    marker.on('click', () => {
+      this.router.navigate(['/stories', story.username]);
+    });
+  });
+});
+
+
+    this.serviceSrv.getMapmapPostsCached(this.selectedLat, this.selectedLon, 8, this.loggedInUser)
+  .subscribe((posts: any) => {
+    posts.forEach((post: any) => {
+
+      // 🟦 Custom icon for POSTS (distinct from stories)
+      const userIcon = L.divIcon({
+        html: `
+          <div style="text-align:center;">
+            <div style="
+              position: relative;
+              display: inline-block;
+            ">
+              <img 
+                src="${this.getProfileImage(post.profilePicture)}"
+                style="width: 45px; height: 45px; border-radius: 10px; 
+                       object-fit: cover; border: 2px solid #007bff; 
+                       box-shadow: 0 0 5px rgba(0,0,0,0.3);"
+              />
+              <div style="
+                position: absolute;
+                bottom: -5px;
+                right: -5px;
+                background: #007bff;
+                border-radius: 50%;
+                padding: 3px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <i class="fa fa-image" style="color: white; font-size: 10px;"></i>
+              </div>
+            </div>
+            <br>
+            <span style="color:black; font-size:12px; font-weight:500;">
+              ${post.userName}
+            </span>
+          </div>
+        `,
+        className: '',
+        iconSize: [60, 60],
+        iconAnchor: [30, 30]
+      });
+
+      const marker = L.marker([post.latitude, post.longitude], { icon: userIcon })
+        .addTo(this.map)
+        .bindPopup(`
+          <div style="text-align:center">
+            <small>${post.userName}</small><br>
+            <img 
+              src="${this.getProfileImage(post.profilePicture)}"  
+              style="border-radius:10px; width: 50px; height: 50px; object-fit: contain; border: 2px solid #007bff;"
+            ><br>
+            <img 
+              id="postImg-${post.id}" 
+              src="${(post.imageUrl != 'multiple') ? this.getProfileImage(post.imageUrl) : this.getProfileImage(post.mediaUrl[0])}" 
+              width="100" 
+              height="100" 
+              style="border-radius:8px; cursor:pointer;"
+            ><br>
+            <strong>${post.caption}</strong><br>
+          </div>
+        `);
+
+      marker.on('popupopen', () => {
+        const img = document.getElementById(`postImg-${post.id}`);
+        if (img) {
+          img.addEventListener('click', () => {
+            this.router.navigate([`/${post.userName}/p/${post.postId}`]);
+          });
+        }
       });
     });
+  });
+
+
+
   }
   getProfileImage(image: string | null): string {
     if (!image || image === 'null') {

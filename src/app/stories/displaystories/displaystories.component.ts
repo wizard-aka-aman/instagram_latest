@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 import { StoryTransferService } from 'src/app/story-transfer.service';
 
@@ -32,7 +33,7 @@ export class DisplaystoriesComponent implements OnInit {
   personalprogress: number = 0;
 
 
-  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute,private router : Router , private storyTransfer : StoryTransferService,    private location: Location,) {
+  constructor(private serviceSrv: ServiceService, private route: ActivatedRoute,private router : Router , private storyTransfer : StoryTransferService,    private location: Location,private toaster:ToastrService) {
     this.loggedInUser = this.serviceSrv.getUserName();
   }
   ngOnInit() {
@@ -67,7 +68,7 @@ export class DisplaystoriesComponent implements OnInit {
         next: (data: any) => {
           this.isMyPersonalStories = true;
           this.myPersonalStories = data;
-          console.log(data);
+          console.log(data);          
         },
         error: (error) => {
           console.error(error);
@@ -76,8 +77,7 @@ export class DisplaystoriesComponent implements OnInit {
     }
     else {
       this.serviceSrv.GetStoryByUsername(this.loggedInUser).subscribe({
-        next: (data: any) => {
-          console.log(data);
+        next: (data: any) => { 
           this.usersWithStories = data;
           this.isMyPersonalStories = false;
           this.openStory(this.usersWithStories.filter(e => e.username == this.urlUsername)[0]);
@@ -88,6 +88,7 @@ export class DisplaystoriesComponent implements OnInit {
         }
       })
     }
+    
   }
   nextUser() {
     this.isTimerStoped = false
@@ -262,6 +263,20 @@ export class DisplaystoriesComponent implements OnInit {
       this.personalcurrentStoryIndex--;
 
     }
+  }
+  Delete(storyId : number){
+    console.log(storyId); 
+    
+    
+    this.serviceSrv.DeleteStory(this.loggedInUser,storyId).subscribe({
+      next:(res:any)=>{
+        console.log(res);
+        this.toaster.success("Story Deleted","Success")
+      },
+      error:(err:any)=>{
+        console.log(err);
+      }
+    })
   }
 
 }

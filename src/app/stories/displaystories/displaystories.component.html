@@ -46,97 +46,97 @@
     <!-- Progress Bar -->
     <div class="story-progress-bar position-absolute top-0 start-0 w-100" style="position: relative;">
       <div 
-        class="progress-inner" 
-        [style.width.%]="progress">
-      </div>
-
-      <div class="d-flex justify-content-end align-items-center">
-        <img 
-          [src]="getProfileImage(usersWithStories[currentUserIndex]?.profilePicture)" 
-          style="width: 50px !important; height: 50px !important;" 
-          class="story-avatar rounded-circle me-3">
-
-        <p class="position-absolute" style="background-color: rgba(0, 0, 0, 0.03); color: white; top: 16px; left: 59px;">
-          {{ usersWithStories[currentUserIndex]?.username }}  <br>
-          <span class="mx-1">{{ usersWithStories[currentUserIndex]?.displayStories[0].createdAt }}h</span>
-        </p>
-
-        <i *ngIf="!isTimerStoped" style="cursor: pointer;" class="fa-solid fa-pause mt-3 me-5" (click)="stoptime()"></i>
-        <i *ngIf="isTimerStoped"  style="cursor: pointer;"class="fa-solid fa-play mt-3 me-5" (click)="playtime()"></i>
-      </div>
+      class="progress-inner" 
+      [style.width.%]="progress">
     </div>
-
-    <!-- Main Image -->
-    <div class="d-flex"> 
-      <img
+    
+    <div class="d-flex justify-content-end align-items-center">
+      <img 
+      [src]="getProfileImage(usersWithStories[currentUserIndex]?.profilePicture)" 
+      style="width: 50px !important; height: 50px !important;" 
+          class="story-avatar rounded-circle me-3">
+          
+          <p class="position-absolute" style="background-color: rgba(0, 0, 0, 0.03); color: white; top: 16px; left: 59px;">
+            {{ usersWithStories[currentUserIndex]?.username }}  <br>
+            <span class="mx-1">{{ usersWithStories[currentUserIndex]?.displayStories[0].createdAt }}h</span>
+          </p>
+          <img *ngIf="currentUserStories[currentStoryIndex]?.isCloseFriendStory" src="../../../assets/cf_symbol-removebg-preview.png" width="30" height="30" alt="" srcset="">
+          <i *ngIf="!isTimerStoped" style="cursor: pointer;" class="fa-solid fa-pause mt-3 me-5" (click)="stoptime()"></i>
+          <i *ngIf="isTimerStoped"  style="cursor: pointer;"class="fa-solid fa-play mt-3 me-5" (click)="playtime()"></i>
+        </div>
+      </div>
+      
+      <!-- Main Image -->
+      <div class="d-flex"> 
+        <img
         [src]="getProfileImage(currentUserStories[currentStoryIndex]?.imageUrl)"
         class="rounded story-image main-story-img"
         alt="story">
-    </div>
-
-    <!-- Prev/Next Story Buttons -->
-    <button
+      </div>
+      
+      <!-- Prev/Next Story Buttons -->
+      <button
       class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
       (click)="prevStory()"
       *ngIf="currentStoryIndex > 0">
       ‹
     </button>
-
+    
     <button
-      class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
-      (click)="nextStory()"
-      *ngIf="currentStoryIndex < currentUserStories.length - 1">
-      ›
-    </button>
-  </div>
+    class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-sm px-2 z-2"
+    (click)="nextStory()"
+    *ngIf="currentStoryIndex < currentUserStories.length - 1">
+    ›
+  </button>
+</div>
 
-  <!-- Next User Preview -->
-  <div 
-  class="post-wrapper  position-absolute z-2" 
-  style="right: 10%; top: 50%; transform: translateY(-50%);" 
-  *ngIf="currentUserIndex < usersWithStories.length - 1">
-  
-  <img 
-    [src]="getProfileImage(usersWithStories[currentUserIndex + 1].displayStories[0]?.imageUrl)" 
-    alt="Preview"
-    class="rounded story-image postimage">
-  
-  <div class="overlay d-flex justify-content-center align-items-center">
-    <div class="text-white d-flex justify-content-center align-items-center gap-3 fs-5 fw-bold">
-      <div class="circle-image text-center">
-        <img src="../../../assets/instagram_loading.png" width="88" height="88" alt="">
-        <img 
-          (click)="nextUser()" 
+<!-- Next User Preview -->
+<div 
+class="post-wrapper  position-absolute z-2" 
+style="right: 10%; top: 50%; transform: translateY(-50%);" 
+*ngIf="currentUserIndex < usersWithStories.length - 1">
+
+<img 
+[src]="getProfileImage(usersWithStories[currentUserIndex + 1].displayStories[0]?.imageUrl)" 
+alt="Preview"
+class="rounded story-image postimage">
+
+<div class="overlay d-flex justify-content-center align-items-center">
+  <div class="text-white d-flex justify-content-center align-items-center gap-3 fs-5 fw-bold">
+    <div class="circle-image text-center">
+      <img src="../../../assets/instagram_loading.png" width="88" height="88" alt="">
+      <img 
+      (click)="nextUser()" 
           [src]="getProfileImage(usersWithStories[currentUserIndex + 1].profilePicture)" 
           class="story-avatar rounded-circle">
-        <div class="text-center small">{{ usersWithStories[currentUserIndex + 1].username }}</div>
+          <div class="text-center small">{{ usersWithStories[currentUserIndex + 1].username }}</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-
+  
+  
   <!-- Next User Button -->
   <button 
-    class="btn text-white fs-1 position-absolute end-0 translate-middle-y z-3 "
-    (click)="nextUser()"
-    *ngIf="currentUserIndex < usersWithStories.length - 1">
-    ›
-  </button>
+  class="btn text-white fs-1 position-absolute end-0 translate-middle-y z-3 "
+  (click)="nextUser()"
+  *ngIf="currentUserIndex < usersWithStories.length - 1">
+  ›
+</button>
 </div>
 
 
 <!-- Story Container -->
 <div *ngIf="isMyPersonalStories" class="d-flex justify-content-center align-items-center h-100 position-relative w-100 flex-wrap flex-md-nowrap gap-md-4 story-container">
-
+  
   <!-- Close Button -->
   <button class="btn fs-2 text-white position-absolute top-0 end-0 mt-3 me-3 z-3" routerLink="/" (click)="closeStory()">
     <i class="fa-solid fa-xmark"></i>
   </button>
-
+  
   <!-- Main Story -->
   <div class="story-main position-absolute top-50 start-50 translate-middle d-flex justify-content-center align-items-center position-relative flex-shrink-0">
-
+    
     <!-- Progress Bar -->
     <div class="  position-absolute top-0 start-0 w-100" style="position: relative;"> 
       <div class="d-flex justify-content-end align-items-center">
@@ -144,21 +144,26 @@
           [src]="getProfileImage(myPersonalStories[0].profilePicture)" 
           style="width: 50px !important; height: 50px !important;" 
           class="story-avatar rounded-circle me-3">
-
-        <p class="position-absolute" style="background-color: rgba(0, 0, 0, 0.03); color: white; top: 16px; left: 59px;">
-          {{ myPersonalStories[0].username }} 
-          <span class="mx-1">
-            {{ myPersonalStories[0].displayStories[personalcurrentStoryIndex]?.createdAt }}h
-          </span>
-        </p> 
-       </div>
-    </div>
-    <div class="btn btn-primary position-absolute bottom-0   start-50 translate-middle"  data-bs-toggle="modal" data-bs-target="#storylikemodal"  style="z-index: 1;">
-      See Views
-    </div>
-
-    <!-- Story Image -->
-    <div class="d-flex"> 
+          
+          <p class="position-absolute" style="background-color: rgba(0, 0, 0, 0.03); color: white; top: 16px; left: 59px;">
+            {{ myPersonalStories[0].username }} 
+            <span class="mx-1">
+              {{ myPersonalStories[0].displayStories[personalcurrentStoryIndex]?.createdAt }}h
+            </span>
+          </p> 
+        </div>
+      </div>
+      <div class="position-absolute bottom-0   start-50 translate-middle">
+        <div class="btn btn-primary "  data-bs-toggle="modal" data-bs-target="#storylikemodal"  style="z-index: 1;">
+        See Views
+        
+      </div>
+        <div *ngIf="isMyPersonalStories"  class="btn btn-danger" (click)="Delete(myPersonalStories[0].displayStories[personalcurrentStoryIndex]?.storyId)" > Delete</div>
+      </div>
+      
+      
+      <!-- Story Image -->
+      <div class="d-flex"> 
       <img
         [src]="getProfileImage(myPersonalStories[0].displayStories[personalcurrentStoryIndex]?.imageUrl)"
         class="rounded story-image main-story-img"

@@ -20,14 +20,14 @@ export class SidebarComponent {
   posts: any[] = [];
   previewUrl: string | ArrayBuffer | null = null;
   previewUrlStory: string | ArrayBuffer | null = null;
-previewUrlReel: SafeUrl | null = null;
+  previewUrlReel: SafeUrl | null = null;
   selectedFileReel: File | null = null;
   isNextStep: boolean = false;
   isNextStepStory: boolean = false;
   isNextStepReel: boolean = false;
   caption: string = '';
   selectedFile!: File;
-  selectedFileStory!: File;   
+  selectedFileStory!: File;
   isCompletedLoading = false;
   isCompletedLoadingStory = false;
   isCompletedLoadingReel = false;
@@ -45,22 +45,27 @@ previewUrlReel: SafeUrl | null = null;
   totalPages = 0;
   pageNumber = 1;
   pageSize = 10;
-  latitude = 0 
+  latitude = 0
   longitude = 0
-  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService,private sanitizer: DomSanitizer, private MessageService: MessageServiceService , private toastr:ToastrService) {
+  selectedPlaceName = ""
+  LocationLatitude = 0
+  LocationLongitude = 0
+  locationName: any[] = []
+  locationEnter: string = ""
+  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService, private sanitizer: DomSanitizer, private MessageService: MessageServiceService, private toastr: ToastrService) {
     this.username = this.Service.getUserName();
   }
 
   ngOnInit(): void {
     navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.latitude = position.coords.latitude;
-          this.longitude = position.coords.longitude;
-          console.log("User location:", this.latitude, this.longitude);
-        },
-        (error) => {
-          console.error('Error getting location', error);
-        }
+      (position) => {
+        this.latitude = position.coords.latitude;
+        this.longitude = position.coords.longitude;
+        console.log("User location:", this.latitude, this.longitude);
+      },
+      (error) => {
+        console.error('Error getting location', error);
+      }
     );
 
     this.notiService.startConnection(this.username, (sender, messageGroup, message) => {
@@ -78,7 +83,7 @@ previewUrlReel: SafeUrl | null = null;
         this.isSeen = data;
       },
     })
-    this.Service.GetAllNotifications(this.username,this.pageNumber,this.pageSize).subscribe({
+    this.Service.GetAllNotifications(this.username, this.pageNumber, this.pageSize).subscribe({
       next: (data: any) => {
         console.log(data);
         this.isSeen = data.item1.every((e: any) => e.isSeen)
@@ -86,7 +91,7 @@ previewUrlReel: SafeUrl | null = null;
       },
       error: (err: any) => {
         console.log(err);
-        this.toastr.error(err.error.message , "Error Occured")
+        this.toastr.error(err.error.message, "Error Occured")
       },
     })
 
@@ -115,7 +120,7 @@ previewUrlReel: SafeUrl | null = null;
       this.MessageService.SetIsMessage(true);
 
 
-      
+
       this.Service.GetRecentMessage(this.username).subscribe({
         next: (data: any) => {
           console.log(data);
@@ -132,7 +137,7 @@ previewUrlReel: SafeUrl | null = null;
             };
             console.log(recentForm);
             console.log("sidebar");
-            
+
 
             this.Service.SaveRecentMessage(recentForm).subscribe({
               next: () => {
@@ -178,63 +183,63 @@ previewUrlReel: SafeUrl | null = null;
       }, 200);
     }
   }
-  previewUrls:any[] = []
-  selectedFiles:any= []
+  previewUrls: any[] = []
+  selectedFiles: any = []
 
   handleFileUploadPost(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const files = input.files;
+    const input = event.target as HTMLInputElement;
+    const files = input.files;
 
-  if (!files || files.length === 0) return;
- // Limit to 5 files
-  
-  const fData = new FormData();
-  // this.previewUrls = []; // Clear previous previews
+    if (!files || files.length === 0) return;
+    // Limit to 5 files
 
-  Array.from(files).forEach((file) => {
-    if (!file.type.startsWith('image/')) {
-      this.toastr.warning(`File ${file.name} is not a valid image.`);
-      return;
-    }
+    const fData = new FormData();
+    // this.previewUrls = []; // Clear previous previews
 
-    // Append file and metadata to FormData
-    fData.append('Caption', 'asdasd');
-    fData.append('UserName', this.username);
-    fData.append('imageFile', file);
-
-    // Save the file for later upload if needed
-    this.selectedFiles = [...(this.selectedFiles || []), file];
-
-    // Read file as base64 and push to preview array
-    const reader = new FileReader();
-    console.log(reader);
-    
-    reader.onload = () => {
-      if (reader.result) {
-        this.previewUrls.push(reader.result);
-        this.previewUrl = reader.result;
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith('image/')) {
+        this.toastr.warning(`File ${file.name} is not a valid image.`);
+        return;
       }
-    };
-    reader.readAsDataURL(file);
-  });
-  
-  console.log('FormData:', fData);
-  console.log('Selected Files:', this.selectedFiles);
-  console.log(this.previewUrls);
-}
+
+      // Append file and metadata to FormData
+      fData.append('Caption', 'asdasd');
+      fData.append('UserName', this.username);
+      fData.append('imageFile', file);
+
+      // Save the file for later upload if needed
+      this.selectedFiles = [...(this.selectedFiles || []), file];
+
+      // Read file as base64 and push to preview array
+      const reader = new FileReader();
+      console.log(reader);
+
+      reader.onload = () => {
+        if (reader.result) {
+          this.previewUrls.push(reader.result);
+          this.previewUrl = reader.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    console.log('FormData:', fData);
+    console.log('Selected Files:', this.selectedFiles);
+    console.log(this.previewUrls);
+  }
 
 
   handleFileUploadStory(event: Event) {
-    
+
     console.log("strorrryrrryryy");
 
     const fData = new FormData();
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file!.type.startsWith('image/')) {
-        this.toastr.warning(`File ${file!.name} is not a valid image.`);
-        return;
-      }
+      this.toastr.warning(`File ${file!.name} is not a valid image.`);
+      return;
+    }
     if (file) {
       fData.append('Caption', "asdasd");
       fData.append('UserName', this.username);
@@ -294,7 +299,7 @@ previewUrlReel: SafeUrl | null = null;
 
     console.log("Video file:", file);
     console.log("Preview URL:", this.previewUrlReel);
-}
+  }
 
 
 
@@ -376,21 +381,25 @@ previewUrlReel: SafeUrl | null = null;
       return;
     }
     // Limit to 5 files
-  if (this.selectedFiles.length > 5) {
-    this.toastr.error('You can only upload up to 5 images.');
-    return;
-  }
+    if (this.selectedFiles.length > 5) {
+      this.toastr.error('You can only upload up to 5 images.');
+      return;
+    }
     console.log(this.selectedFiles);
-    
+
     this.isCompletedLoading = true;
     const fData = new FormData();
     fData.append('Caption', this.caption);
     fData.append('UserName', this.username);
-      for (let i = 0; i < this.selectedFiles.length; i++) {
-    fData.append('imageFile', this.selectedFiles[i]); // append each file
-  }
+    for (let i = 0; i < this.selectedFiles.length; i++) {
+      fData.append('imageFile', this.selectedFiles[i]); // append each file
+    }
+    fData.append('Location', this.selectedPlaceName);
+    fData.append('Latitude', this.LocationLatitude.toString());
+    fData.append('Longitude', this.LocationLongitude.toString());
+
     console.log(fData);
-    
+
     this.Service.UploadPost(fData).subscribe({
       next: (res) => {
         console.log(res);
@@ -406,7 +415,34 @@ previewUrlReel: SafeUrl | null = null;
       }
     });
   }
-  UploadFinalStory() {
+  FindLocation(){
+        this.Service.GetLocationByOpenStreetMap(this.locationEnter).subscribe({
+      next: (data: any) => {
+        this.locationName = data.map((user: any) => ({
+          lat: user.lat,
+          lon: user.lon,
+          name: user.name,
+          display_name: user.display_name
+        }));
+
+        console.log(this.locationName);
+      },
+      error: (err: any) => {
+        console.log(err);
+        this.toastr.error(err.error.message, "Error Occured")
+        this.isCompletedLoading = false;
+      }
+    })
+  }
+  SelectedLocation(item:any){ 
+    console.log(item);
+        this.selectedPlaceName = item.display_name;
+        this.LocationLatitude = item.lat;
+        this.LocationLongitude = item.lon;
+        this.locationEnter = ""
+        this.locationName = []
+  }
+  UploadFinalStory(isCloseFriend:boolean) {
     this.isCompletedLoadingStory = true;
     if (!this.selectedFileStory) {
       alert('Please provide an image and caption.');
@@ -418,6 +454,9 @@ previewUrlReel: SafeUrl | null = null;
     fData.append('imageFile', this.selectedFileStory);
     fData.append('Latitude', this.latitude.toString());
     fData.append('Longitude', this.longitude.toString());
+    if(isCloseFriend){
+      fData.append('IsCloseFriendStory', true.toString());
+    }
 
     this.ClearPreviewStory();
     this.Service.PostStory(fData).subscribe({
@@ -434,16 +473,16 @@ previewUrlReel: SafeUrl | null = null;
     });
   }
   UploadFinalReel() {
-    if(this.descripton.trim() == ""){
+    if (this.descripton.trim() == "") {
       this.toastr.error("Give decription first")
       return;
     }
-    if (!this.selectedFileReel ) {
+    if (!this.selectedFileReel) {
       alert('Please provide an image and caption.');
       return;
     }
     this.isCompletedLoadingReel = true;
-    
+
 
     const fData = new FormData();
     fData.append('username', this.username);

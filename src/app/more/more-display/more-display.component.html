@@ -1,5 +1,5 @@
 <!-- src/app/user-dashboard/user-dashboard.component.html -->
-<div class="container mt-4" style="max-width: 750px;">
+<div class="container mt-4" style="max-width: 850px;">
 
   <!-- Pending Requests -->
   <h4 class="mb-3">Pending Requests</h4>
@@ -33,10 +33,16 @@
     </div>
   </div>
 </div>
-<div class="  m-3">
-    <h4 class=" text-center">Map for Stories</h4> 
-    <div class="btn btn-primary "  routerLink="/map" >Map</div>
+<div class="row">
+  <div class="col-6 ">
+    <h4 class="  ">Map for Stories And Posts</h4> 
+    <div class="btn btn-primary"  routerLink="/map" >Map</div>
   </div>
+<div class="col-6 ">
+    <h4 class="  ">Close Friends</h4> 
+    <div class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#closefriend" >Close Friend</div>
+  </div>
+</div>
 
 
 </div>
@@ -71,6 +77,37 @@
   </div>
 </ng-container>
 
+
+    </div>
+  </div>
+</div>
+<!-- following Modal -->
+<div class="modal fade" id="closefriend" tabindex="-1" aria-labelledby="closefriendLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+
+      <!-- Modal Header -->
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Close Friends</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute   me-3" data-bs-dismiss="modal" aria-label="Close" (click)="closeCF()" ></button>
+        <button type="button" class="btn btn-primary position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close" (click)="AddCloseFriendFunction()" >Close Friend</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
+          <!-- Loop Over Likes -->
+          <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect" *ngFor="let like of followingdata">
+            <img [src]="getProfileImage(like.profilePicture)" alt="Profile Picture" class="rounded-circle" width="40" height="40"
+              style="object-fit: cover;" />
+            <div class="flex-grow-1">
+              <div class="fw-bold text-white">{{ like.userName }}</div>
+              <div class="small ">{{ like.fullName }}</div>
+            </div>
+            <input type="checkbox" class="mx-auto form-check-input" [checked]="like.isCF"
+              (change)="onCFChange(like.userName, $event)" />
+
+          </div>
+      </div>
 
     </div>
   </div>

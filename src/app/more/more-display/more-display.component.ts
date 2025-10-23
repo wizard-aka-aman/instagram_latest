@@ -1,5 +1,5 @@
 import { Time } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -15,13 +15,27 @@ export class MoreDisplayComponent implements OnInit {
   pageNumber =1;
   pageSize = 5;
   totalItem =0;
+  closeFriendList :any[]=[];
+  previousCloseFriendList :any[]=[];
+  followingdata:any[]=[]
   constructor(private ServiceSrv :ServiceService) { 
     this.loggedInUser = this.ServiceSrv.getUserName();
   }
 
   ngOnInit(): void {
     this.GetAllReq();
+    
     this.FunGetPersonalStories();
+    this.ServiceSrv.GetFollowing(this.loggedInUser).subscribe({
+        next: (res: any) => {
+          this.followingdata = res;
+          this.GetCloseFriendFunction()
+        },
+        error: (err: any) => {
+          console.log(err);
+
+        }
+      })
   }
   GetAllReq(){
     this.ServiceSrv.GetAllRequestedDto(this.loggedInUser).subscribe({
@@ -88,4 +102,68 @@ export class MoreDisplayComponent implements OnInit {
   get totalPages() {
     return Math.ceil(this.totalItem / this.pageSize);
   }
+
+  GetCloseFriendFunction(){
+    this.ServiceSrv.GetCloseFriend(this.loggedInUser).subscribe({
+      next: (res:any)=>{
+        // console.log(res);
+        this.closeFriendList = res;
+        this.previousCloseFriendList = res;
+        console.log(this.previousCloseFriendList);
+        this.followingdata = this.followingdata.map(e =>{
+          if(this.closeFriendList.includes(e.userName)){
+            e.isCF = true
+          } else{
+            e.isCF = false
+          }
+          return e;
+        })
+         this.followingdata = this.followingdata.sort((a, b) => {
+             return (b.isCF === true ? 1 : 0) - (a.isCF === true ? 1 : 0);
+         });
+        console.log(this.followingdata);
+        
+      },
+      error: (err:any)=>{
+        console.log(err);
+        
+      }
+    })
+  }
+
+onCFChange(userName: string, event: any) {
+  if (event.target.checked) {
+    // agar checkbox tick hua to add karo
+    if (!this.closeFriendList.includes(userName)) {
+      this.closeFriendList.push(userName);
+    }
+  } else {
+    // agar untick hua to remove karo
+    this.closeFriendList = this.closeFriendList.filter(u => u !== userName);
+  }
+
+  console.log("Selected Close Friends:", this.closeFriendList);
+}
+  
+
+  AddCloseFriendFunction(){
+    const body = {
+      loggedInUserName : this.loggedInUser,
+      closeFriendUserName : this.closeFriendList
+    }  
+    this.ServiceSrv.AddCloseFriend(body).subscribe({
+      next: (res:any)=>{
+        console.log(res);
+        this.GetCloseFriendFunction();
+      },
+      error: (err:any)=>{
+        console.log(err);
+      }
+    })
+  } 
+  closeCF(){
+    console.log("closeCF called");
+    
+  }
+
 }

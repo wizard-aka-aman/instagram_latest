@@ -65,6 +65,7 @@ export class ServiceService {
   chatListRefresh$ = this.chatListRefreshSubject.asObservable();
 
   private mapStories$ = new BehaviorSubject<any[] | null>(null);
+  private mapPosts$ = new BehaviorSubject<any[] | null>(null);
   
   constructor(private http: HttpClient) {
 
@@ -344,9 +345,41 @@ export class ServiceService {
       return of(cachedStories);
     } else {
       // ✅ Fetch from API → then store in BehaviorSubject
+      console.log("api calling for mapstories");
+      
       return this.GetMapStories(username).pipe(
         tap((stories:any) => this.mapStories$.next(stories))
       );
     }
+  }
+  getMapmapPostsCached(latitude:number,longitude:number,radius:number,loggedInUser:string): Observable<any[]> {
+    const cachedmapPosts = this.mapPosts$.value;
+
+    if (cachedmapPosts) {
+      // ✅ Already available in BehaviorSubject → return directly
+      return of(cachedmapPosts);
+    } else {
+      // ✅ Fetch from API → then store in BehaviorSubject
+      console.log("api calling for mapPosts");
+      
+      return this.GetNearbyPost(latitude,longitude,radius,loggedInUser).pipe(
+        tap((mapPosts:any) => this.mapPosts$.next(mapPosts))
+      );
+    }
+  }
+  GetNearbyPost(latitude:number,longitude:number,radius:number,loggedInUser:string){
+    return this.http.get(`${this.BaseUrl}/Posts/posts/nearby/${latitude}/${longitude}/${radius}/${loggedInUser}`);
+  }
+  GetLocationByOpenStreetMap(name:string){
+    return this.http.get(`https://nominatim.openstreetmap.org/search?format=json&q=${name}`);
+  }
+  GetCloseFriend(username:string){
+    return this.http.get(`${this.BaseUrl}/api/CloseFriend/${username}`);
+  }
+  AddCloseFriend(item:any){
+    return this.http.post(`${this.BaseUrl}/api/CloseFriend/add`,item);
+  }
+  DeleteStory(loggedInUsername:string,storyId:number){
+    return this.http.delete(`${this.BaseUrl}/api/Story/delete-story/${loggedInUsername}/${storyId}`);
   }
 }

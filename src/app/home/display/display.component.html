@@ -37,7 +37,8 @@
     </div>
 
     <div *ngFor="let user of storiesGroupedByUser" class="circle-image me-3 " >
-      <img *ngIf="!user.isSeen" src="../../../assets/instagram_loading.png"  width="100" height="100" alt="" srcset="">
+      <img *ngIf="!user.isSeen && !user.isCloseFriend" src="../../../assets/instagram_loading.png"  width="100" height="100" alt="" srcset="">
+      <img *ngIf="!user.isSeen && user.isCloseFriend" src="../../../assets/instagram_loading_cf.png"  width="100" height="100" alt="" srcset="">
       <img *ngIf="user.isSeen" src="../../../assets/instagram_loading_seen.png" width="100" height="100" alt="" srcset="">
       <img [src]="getProfileImage(user.profilePicture) || 'assets/avatar.png'" (click)="openStory(user)" routerLink="stories/{{user.username}}/{{user.displayStories[0].storyId}}" class="story-avatar rounded-circle me-3 " width="88" height="88">
       <div class="text-center small">{{ user.username }}</div>
