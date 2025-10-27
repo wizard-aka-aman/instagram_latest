@@ -75,174 +75,442 @@
       </a> 
   </nav>
 </div>
-<!-- Bootstrap Create Modal -->
+<!-- Bootstrap Create Modal -->   
+<!-- Bootstrap Create Modal - Enhanced & Responsive -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
   <div
     class="modal-dialog modal-dialog-centered"
-    [ngClass]="{ 'modal-lg': isNextStep }"
-    style="transition: all 0.5s ease;">
-    <div class="modal-content text-center" style="background-color: rgb(38, 38, 38); transition: all 0.5s ease;">
+    [ngClass]="{ 'modal-lg': isNextStep, 'modal-xl': isTaggingMode }"
+    style="transition: all 0.3s ease; margin: auto; display: flex; align-items: center; min-height: calc(100% - 2rem);">
+    <div class="modal-content" style="background-color: #262626; border: none; border-radius: 12px; max-height: 90vh; overflow: hidden; margin: 1rem auto;">
       
       <!-- Modal Header -->
-      <div class="modal-header border-0" style="background-color: black; color: white;">
-        <h5 class="modal-title w-100" id="createModalLabel">
-          {{ isNextStep ? 'Create Post' : 'Upload Photo' }}
+      <div class="modal-header border-0 py-3 px-3" style="background-color: #000; color: white; flex-shrink: 0;">
+        <!-- Back Button (Mobile) -->
+        <button 
+          *ngIf="(isNextStep || isTaggingMode) && previewUrl" 
+          class="btn btn-link text-white p-0 me-2 d-md-none" 
+          type="button"
+          style="text-decoration: none; font-size: 1.3rem; min-width: 40px;"
+          (click)="isTaggingMode ? ExitTaggingMode() : ResetModal()">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <!-- Back Button (Desktop) -->
+        <button 
+          *ngIf="isNextStep && !isTaggingMode" 
+          class="btn btn-link text-white p-0 me-2 d-none d-md-block" 
+          type="button"
+          style="text-decoration: none;"
+          (click)="ResetModal()">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back
+        </button>
+
+        <!-- Title -->
+        <h5 class="modal-title flex-grow-1 text-center mb-0 mx-2" id="createModalLabel" style="font-size: 1rem; font-weight: 600;">
+          {{ isTaggingMode ? 'Tag People' : (isNextStep ? 'Create Post' : 'Upload Photo') }}
         </h5>
 
-        <!-- Buttons -->
-        <button   class="btn border text-white" (click)="ClearPreview()"  data-bs-dismiss="modal">X</button>
-        <button  style="display: none;" class="btn border text-white" (click)="ClearPreview()"  #closeModal data-bs-dismiss="modal">X</button>
-        <button *ngIf="previewUrl && !isNextStep" class="btn text-primary" (click)="NextModal()">Next</button>
-        <button *ngIf="isNextStep" class="btn text-primary" (click)="ResetModal()">Back</button>
+        <!-- Action Buttons -->
+        <div class="d-flex align-items-center gap-2" style="min-width: 40px; justify-content: flex-end;">
+          <button 
+            *ngIf="isTaggingMode" 
+            class="btn btn-link text-primary p-0 fw-semibold" 
+            type="button"
+            style="text-decoration: none; font-size: 0.95rem;"
+            (click)="ExitTaggingMode()">
+            Done
+          </button>
+          
+          <button 
+            *ngIf="previewUrl && !isNextStep && !isTaggingMode" 
+            class="btn btn-link text-primary p-0 fw-semibold" 
+            type="button"
+            style="text-decoration: none; font-size: 0.95rem;"
+            (click)="NextModal()">
+            Next
+          </button>
+
+          <!-- Close Button - Always visible -->
+          <button 
+            class="btn btn-link text-white p-0" 
+            type="button"
+            style="text-decoration: none; font-size: 1.5rem; line-height: 1; min-width: 30px;"
+            (click)="ClearPreview()" 
+            data-bs-dismiss="modal"
+            aria-label="Close">
+            <i class="fa-solid fa-times"></i>
+          </button>
+          <button 
+            style="display: none;" 
+            #closeModal 
+            data-bs-dismiss="modal">
+          </button>
+        </div>
       </div>
 
       <!-- Modal Body -->
-      <div class="modal-body p-0" style="background-color: rgb(38, 38, 38); transition: all 0.5s ease;">
+      <div class="modal-body p-0" style="background-color: #262626; max-height: calc(90vh - 60px); overflow-y: auto; overflow-x: hidden;">
         
-        <!-- Preview with Caption -->
-        <div
-  *ngIf="previewUrls && isNextStep && !postShared && !isCompletedLoading"
-  class="d-md-flex gap-2 p-3"
->
-  <div
-    class="flex-shrink-0 d-flex justify-content-center align-items-center"
-    style="max-width: 300px;"
-  >
-    <!-- Bootstrap Carousel -->
-    <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div
-          *ngFor="let img of previewUrls; let i = index"
-          class="carousel-item"
-          [class.active]="i === 0"
-        >
-          <img
-            [src]="img"
-            alt="Preview"
-            class="d-block w-100 rounded"
-            style="object-fit: contain; height: 300px;"
-          />
+        <!-- STEP 2: Preview with Caption -->
+        <div *ngIf="previewUrls && isNextStep && !postShared && !isCompletedLoading" class="row g-0">
+          <!-- Image Preview Column -->
+          <div class="col-lg-7 col-md-6 d-flex align-items-center justify-content-center bg-black p-3 p-md-4">
+            <div class="w-100" style="max-width: 500px;">
+              <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner rounded">
+                  <div
+                    *ngFor="let img of previewUrls; let i = index"
+                    class="carousel-item"
+                    [class.active]="i === 0">
+                    <img
+                      [src]="img"
+                      alt="Preview {{ i + 1 }}"
+                      class="d-block w-100"
+                      style="object-fit: contain; max-height: 500px; height: auto;"
+                    />
+                  </div>
+                </div>
+
+                <!-- Carousel Indicators (Mobile) -->
+                <div *ngIf="previewUrls.length > 1" class="carousel-indicators">
+                  <button 
+                    *ngFor="let img of previewUrls; let i = index"
+                    type="button" 
+                    [attr.data-bs-target]="'#previewCarousel'" 
+                    [attr.data-bs-slide-to]="i" 
+                    [class.active]="i === 0">
+                  </button>
+                </div>
+
+                <!-- Carousel Controls (Desktop) -->
+                <button 
+                  *ngIf="previewUrls.length > 1"
+                  class="carousel-control-prev d-none d-md-flex" 
+                  type="button" 
+                  data-bs-target="#previewCarousel" 
+                  data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button 
+                  *ngIf="previewUrls.length > 1"
+                  class="carousel-control-next d-none d-md-flex" 
+                  type="button" 
+                  data-bs-target="#previewCarousel" 
+                  data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caption & Details Column -->
+          <div class="col-lg-5 col-md-6 p-3 p-md-4" style="background-color: #262626;">
+            <div class="h-100 d-flex flex-column">
+              <!-- Caption Textarea -->
+              <div class="mb-3">
+                <label class="form-label text-white small fw-semibold mb-2">Caption</label>
+                <textarea
+                  [(ngModel)]="caption"
+                  placeholder="Write a caption..."
+                  rows="4"
+                  class="form-control border-0 shadow-sm"
+                  style="background-color: #1a1a1a; color: white; resize: none; border-radius: 8px;"
+                ></textarea>
+              </div>
+
+              <!-- Location Input -->
+              <div class="mb-3">
+                <label class="form-label text-white small fw-semibold mb-2">
+                  <i class="fa-solid fa-location-dot me-1"></i> Location (Optional)
+                </label>
+                <div class="input-group">
+                  <input
+                    [(ngModel)]="locationEnter"
+                    placeholder="Add location..."
+                    class="form-control border-0 shadow-sm"
+                    style="background-color: #1a1a1a; color: white; border-radius: 8px 0 0 8px;"
+                    (keydown.enter)="FindLocation()"
+                  />
+                  <button 
+                    class="btn btn-outline-light border-0 shadow-sm" 
+                    style="background-color: #1a1a1a; border-radius: 0 8px 8px 0;"
+                    (click)="FindLocation()">
+                    <i class="fa-solid fa-search"></i>
+                  </button>
+                </div>
+                
+                <!-- Location Results -->
+                <div 
+                  *ngIf="locationName && locationName.length > 0"
+                  class="mt-2 border rounded p-2" 
+                  style="max-height: 150px; overflow-y: auto; background-color: #1a1a1a; border-color: #3a3a3a !important;">
+                  <div 
+                    *ngFor="let item of locationName" 
+                    (click)="SelectedLocation(item)" 
+                    class="p-2 rounded mb-1" 
+                    style="cursor: pointer; background-color: #262626;"
+                    onmouseover="this.style.backgroundColor='#3a3a3a'" 
+                    onmouseout="this.style.backgroundColor='#262626'">
+                    <div class="text-white small"><strong>{{item.name}}</strong></div>
+                    <div style="font-size: 0.75rem;">{{item.display_name}}</div>
+                  </div>
+                </div>
+
+                <!-- Selected Location -->
+                <div *ngIf="selectedPlaceName" class="mt-2 text-white small">
+                  <i class="fa-solid fa-check-circle text-success me-1"></i> {{selectedPlaceName}}
+                </div>
+              </div>
+
+              <!-- Tag People Button -->
+              <div class="mb-3">
+                <button *ngIf="!isTaggingMode"
+                  class="btn btn-outline-light w-100 border-0 shadow-sm" 
+                  style="background-color: #1a1a1a; border-radius: 8px;"
+                  (click)="EnterTaggingMode()">
+                  <i class="fa-solid fa-user-tag me-2"></i>Tag People
+                </button>
+                <button *ngIf="isTaggingMode"
+                  class="btn btn-outline-light w-100 border-0 shadow-sm" 
+                  style="background-color: #1a1a1a; border-radius: 8px;"
+                  (click)="ExitTaggingMode()">
+                  <i class="fa-solid fa-user-tag me-2"></i>Tag People (Done)
+                </button>
+              </div>
+
+              <!-- Tagged Users Display -->
+              <div *ngIf="taggedUsers.length > 0" class="mb-3">
+                <label class="form-label text-white small fw-semibold mb-2">Tagged Users</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <span 
+                    *ngFor="let tag of taggedUsers; let i = index" 
+                    class="badge d-flex align-items-center gap-2 px-3 py-2"
+                    style="background-color: #0095f6; border-radius: 20px; font-size: 0.875rem;">
+                    <i class="fa-solid fa-user"></i>
+                    {{ tag.username }}
+                    <i class="fa-solid fa-times" style="cursor: pointer;" (click)="RemoveTag(i)"></i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Spacer -->
+              <div class="flex-grow-1"></div>
+
+              <!-- Post Button -->
+              <div class="mt-3">
+                <button 
+                  class="btn w-100 fw-semibold shadow-sm" 
+                  style="background-color: #0095f6; color: white; border: none; border-radius: 8px; padding: 12px;"
+                  (click)="UploadFinalPost()">
+                  <i class="fa-solid fa-paper-plane me-2"></i>Share Post
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Carousel controls -->
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>
+        <!-- TAGGING MODE -->
+        <div *ngIf="isTaggingMode" class="p-3 p-md-4">
+          <div class="row g-3">
+            <!-- Image with Tag Points -->
+            <div class="col-lg-7 col-md-6">
+              <div class="position-relative rounded overflow-hidden" style="background-color: #000;">
+                <img
+                  #taggableImage
+                  [src]="previewUrls[currentImageIndex]"
+                  alt="Taggable Image"
+                  class="w-100 d-block"
+                  style="object-fit: contain; max-height: 600px; cursor: crosshair;"
+                  (click)="OnImageClick($event)"
+                />
+                
+                <!-- Tag Markers -->
+                <div
+                  *ngFor="let tag of getCurrentImageTags(); let i = index"
+                  class="position-absolute"
+                  [style.left.%]="tag.x"
+                  [style.top.%]="tag.y"
+                  style="transform: translate(-50%, -50%); z-index: 10;">
+                  <div 
+                    class="badge d-flex align-items-center gap-2 px-2 py-1 shadow" 
+                    style="background-color: rgba(0, 0, 0, 0.75); cursor: pointer; white-space: nowrap; border-radius: 12px;">
+                    <i class="fa-solid fa-user" style="font-size: 0.75rem;"></i>
+                    <span style="font-size: 0.875rem;">{{ tag.username }}</span>
+                    <i 
+                      class="fa-solid fa-times" 
+                      style="font-size: 0.75rem; cursor: pointer;" 
+                      (click)="RemoveTagFromImage(i)">
+                    </i>
+                  </div>
+                </div>
+              </div>
 
-  <div class="flex-grow-1 text-start mt-3 mt-md-0">
-    <label class="my-2" for="caption">Caption:</label>
-    <textarea
-    [(ngModel)]="caption"
-    placeholder="Write a caption..."
-    rows="4"
-    class="form-control border-secondary"
-    style="background-color: black; color: white; resize: none;"
-    ></textarea>
-    <label class="my-2" for="location">Location (Optional):</label>
-    <input
-      [(ngModel)]="locationEnter"
-      placeholder="Write a Location..."
-      rows="2"
-      class="form-control border-secondary"
-      style="background-color: black; color: white; resize: none;"
-      (keydown.enter)="FindLocation()"
-    >
-    <div style="overflow: auto; max-height: 200px;">
-  <div *ngFor="let item of locationName" (click)="SelectedLocation(item)" style="cursor: pointer;" class="compact-card">
-    <strong>{{item.name}}</strong>: {{item.display_name}}
-  </div>
-  {{selectedPlaceName}}
-</div>
+              <!-- Image Navigation (for multiple images) -->
+              <div *ngIf="previewUrls.length > 1" class="d-flex justify-content-center gap-2 mt-3 flex-wrap">
+                <button
+                  *ngFor="let img of previewUrls; let i = index"
+                  class="btn btn-sm"
+                  [ngClass]="i === currentImageIndex ? 'btn-primary' : 'btn-outline-secondary'"
+                  style="min-width: 50px; border-radius: 8px;"
+                  (click)="currentImageIndex = i">
+                  <i class="fa-solid fa-image me-1"></i>{{ i + 1 }}
+                </button>
+              </div>
+            </div>
 
+            <!-- User Search Panel -->
+            <div class="col-lg-5 col-md-6">
+              <div class="h-100 d-flex flex-column">
+                <label class="form-label text-white fw-semibold mb-2">Search Users</label>
+                <input
+                  [(ngModel)]="userSearchQuery"
+                  (input)="DeBounce()"
+                  placeholder="Search username..."
+                  class="form-control border-0 shadow-sm mb-3"
+                  style="background-color: #1a1a1a; color: white; border-radius: 8px; padding: 12px;"
+                />
 
-    <button class="btn btn-primary mt-3 float-end" (click)="FindLocation()">
-      Get Location
-    </button>
-    <button class="btn btn-primary mt-3 float-end" (click)="UploadFinalPost()">
-      Post
-    </button>
-  </div>
-</div>
+                <!-- Search Results -->
+                <div 
+                  *ngIf="searchResults.length > 0" 
+                  class="border rounded p-2 flex-grow-1"
+                  style="max-height: 400px; overflow-y: auto; background-color: #1a1a1a; border-color: #3a3a3a !important;">
+                  <div
+                    *ngFor="let user of searchResults"
+                    class="d-flex align-items-center gap-3 p-2 rounded mb-2"
+                    style="cursor: pointer; background-color: #262626; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='#3a3a3a'" 
+                    onmouseout="this.style.backgroundColor='#262626'"
+                    (click)="SelectUserForTag(user)">
+                    <img
+                      [src]="getProfileImage(user.profilePic??'')"
+                      alt="Profile"
+                      class="rounded-circle"
+                      style="width: 48px; height: 48px; object-fit: cover; border: 2px solid #555;"
+                    />
+                    <div class="flex-grow-1">
+                      <div class="fw-bold text-white">{{ user.username }}</div>
+                      <div class=" small">{{ user.fullName }}</div>
+                    </div>
+                    <i class="fa-solid fa-plus-circle text-primary"></i>
+                  </div>
+                </div>
 
+                <div *ngIf="userSearchQuery && searchResults.length === 0" class="text-center  mt-3">
+                  <i class="fa-solid fa-user-slash fa-2x mb-2"></i>
+                  <p>No users found</p>
+                </div>
+
+                <!-- Instructions -->
+                <div class="mt-3 p-3 rounded" style="background-color: #1a1a1a; border-radius: 8px;">
+                  <div class="text-white small">
+                    <strong class="d-block mb-2"><i class="fa-solid fa-info-circle me-1"></i> How to tag:</strong>
+                    <ol class="mb-0 ps-3">
+                      <li class="mb-1">Search for a user above</li>
+                      <li class="mb-1">Click on their name</li>
+                      <li>Click on the image to place the tag</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
          
-        <div *ngIf="isCompletedLoading">
-          <img src="../../../../assets/instagram_loading.png" class="m-5 instagramloading" alt="">
+        <!-- Loading State -->
+        <div *ngIf="isCompletedLoading" class="text-center py-5">
+          <img 
+            src="../../../../assets/instagram_loading.png" 
+            class="instagramloading mb-3" 
+            style="max-width: 150px; animation: spin 1s linear infinite;" 
+            alt="Loading">
+          <p class="text-white">Uploading your post...</p>
         </div>
 
-        <!-- Initial Upload UI -->
-        <div *ngIf="!previewUrl && !postShared" class="py-5">
-          <i class="fa-solid fa-photo-film mb-3" style="font-size: 100px;"></i>
-          <p class="fs-4">Drag photos and videos here </p>
-          <button class="btn fw-bold btn-primary" (click)="triggerFileInputPost()">Upload Post</button>
+        <!-- STEP 1: Initial Upload UI -->
+        <div *ngIf="!previewUrl && !postShared" class="text-center py-5 px-3">
+          <div class="mb-4">
+            <i class="fa-solid fa-images text-white-50" style="font-size: 120px;"></i>
+          </div>
+          <h4 class="text-white mb-3">Share photos and videos</h4>
+          <p class=" mb-4">Drag and drop or click to upload</p>
+          <button 
+            class="btn btn-lg fw-semibold shadow" 
+            style="background-color: #0095f6; color: white; border: none; border-radius: 8px; padding: 12px 40px;"
+            (click)="triggerFileInputPost()">
+            <i class="fa-solid fa-upload me-2"></i>Select from Device
+          </button>
         </div>
          
-        <div *ngIf="postShared">
-          <img src="../../../../assets/instagram_loading_complete-removebg-preview.png" class="mt-3 " alt="">
-          <p class="fs-3 fw-light" >Your post has been shared.</p>
+        <!-- Success State -->
+        <div *ngIf="postShared" class="text-center py-5">
+          <div class="mb-3">
+            <img src="../../../../assets/instagram_loading_complete-removebg-preview.png"  alt="" srcset="">
+          </div>
+          <h3 class="text-white fw-light mb-2">Your post has been shared!</h3>
         </div>
 
-        <!-- Preview Only -->
-        <div *ngIf="previewUrl && !isNextStep" class="mt-3">
-          <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div
-          *ngFor="let img of previewUrls; let i = index"
-          class="carousel-item"
-          [class.active]="i === 0"
-        >
-          <img
-            [src]="img"
-            alt="Preview"
-            class="d-block w-100 rounded"
-            style="object-fit: cover; height: 300px;"
-          />
-        </div>
-      </div>
+        <!-- Preview Only (Before Next Step) -->
+        <div *ngIf="previewUrl && !isNextStep" class="p-3 p-md-4">
+          <div style="max-width: 600px; margin: 0 auto;">
+            <div id="previewCarouselInit" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner rounded" style="background-color: #000;">
+                <div
+                  *ngFor="let img of previewUrls; let i = index"
+                  class="carousel-item"
+                  [class.active]="i === 0">
+                  <img
+                    [src]="img"
+                    alt="Preview {{ i + 1 }}"
+                    class="d-block w-100"
+                    style="object-fit: contain; max-height: 500px;"
+                  />
+                </div>
+              </div>
 
-      <!-- Carousel controls -->
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
+              <!-- Indicators -->
+              <div *ngIf="previewUrls.length > 1" class="carousel-indicators">
+                <button 
+                  *ngFor="let img of previewUrls; let i = index"
+                  type="button" 
+                  [attr.data-bs-target]="'#previewCarouselInit'" 
+                  [attr.data-bs-slide-to]="i" 
+                  [class.active]="i === 0">
+                </button>
+              </div>
+
+              <!-- Controls -->
+              <button 
+                *ngIf="previewUrls.length > 1"
+                class="carousel-control-prev" 
+                type="button" 
+                data-bs-target="#previewCarouselInit" 
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button 
+                *ngIf="previewUrls.length > 1"
+                class="carousel-control-next" 
+                type="button" 
+                data-bs-target="#previewCarouselInit" 
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
         </div>
 
       </div>
     </div>
   </div>
 </div>
+
+
 <!-- Bootstrap story Modal -->
 <div class="modal fade" id="storyModal" tabindex="-1" aria-labelledby="storyModalLabel" aria-hidden="true">
   <div

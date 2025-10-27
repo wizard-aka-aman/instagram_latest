@@ -306,3 +306,299 @@ input::placeholder{
     padding-top: 55px; /* upar space de diya topbar ke liye */
   }
 }
+ 
+/* Container */
+.container-fluid {
+  background-color: black;
+  min-height: 100vh;
+}
+
+/* Post Card */
+.post-card {
+  background-color: black !important;
+  border-bottom: 1px solid rgb(38, 38, 38);
+}
+
+.post-header {
+  min-height: 60px;
+}
+
+/* Post Image Container */
+.post-image-container {
+  width: 100%;
+  background-color: black;
+  position: relative;
+  overflow: hidden;
+}
+
+.post-image {
+  width: 100%;
+  display: block;
+  max-height: 600px;
+  object-fit: contain;
+  background-color: black;
+}
+
+/* Tag Marker */
+.tag-marker {
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  cursor: pointer; 
+}
+
+.tag-marker::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tag-label {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.tag-label i {
+  margin-right: 4px;
+}
+
+/* Toggle Tags Button */
+.toggle-tags-btn {
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.toggle-tags-btn:hover {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Carousel Custom Styling */
+.carousel-arrow {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: 40px;
+  opacity: 0.8;
+}
+
+.carousel-control-prev:hover .carousel-arrow,
+.carousel-control-next:hover .carousel-arrow {
+  background: white;
+  transform: scale(1.1);
+}
+
+/* Custom Carousel Indicators */
+.carousel-indicators-custom {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.carousel-indicators-custom span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.carousel-indicators-custom span.active {
+  background: white;
+  width: 8px;
+  height: 8px;
+}
+
+/* Action Icons */
+.action-icon {
+  font-size: 24px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
+  opacity: 0.7;
+}
+
+.action-icon:active {
+  transform: scale(0.95);
+}
+
+/* Post Actions */
+.post-actions {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 767.98px) {
+  .container-fluid {
+    padding: 0 !important;
+  }
+
+  .post-card {
+    margin-bottom: 0 !important;
+  }
+
+  .post-header {
+    padding: 8px 12px !important;
+    min-height: 54px;
+  }
+
+  .post-header img {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .post-header strong {
+    font-size: 14px !important;
+  }
+
+  .post-header .text-muted {
+    font-size: 12px !important;
+  }
+
+  .post-image {
+    max-height: 500px;
+  }
+
+  /* Smaller tags on mobile */
+  .tag-marker::before {
+    width: 10px;
+    height: 10px;
+  }
+
+  .tag-label {
+    font-size: 12px;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+  }
+
+  .toggle-tags-btn {
+    bottom: 8px;
+    left: 8px;
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+  }
+
+  /* Action icons slightly smaller on mobile */
+  .action-icon {
+    font-size: 22px;
+  }
+
+  .post-actions {
+    padding: 8px 12px !important;
+  }
+
+  .post-actions > div {
+    gap: 16px !important;
+  }
+
+  /* Carousel controls */
+  .carousel-arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: 35px;
+  }
+
+  .carousel-indicators-custom {
+    bottom: 8px;
+  }
+
+  .carousel-indicators-custom span {
+    width: 5px;
+    height: 5px;
+  }
+
+  .carousel-indicators-custom span.active {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .post-image {
+    max-height: 450px;
+  }
+
+  .action-icon {
+    font-size: 20px;
+  }
+
+  .post-actions > div {
+    gap: 12px !important;
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .col-md-8 {
+    max-width: 614px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .col-lg-6 {
+    max-width: 630px;
+  }
+}
+
+/* Remove Bootstrap carousel transition interference */
+.carousel-item {
+  transition: transform 0.6s ease-in-out !important;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}

@@ -1,5 +1,6 @@
 import { Time } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -18,7 +19,7 @@ export class MoreDisplayComponent implements OnInit {
   closeFriendList :any[]=[];
   previousCloseFriendList :any[]=[];
   followingdata:any[]=[]
-  constructor(private ServiceSrv :ServiceService) { 
+  constructor(private ServiceSrv :ServiceService , private toastr :ToastrService) { 
     this.loggedInUser = this.ServiceSrv.getUserName();
   }
 
@@ -154,10 +155,12 @@ onCFChange(userName: string, event: any) {
     this.ServiceSrv.AddCloseFriend(body).subscribe({
       next: (res:any)=>{
         console.log(res);
+        this.toastr.success("Update Close Friends Successfully");
         this.GetCloseFriendFunction();
       },
       error: (err:any)=>{
         console.log(err);
+        this.toastr.error("Something Went Wrong");
       }
     })
   } 

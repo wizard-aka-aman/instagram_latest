@@ -1,22 +1,27 @@
-<!-- src/app/user-dashboard/user-dashboard.component.html -->
-<div class="container mt-4" style="max-width: 850px;">
+<div class="container mt-4">
 
   <!-- Pending Requests -->
-  <h4 class="mb-3">Pending Requests</h4>
-  <div class="requests-wrapper">
-    <div class="request-card" *ngFor="let request of pendingRequests">
-      <div class="card shadow-sm d-flex justify-content-center align-items-center p-3 text-center border-1 border-danger border h-100" style="background-color: rgb(0, 0, 0); color: white;">
-        <img [src]="getProfileImage(request.profilePictureOfReqTo) || 'assets/avatar.png'" class="rounded-circle mb-2 img-fluid"
-             style="width :50px; height: 50px; object-fit: contain;" alt="profile">
-        <h6>{{ request.userNameOfReqTo }}</h6>
-        <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap"> 
-          <button class="btn btn-outline-danger btn-sm" (click)="RemoveRequest(request)" >Remove Requested</button>
+  <h4 class="mb-3 text-center text-md-start">Pending Requests</h4>
+  <div class="requests-wrapper row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
+    <div class="col" *ngFor="let request of pendingRequests">
+      <div
+        class="card shadow-sm d-flex flex-column justify-content-center align-items-center p-3 text-center border-1 border-danger border h-100"
+        style="background-color: rgb(0, 0, 0); color: white;">
+        <img routerLink="/{{request.userNameOfReqTo}}"
+             [src]="getProfileImage(request.profilePictureOfReqTo) || 'assets/avatar.png'"
+             class="rounded-circle mb-2 img-fluid"
+             style="width:50px; height:50px; object-fit:contain;"
+             alt="profile">
+        <h6 class="text-truncate">{{ request.userNameOfReqTo }}</h6>
+        <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
+          <button class="btn btn-outline-danger btn-sm" (click)="RemoveRequest(request)">Remove Requested</button>
         </div>
       </div>
     </div>
   </div>
 
   <hr class="my-4">
+ 
 
   <!-- Previous Stories -->
   <div class="d-flex justify-content-around align-items-center mb-3">
@@ -33,80 +38,77 @@
     </div>
   </div>
 </div>
-<div class="row">
-  <div class="col-6 ">
-    <h4 class="  ">Map for Stories And Posts</h4> 
-    <div class="btn btn-primary"  routerLink="/map" >Map</div>
-  </div>
-<div class="col-6 ">
-    <h4 class="  ">Close Friends</h4> 
-    <div class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#closefriend" >Close Friend</div>
-  </div>
-</div>
 
+  <div class="row text-center text-md-start mt-4 g-3 " style="height: 240px !important; padding-bottom: 90px ;">
+    <div class="col-12 col-md-6">
+      <h4>Map for Stories And Posts</h4>
+      <div class="btn btn-primary w-100 w-md-auto" routerLink="/map">Map</div>
+    </div>
+    <div class="col-12 col-md-6">
+      <h4>Close Friends</h4>
+      <div class="btn btn-primary w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#closefriend">Close Friend</div>
+    </div>
+  </div>
 
 </div>
 
 <!-- View Modal -->
 <div class="modal fade" id="storylikemodalStory" tabindex="-1" aria-labelledby="storylikeLabelmodal" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
     <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
 
-      <!-- Modal Header -->
       <div class="modal-header border-0" style="background-color: #1a1a1a;">
         <h5 class="modal-title mx-auto" id="storylikeLabelmodal" style="font-weight: 600;">Views</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3"
+                data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-       
       <ng-container *ngIf="displayLikeUser as seenList">
-  <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-      *ngFor="let view of seenList" 
-      data-bs-dismiss="modal" aria-label="Close"
-      style="cursor: pointer;"
-      [routerLink]="['/', view.seenByUsername]">
-    <img [src]="getProfileImage(view.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
-    <div>
-      <div class="fw-bold text-white">{{ view.seenByUsername }}</div> 
-    </div>
-  </div>
-  <div class="" *ngIf="seenList.length ==0" >
-    <div class="text-center text-white p-4">
-      <h5> No one has viewed this story yet</h5>
-    </div>
-  </div>
-</ng-container>
-
+        <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+             *ngFor="let view of seenList"
+             data-bs-dismiss="modal" aria-label="Close"
+             style="cursor: pointer;"
+             [routerLink]="['/', view.seenByUsername]">
+          <img [src]="getProfileImage(view.profilePicture)" class="rounded-circle"
+               width="40" height="40" style="object-fit: cover;" />
+          <div>
+            <div class="fw-bold text-white text-truncate">{{ view.seenByUsername }}</div>
+          </div>
+        </div>
+        <div *ngIf="seenList.length == 0" class="text-center text-white p-4">
+          <h5>No one has viewed this story yet</h5>
+        </div>
+      </ng-container>
 
     </div>
   </div>
 </div>
-<!-- following Modal -->
+
+<!-- Close Friends Modal -->
 <div class="modal fade" id="closefriend" tabindex="-1" aria-labelledby="closefriendLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
     <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
 
-      <!-- Modal Header -->
       <div class="modal-header border-0" style="background-color: #1a1a1a;">
         <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Close Friends</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute   me-3" data-bs-dismiss="modal" aria-label="Close" (click)="closeCF()" ></button>
-        <button type="button" class="btn btn-primary position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close" (click)="AddCloseFriendFunction()" >Close Friend</button>
+        <button type="button" class="btn-close btn-close-white position-absolute me-3"
+                data-bs-dismiss="modal" aria-label="Close" (click)="closeCF()"></button>
+        <button type="button" class="btn btn-primary position-absolute end-0 me-3"
+                data-bs-dismiss="modal" aria-label="Close" (click)="AddCloseFriendFunction()">Close Friend</button>
       </div>
 
-      <!-- Modal Body -->
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
-          <!-- Loop Over Likes -->
-          <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect" *ngFor="let like of followingdata">
-            <img [src]="getProfileImage(like.profilePicture)" alt="Profile Picture" class="rounded-circle" width="40" height="40"
-              style="object-fit: cover;" />
-            <div class="flex-grow-1">
-              <div class="fw-bold text-white">{{ like.userName }}</div>
-              <div class="small ">{{ like.fullName }}</div>
-            </div>
-            <input type="checkbox" class="mx-auto form-check-input" [checked]="like.isCF"
-              (change)="onCFChange(like.userName, $event)" />
-
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
+        <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
+             *ngFor="let like of followingdata">
+          <img [src]="getProfileImage(like.profilePicture)" alt="Profile Picture"
+               class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+          <div class="flex-grow-1">
+            <div class="fw-bold text-white text-truncate">{{ like.userName }}</div>
+            <div class="small  text-truncate">{{ like.fullName }}</div>
           </div>
+          <input type="checkbox" class="form-check-input mx-auto"
+                 [checked]="like.isCF" (change)="onCFChange(like.userName, $event)" />
+        </div>
       </div>
 
     </div>

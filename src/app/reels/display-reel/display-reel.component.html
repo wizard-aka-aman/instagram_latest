@@ -74,7 +74,7 @@
         <div class="d-flex mt-2 justify-content-center align-items-center px-2 position-absolute bottom-0 w-100  "
           style="border-radius: 4%;background-color: rgba(90, 90, 90, 0.719);">
           <input [(ngModel)]="reel.newComment" class="form-control me-2" style="height: 30px;"
-            placeholder="Add a comment..." />
+            placeholder="Add a comment..." (keydown.enter)="postComment(reel)" />
           <button class="btn  text-light" (click)="postComment(reel)">Post</button>
         </div>
 

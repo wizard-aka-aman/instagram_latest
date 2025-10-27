@@ -45,4 +45,6 @@
   object-fit: contain !important; /* maintain aspect ratio, fill box */
   border-radius: 8px; /* optional, thoda rounded look */
 }
-
+.g-3{
+  bs-gutter-y: 0px;
+}

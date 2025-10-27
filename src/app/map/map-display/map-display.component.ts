@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as L from 'leaflet';
@@ -14,7 +15,7 @@ export class MapDisplayComponent implements OnInit {
   selectedLon: number = 0;
   marker: any;
   loggedInUser: string = ""
-  constructor(private serviceSrv: ServiceService, private router: Router) {
+  constructor(private serviceSrv: ServiceService, private router: Router , private Location: Location) {
     this.loggedInUser = this.serviceSrv.getUserName()
   }
 
@@ -193,5 +194,8 @@ export class MapDisplayComponent implements OnInit {
       return 'assets/avatar.png';
     }
     return 'data:image/jpeg;base64,' + image;
+  }
+  close(){
+    this.Location.back();
   }
 }

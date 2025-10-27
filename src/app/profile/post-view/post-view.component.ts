@@ -26,7 +26,7 @@ export class PostViewComponent implements OnInit {
     commentsCount: 0,
     likesCount: 0,
     createdAt: '',
-    postId: 0
+    postId: 0,
   };
   likeAndUnLike = {
     postUsername: '',
@@ -51,6 +51,23 @@ export class PostViewComponent implements OnInit {
   AllFollowingResults: any[] = []
   setPostId: number = 0
   loggedInUsernameProfile: string = ""
+  // In your component.ts 
+taggedUsers: any[] = [];
+showTags: boolean = false;
+mediaWithTags: any[] = []; // holds the parsed JSON
+currentImageIndex: number = 0; // track current carousel index
+
+// When carousel slides, update index
+onCarouselSlide(event: any) {
+  this.currentImageIndex = event.to;
+}
+
+// Get tags for current image
+getTagsForCurrentImage() {
+  if (!this.mediaWithTags || !this.mediaWithTags[this.currentImageIndex]) return [];
+  return this.mediaWithTags[this.currentImageIndex].TaggedUsers || [];
+}
+
   @ViewChild('comment') comment!: ElementRef<HTMLInputElement>;
   constructor(
     private route: ActivatedRoute,
@@ -87,6 +104,7 @@ export class PostViewComponent implements OnInit {
         this.ListComment = data.comments
         this.multiplePost = data.mediaUrl
         this.isSavedPost = data.isSaved
+        this.taggedUsers = data.taggedUsers
         this.loggedInUsernameProfile = data.loggedInUsernameProfile
         if (data.likesCount == 0) {
           this.zeroLike = true;
@@ -96,8 +114,13 @@ export class PostViewComponent implements OnInit {
         }
         this.isLikedByMe = this.isLike(data.likes);
         console.log(this.isLikedByMe);
-        console.log(this.ListComment);
-
+        console.log(this.ListComment); 
+        console.log(this.taggedUsers[0]?.taggedUsers);
+        
+  // For single image post, still store as array of one
+  if (!this.mediaWithTags || !Array.isArray(this.mediaWithTags)) {
+    this.mediaWithTags = [];
+  }
       },
       error: (err: any) => {
         console.log(err);
@@ -349,6 +372,8 @@ export class PostViewComponent implements OnInit {
         this.toastr.error("Error Occured!!")
     }})
     }
-
   }
+  toggleTags() {
+  this.showTags = !this.showTags;
+}
 }

@@ -8,13 +8,33 @@ import { NotificationServiceService } from 'src/app/notification-service.service
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
 
+// Interface for tagged users
+interface TaggedUser {
+  userId: string;
+  username: string;
+  fullName?: string;
+  profilePic?: string;
+  x: number; // X coordinate as percentage
+  y: number; // Y coordinate as percentage
+  imageIndex: number; // Which image in the carousel
+}
+
+// Interface for user search results
+interface User {
+  userId: string;
+  username: string;
+  fullName?: string;
+  profilePic?: string;
+}
+
+
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-  username: string = "";
+ username: string = "";
   isMessage: boolean = false
   fullDetailPost: any;
   posts: any[] = [];
@@ -40,6 +60,7 @@ export class SidebarComponent {
   @ViewChild('fileInputPost') fileInputPost!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputStory') fileInputStory!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputReel') fileInputReel!: ElementRef<HTMLInputElement>;
+  @ViewChild('taggableImage') taggableImage!: ElementRef<HTMLImageElement>;
   descripton: string = ""
   isSeen: boolean = false;
   totalPages = 0;
@@ -52,7 +73,29 @@ export class SidebarComponent {
   LocationLongitude = 0
   locationName: any[] = []
   locationEnter: string = ""
-  constructor(private Service: ServiceService, private route: Router, private notiService: NotificationServiceService, private chatService: ChatService, private sanitizer: DomSanitizer, private MessageService: MessageServiceService, private toastr: ToastrService) {
+  previewUrls: any[] = []
+  selectedFiles: any = []
+
+  // Tagging properties
+  isTaggingMode: boolean = false;
+  taggedUsers: TaggedUser[] = [];
+  currentImageIndex: number = 0;
+  userSearchQuery: string = '';
+  searchResults: User[] = [];
+  selectedUserForTagging: User | null = null;
+
+  //debouncing 
+  debounceTimer: any;
+
+  constructor(
+    private Service: ServiceService, 
+    private route: Router, 
+    private notiService: NotificationServiceService, 
+    private chatService: ChatService, 
+    private sanitizer: DomSanitizer, 
+    private MessageService: MessageServiceService, 
+    private toastr: ToastrService
+  ) {
     this.username = this.Service.getUserName();
   }
 
@@ -70,19 +113,17 @@ export class SidebarComponent {
 
     this.notiService.startConnection(this.username, (sender, messageGroup, message) => {
       console.log(messageGroup, this.username);
-
     }).then(() => {
       console.log("then wala chala");
     });
 
-    // this.notiService.startConnection(localStorage.getItem('jwt')?? ""); // app load hote hi SignalR connect
     this.Service.isSeenNoti$.subscribe({
       next: (data: any) => {
         console.log(data);
-
         this.isSeen = data;
       },
     })
+    
     this.Service.GetAllNotifications(this.username, this.pageNumber, this.pageSize).subscribe({
       next: (data: any) => {
         console.log(data);
@@ -103,6 +144,7 @@ export class SidebarComponent {
         console.log(err);
       },
     })
+    
     this.chatService.startConnection(this.username, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel, postid, publicid, reelurl) => {
       console.log({
         id: messageId,
@@ -119,17 +161,13 @@ export class SidebarComponent {
       });
       this.MessageService.SetIsMessage(true);
 
-
-
       this.Service.GetRecentMessage(this.username).subscribe({
         next: (data: any) => {
           console.log(data);
           this.Service.setChatList(data);
-          // 👇 Check if sender already in chat list
           const existing = this.Service.getChatList()?.find((c: any) => c.username === sender);
           console.log(existing);
           if (!existing && this.username !== messageGroup) {
-            // Not in chat list → save to RecentMessages and refresh
             const recentForm = {
               SenderUsername: this.username,
               ReceiverUsername: messageGroup,
@@ -138,13 +176,12 @@ export class SidebarComponent {
             console.log(recentForm);
             console.log("sidebar");
 
-
             this.Service.SaveRecentMessage(recentForm).subscribe({
               next: () => {
                 this.Service.GetRecentMessage(this.username).subscribe({
                   next: (data: any) => {
-                    this.Service.setChatList(data); // update global state
-                    this.Service.chatListRefreshSubject.next(true); // trigger refresh
+                    this.Service.setChatList(data);
+                    this.Service.chatListRefreshSubject.next(true);
                   },
                   error: (err) => console.error(err)
                 });
@@ -159,8 +196,6 @@ export class SidebarComponent {
       })
     });
 
-
-
     this.MessageService.isMessage$.subscribe({
       next: (data: any) => {
         this.isMessage = data;
@@ -170,9 +205,11 @@ export class SidebarComponent {
       },
     })
   }
+
   markSeen() {
     // this.notiService.markAllSeen();
   }
+
   logout() {
     const pakka = confirm("Sure you want to Logout?");
     if (pakka) {
@@ -183,18 +220,14 @@ export class SidebarComponent {
       }, 200);
     }
   }
-  previewUrls: any[] = []
-  selectedFiles: any = []
 
   handleFileUploadPost(event: Event) {
     const input = event.target as HTMLInputElement;
     const files = input.files;
 
     if (!files || files.length === 0) return;
-    // Limit to 5 files
 
     const fData = new FormData();
-    // this.previewUrls = []; // Clear previous previews
 
     Array.from(files).forEach((file) => {
       if (!file.type.startsWith('image/')) {
@@ -202,15 +235,12 @@ export class SidebarComponent {
         return;
       }
 
-      // Append file and metadata to FormData
       fData.append('Caption', 'asdasd');
       fData.append('UserName', this.username);
       fData.append('imageFile', file);
 
-      // Save the file for later upload if needed
       this.selectedFiles = [...(this.selectedFiles || []), file];
 
-      // Read file as base64 and push to preview array
       const reader = new FileReader();
       console.log(reader);
 
@@ -228,9 +258,7 @@ export class SidebarComponent {
     console.log(this.previewUrls);
   }
 
-
   handleFileUploadStory(event: Event) {
-
     console.log("strorrryrrryryy");
 
     const fData = new FormData();
@@ -246,38 +274,32 @@ export class SidebarComponent {
       fData.append('imageFile', file);
 
       console.log(fData);
-
       console.log(file);
 
-
       if (file) {
-        this.selectedFileStory = file; // ✅ Save file for later use in upload
+        this.selectedFileStory = file;
         const reader = new FileReader();
 
-        // ✅ This callback is called *after* file is fully read
         reader.onload = () => {
-          // console.log(reader.result);
-
-          this.previewUrlStory = reader.result;  // ✅ base64 image preview 
+          this.previewUrlStory = reader.result;
         };
 
-        reader.readAsDataURL(file); // Start reading the file
+        reader.readAsDataURL(file);
       }
     }
   }
+
   handleFileUploadReel(event: Event) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 
     if (!file) return;
 
-    // ✅ check only video
     if (!file.type.startsWith('video/')) {
       this.toastr.warning(`File ${file.name} is not a valid video.`);
       return;
     }
 
-    // ✅ check video duration
     const video = document.createElement('video');
     video.preload = 'metadata';
     video.src = URL.createObjectURL(file);
@@ -290,10 +312,8 @@ export class SidebarComponent {
       }
     };
 
-    // save file for later upload
     this.selectedFileReel = file;
 
-    // generate safe preview url
     const objectUrl = URL.createObjectURL(file);
     this.previewUrlReel = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
 
@@ -301,76 +321,89 @@ export class SidebarComponent {
     console.log("Preview URL:", this.previewUrlReel);
   }
 
-
-
   triggerFileInputPost() {
     console.log("sidebar post");
     this.fileInputPost.nativeElement.click();
   }
+
   triggerFileInputStory() {
     console.log("sidebar Story");
     this.fileInputStory.nativeElement.click();
   }
+
   triggerFileInputReel() {
     console.log("sidebar Reel");
     this.fileInputReel.nativeElement.click();
   }
+
   close() {
     this.closeModal.nativeElement.click();
   }
+
   NextModal() {
     this.isNextStep = true;
   }
 
   ResetModal() {
     this.isNextStep = false;
-    // this.previewUrl = null
   }
+
   closeReel() {
     this.reelModal.nativeElement.click();
   }
+
   NextModalReel() {
     this.isNextStepReel = true;
   }
 
   ResetModalReel() {
     this.isNextStepReel = false;
-    // this.previewUrl = null
   }
+
   closeStory() {
     this.storyModal.nativeElement.click();
   }
+
   NextModalStory() {
     this.isNextStepStory = true;
   }
 
   ResetModalStory() {
     this.isNextStepStory = false;
-    // this.previewUrl = null
   }
+
   ClearPreview() {
     this.previewUrl = null;
     this.caption = '';
     this.isNextStep = false;
     this.selectedFile = null!;
-    this.fileInputPost.nativeElement.value = ''; // ✅ Reset file input
+    this.fileInputPost.nativeElement.value = '';
     this.postShared = false;
     this.caption = ""
     this.previewUrls = []
     this.selectedFiles = []
+    // Clear tagging data
+    this.taggedUsers = [];
+    this.isTaggingMode = false;
+    this.currentImageIndex = 0;
+    this.userSearchQuery = '';
+    this.searchResults = [];
+    this.selectedUserForTagging = null;
   }
+
   ClearPreviewStory() {
     this.previewUrlStory = null;
     this.isNextStepStory = false;
     this.selectedFileStory = null!;
-    this.fileInputStory.nativeElement.value = ''; // ✅ Reset file input
+    this.fileInputStory.nativeElement.value = '';
     this.postSharedStory = false;
   }
+
   ClearPreviewReel() {
     this.previewUrlReel = null;
     this.isNextStepReel = false;
     this.selectedFileReel = null!;
-    this.fileInputReel.nativeElement.value = ''; // ✅ Reset file input
+    this.fileInputReel.nativeElement.value = '';
     this.postSharedReel = false;
     this.descripton = ""
   }
@@ -380,7 +413,6 @@ export class SidebarComponent {
       this.toastr.error('Please provide an image and caption.');
       return;
     }
-    // Limit to 5 files
     if (this.selectedFiles.length > 5) {
       this.toastr.error('You can only upload up to 5 images.');
       return;
@@ -392,20 +424,45 @@ export class SidebarComponent {
     fData.append('Caption', this.caption);
     fData.append('UserName', this.username);
     for (let i = 0; i < this.selectedFiles.length; i++) {
-      fData.append('imageFile', this.selectedFiles[i]); // append each file
+      fData.append('imageFile', this.selectedFiles[i]);
     }
     fData.append('Location', this.selectedPlaceName);
     fData.append('Latitude', this.LocationLatitude.toString());
     fData.append('Longitude', this.LocationLongitude.toString());
+    
+    // Add tagged users data
+   if (this.taggedUsers.length > 0) {
+  // Group tags by image index
+  const groupedTags: { [key: number]: any[] } = {};
+
+  this.taggedUsers.forEach(tag => {
+    if (!groupedTags[tag.imageIndex]) groupedTags[tag.imageIndex] = [];
+    groupedTags[tag.imageIndex].push({
+      Username: tag.username,
+      X: tag.x,
+      Y: tag.y
+    });
+  });
+
+  // Convert grouped tags into MediaWithTags array format
+  const mediaWithTags = Object.keys(groupedTags).map(index => ({
+    TaggedUsers: groupedTags[+index]
+  }));
+
+  // Append as JSON string to FormData
+  fData.append('TaggedUsers', JSON.stringify(mediaWithTags));
+}
+
 
     console.log(fData);
+    console.log('Tagged Users:', this.taggedUsers);
 
     this.Service.UploadPost(fData).subscribe({
       next: (res) => {
         console.log(res);
         this.ClearPreview();
         this.postShared = true;
-        this.Service.emitPostRefresh(); // Notify post component
+        this.Service.emitPostRefresh();
         this.isCompletedLoading = false;
       },
       error: (err) => {
@@ -415,8 +472,9 @@ export class SidebarComponent {
       }
     });
   }
-  FindLocation(){
-        this.Service.GetLocationByOpenStreetMap(this.locationEnter).subscribe({
+
+  FindLocation() {
+    this.Service.GetLocationByOpenStreetMap(this.locationEnter).subscribe({
       next: (data: any) => {
         this.locationName = data.map((user: any) => ({
           lat: user.lat,
@@ -434,15 +492,17 @@ export class SidebarComponent {
       }
     })
   }
-  SelectedLocation(item:any){ 
+
+  SelectedLocation(item: any) {
     console.log(item);
-        this.selectedPlaceName = item.display_name;
-        this.LocationLatitude = item.lat;
-        this.LocationLongitude = item.lon;
-        this.locationEnter = ""
-        this.locationName = []
+    this.selectedPlaceName = item.display_name;
+    this.LocationLatitude = item.lat;
+    this.LocationLongitude = item.lon;
+    this.locationEnter = ""
+    this.locationName = []
   }
-  UploadFinalStory(isCloseFriend:boolean) {
+
+  UploadFinalStory(isCloseFriend: boolean) {
     this.isCompletedLoadingStory = true;
     if (!this.selectedFileStory) {
       alert('Please provide an image and caption.');
@@ -454,7 +514,7 @@ export class SidebarComponent {
     fData.append('imageFile', this.selectedFileStory);
     fData.append('Latitude', this.latitude.toString());
     fData.append('Longitude', this.longitude.toString());
-    if(isCloseFriend){
+    if (isCloseFriend) {
       fData.append('IsCloseFriendStory', true.toString());
     }
 
@@ -472,6 +532,7 @@ export class SidebarComponent {
       }
     });
   }
+
   UploadFinalReel() {
     if (this.descripton.trim() == "") {
       this.toastr.error("Give decription first")
@@ -482,7 +543,6 @@ export class SidebarComponent {
       return;
     }
     this.isCompletedLoadingReel = true;
-
 
     const fData = new FormData();
     fData.append('username', this.username);
@@ -502,5 +562,133 @@ export class SidebarComponent {
         this.isCompletedLoadingReel = false;
       }
     });
+  }
+
+  // ==================== TAGGING METHODS ====================
+
+  EnterTaggingMode(): void {
+    this.isTaggingMode = true;
+    this.currentImageIndex = 0;
+  }
+
+  ExitTaggingMode(): void {
+    this.isTaggingMode = false;
+    this.selectedUserForTagging = null;
+    this.userSearchQuery = '';
+    this.searchResults = [];
+  }
+
+  SearchUsers(): void {
+    if (!this.userSearchQuery.trim()) {
+      this.searchResults = [];
+      return;
+    }
+
+    // Call your API to search users by username
+    // Replace this with your actual service method
+    this.Service.SearchUsers(this.userSearchQuery).subscribe({
+      next: (data: any) => {
+        this.searchResults = data.map((user: any) => ({
+          userId: user.userId || user.id,
+          username: user.userName,
+          fullName: user.fullName || user.name,
+          profilePic:  user.profilePicture
+        }));
+        console.log('Search results:', this.searchResults);
+      },
+      error: (err: any) => {
+        console.error('Error searching users:', err);
+        this.searchResults = [];
+      }
+    });
+  }
+
+  SelectUserForTag(user: any): void {
+    this.selectedUserForTagging = user;
+    console.log('Selected user for tagging:', user.username);
+    this.toastr.info(`Click on the image to tag ${user.username}`);
+  }
+
+  OnImageClick(event: MouseEvent): void {
+    if (!this.selectedUserForTagging) {
+      this.toastr.warning('Please select a user first!');
+      return;
+    }
+
+    const img = this.taggableImage.nativeElement;
+    const rect = img.getBoundingClientRect();
+
+    // Calculate click position relative to image as percentage
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    // Check if user is already tagged on this image
+    const existingTag = this.taggedUsers.find(
+      tag => tag.username === this.selectedUserForTagging!.username &&
+        tag.imageIndex === this.currentImageIndex
+    );
+
+    if (existingTag) {
+      this.toastr.warning('This user is already tagged on this image!');
+      return;
+    }
+
+    // Add tag
+    const newTag: any = {
+      userId: this.selectedUserForTagging.userId,
+      username: this.selectedUserForTagging.username,
+      fullName: this.selectedUserForTagging.fullName,
+      profilePic: this.selectedUserForTagging.profilePic,
+      x: x,
+      y: y,
+      imageIndex: this.currentImageIndex
+    };
+
+    this.taggedUsers.push(newTag);
+    this.toastr.success(`Tagged ${this.selectedUserForTagging.username}!`);
+
+    // Clear selection and search
+    this.selectedUserForTagging = null;
+    this.userSearchQuery = '';
+    this.searchResults = [];
+  }
+
+  getCurrentImageTags(): any {
+    return this.taggedUsers.filter(tag => tag.imageIndex === this.currentImageIndex);
+  }
+
+  RemoveTag(index: number): void {
+    const removedTag = this.taggedUsers[index];
+    this.taggedUsers.splice(index, 1);
+    this.toastr.info(`Removed tag for ${removedTag.username}`);
+  }
+
+  RemoveTagFromImage(index: number): void {
+    const currentTags = this.getCurrentImageTags();
+    const tagToRemove = currentTags[index];
+    const globalIndex = this.taggedUsers.indexOf(tagToRemove);
+
+    if (globalIndex > -1) {
+      this.taggedUsers.splice(globalIndex, 1);
+      this.toastr.info(`Removed tag for ${tagToRemove.username}`);
+    }
+  }
+  getProfileImage(image: string | null): string {
+    if (!image || image === 'null') {
+      return 'assets/avatar.png';
+    }
+    return 'data:image/jpeg;base64,' + image;
+  }
+  DeBounce() { 
+    // Clear previous timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    // Set new timer
+    this.debounceTimer = setTimeout(() => { 
+      this.SearchUsers();
+      // 🔍 API Call or logic here
+    }, 300); // ⏱ 300ms delay
   }
 } 

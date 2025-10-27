@@ -382,4 +382,7 @@ export class ServiceService {
   DeleteStory(loggedInUsername:string,storyId:number){
     return this.http.delete(`${this.BaseUrl}/api/Story/delete-story/${loggedInUsername}/${storyId}`);
   }
+  GetAllTaggedPost(username:string){
+    return this.http.get(`${this.BaseUrl}/Posts/taggedPost/${username}`);
+  }
 }

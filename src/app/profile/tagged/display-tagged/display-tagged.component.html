@@ -1,18 +1,52 @@
-<div class="container mt-3">
-  <div *ngIf="activeTab === 'tagged' && loggedInUserName != username && ( isPublic||  alreadyFollowing )" class="text-center mt-5">
-    <i class="fa-regular fs-1  fa-user"></i>
-    <p class="fw-bold fs-2" >Photos of you</p>
-    <p> When people tag you in photos, they'll appear here</p>
+<!-- HTML Template -->
+<div class="container-fluid px-2 px-md-3 mt-3">
+  <!-- No Tagged Photos (Own Profile) -->
+  <div *ngIf="activeTab === 'tagged' && loggedInUserName == username && !isPostAvailable" 
+       class="text-center mt-5 py-5">
+    <i class="fa-regular fa-user" style="font-size: 5rem; color: #8e8e8e;"></i>
+    <p class="fw-bold fs-3 mt-3 mb-2">Photos of you</p>
+    <p class="">When people tag you in photos, they'll appear here</p>
   </div>
-    <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing )" class="text-center py-2 " >
-    <i class="fa-solid fa-lock  fs-1"></i>
-    <p class="fw-bold fs-2 mt-3" >This account is private</p>
-    <p>Follow to see their photos and videos.</p>  
+
+  <!-- No Tagged Photos (Other User) -->
+  <div *ngIf="!isPostAvailable && loggedInUserName != username && (isPublic || alreadyFollowing)" 
+       class="text-center py-5">
+    <i class="fa-solid fa-table-cells" style="font-size: 5rem; color: #8e8e8e;"></i>
+    <p class="fw-bold fs-3 mt-3 mb-2">No Tagged Yet</p> 
+  </div>
+
+  <!-- Private Account Message -->
+  <div *ngIf="loggedInUserName != username && !(isPublic || alreadyFollowing)" 
+       class="text-center py-5">
+    <i class="fa-solid fa-lock" style="font-size: 5rem; color: #8e8e8e;"></i>
+    <p class="fw-bold fs-3 mt-3 mb-2">This account is private</p>
+    <p class="">Follow to see their photos and videos.</p>  
+  </div>
+
+  <!-- Tagged Posts Grid -->
+  <div *ngIf="activeTab === 'tagged' && isPostAvailable && (isPublic || alreadyFollowing) || loggedInUserName == username" 
+       class="post-grid mb-3">
+    <div class="post-card" *ngFor="let reel of tagged" (click)="openTaggedPage(reel.postId, reel.userName)">
+      <!-- Post Image -->
+      <img [src]="getProfileImage(reel.mediaUrl[0])"
+           [alt]="'Post by ' + reel.userName"
+           class="post-media"
+           loading="lazy">
+
+      <!-- Hover Overlay -->
+      <div class="overlay d-flex justify-content-center align-items-center">
+        <div class="text-white d-flex gap-3 gap-md-4 fs-6 fs-md-5 fw-bold">
+          <span><i class="fas fa-heart me-1"></i> {{ reel.likeCount }}</span>
+          <span><i class="fas fa-comment me-1"></i> {{ reel.commentCount }}</span>
+        </div>
+      </div>
+
+      <!-- Multiple Images Indicator -->
+      <div *ngIf="reel.mediaUrl.length > 1" class="multiple-indicator">
+        <i class="fa-solid fa-clone"></i>
+      </div>
+    </div>
   </div>
 </div>
 
-<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 
-
-
-
-
+<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" />

@@ -22,6 +22,7 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   loggedInUser: string = '';
   posts: any[] = [];
   TotalPost = 0;
+  showTags: boolean = false;
 
   // Story
   currentUserStories: any[] = [];
@@ -192,6 +193,7 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
           data.item1.forEach((post: any) => {
             post.isLikedByMe = this.isLike(post.likes);
+            post.showTag = false;
           });
 
           // Append properly
@@ -451,4 +453,7 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     this.setPostId = post.postId;
     this.searchResults = this.AllFollowingResults;
   }
+   toggleTags(post:any) {
+    post.showTag = !post.showTag;
+}
 }
