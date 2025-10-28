@@ -11,11 +11,20 @@
 
         <!-- <i  *ngIf="videoPlayer.paused;" class="fa-solid fa-pause fs-1"  ></i>  -->
         <!-- Video -->
-        <video (contextmenu)="DisableDownload($event)" #videoPlayer class="h-100" autoplay
-          (click)="StopAndPlayVideo(videoPlayer)" muted loop [src]="reel.url"
-          style="object-fit: contain; width: 350px;border-radius: 4%;">
-          Your browser does not support the video tag.
-        </video>
+        <video
+  playsinline
+  webkit-playsinline
+  muted
+  autoplay
+  loop
+  (click)="StopAndPlayVideo(videoPlayer)"
+  (contextmenu)="DisableDownload($event)"
+  #videoPlayer
+  [src]="reel.url"
+  style="object-fit: contain; width: 350px; max-height: 90vh; border-radius: 4%; display: block;"
+>
+</video>
+
 
         <!-- Likes & Comments (to right of video, spaced) -->
         <div class="d-flex flex-column align-items-center text-white ms-3">
