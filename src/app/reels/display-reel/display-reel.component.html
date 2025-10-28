@@ -1,128 +1,244 @@
-<div class="container-fluid p-0" style="background-color: black;">
-  <div class="row align-items-center"
-    style="scroll-snap-type: y mandatory; overflow-y: auto; height: 90vh !important; scrollbar-width: none;">
+<div class="reels-container">
+  <div class="reels-wrapper">
 
-    <div class="col-12 d-flex flex-column align-items-center  " *ngFor="let reel of reels; let i = index"
-      style="scroll-snap-align: start; ">
-
-      <!-- Video and Side Info -->
-      <div class="d-flex justify-content-center align-items-center  "
-        style="height: 90vh; width: 100%; padding-top: 20px; transition: linear; position: relative !important;">
-
-        <!-- <i  *ngIf="videoPlayer.paused;" class="fa-solid fa-pause fs-1"  ></i>  -->
-        <!-- Video -->
+    <!-- Single Reel Item -->
+    <div class="reel-item" *ngFor="let reel of reels; let i = index">
+      
+      <!-- Video Container -->
+      <div class="video-wrapper">
         <video
-  playsinline
-  webkit-playsinline
-  muted
-  autoplay
-  loop
-  (click)="StopAndPlayVideo(videoPlayer)"
-  (contextmenu)="DisableDownload($event)"
-  #videoPlayer
-  [src]="reel.url"
-  style="object-fit: contain; width: 350px; max-height: 90vh; border-radius: 4%; display: block;"
->
-</video>
+          playsinline
+          webkit-playsinline
+          muted
+          autoplay
+          loop
+          (click)="StopAndPlayVideo(videoPlayer)"
+          (contextmenu)="DisableDownload($event)"
+          #videoPlayer
+          [src]="reel.url"
+          class="reel-video"
+        ></video>
 
+        <!-- Gradient Overlay for Better Text Visibility -->
+        <div class="video-gradient"></div>
 
-        <!-- Likes & Comments (to right of video, spaced) -->
-        <div class="d-flex flex-column align-items-center text-white ms-3">
-          <i style="cursor: pointer;" *ngIf="!reel.isLikedLoggedInUser" (click)="Like(reel,reel.isLikedLoggedInUser)"
-            class="fa-regular fa-heart fs-4"></i>
-          <i style="cursor: pointer; color: #ff4242;" *ngIf="reel.isLikedLoggedInUser" class="fa-solid fa-heart fs-4"
-            (click)="UnLike(reel,reel.isLikedLoggedInUser)"></i>
-          <p class="mb-4 text-center"  data-bs-toggle="modal" data-bs-target="#ReelHomeLikes" (click)="ToogleLike(reel)" style="cursor: pointer;">{{ reel.likesCount }}</p>
-          <p class="mb-4 text-center" style="cursor: pointer;" (click)="toggleComments(reel, $event)">
-            <i class="fa-regular fa-comment"></i><br>{{ reel.commentsCount }}
-          </p>
-          <p class="mb-4 text-center" style="cursor: pointer;">
-            <i class="fa-regular fa-paper-plane "  data-bs-toggle="modal" data-bs-target="#HomeSent" style="cursor: pointer;" (click)="AddPublicId(reel)"></i>
-          </p>
+        <!-- Action Buttons (Right Side) -->
+        <div class="action-buttons">
+          <!-- Like Button -->
+          <div class="action-item">
+            <button 
+              class="action-btn"
+              (click)="reel.isLikedLoggedInUser ? UnLike(reel, reel.isLikedLoggedInUser) : Like(reel, reel.isLikedLoggedInUser)"
+            >
+              <i 
+                [class]="reel.isLikedLoggedInUser ? 'fa-solid fa-heart liked' : 'fa-regular fa-heart'"
+              ></i>
+            </button>
+            <span 
+              class="action-count" 
+              data-bs-toggle="modal" 
+              data-bs-target="#ReelHomeLikes" 
+              (click)="ToogleLike(reel)"
+            >
+              {{ reel.likesCount | number }}
+            </span>
+          </div>
 
-        </div>
+          <!-- Comment Button -->
+          <div class="action-item">
+            <button class="action-btn" (click)="toggleComments(reel, $event)">
+              <i class="fa-regular fa-comment"></i>
+            </button>
+            <span class="action-count">{{ reel.commentsCount | number }}</span>
+          </div>
 
+          <!-- Share Button -->
+          <div class="action-item">
+            <button 
+              class="action-btn" 
+              data-bs-toggle="modal" 
+              data-bs-target="#HomeSent" 
+              (click)="AddPublicId(reel)"
+            >
+              <i class="fa-regular fa-paper-plane"></i>
+            </button>
+          </div>
 
-        <!-- Username & Profile Picture aligned with video start -->
-        <div class="d-flex   text-white" style="position: absolute; bottom: 60px; width: 300px !important;">
-          <img [src]="getProfileImage(reel.profilePicture)" routerLink="/{{reel.userName}}" style="cursor: pointer;"
-            alt="Profile" class="rounded-circle me-2" width="40" height="40">
-          <div>
-            <strong>{{ reel.userName }}</strong>
-            <button *ngIf="LoggedInUser != reel.userName && !reel.alreadyFollowing && !reel.isRequested && !reel.isSeenUserFollwingMeVariable"(click)="Follow(reel) " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
-            <button *ngIf="LoggedInUser != reel.username && !reel.alreadyFollowing && !reel.isRequested && reel.isSeenUserFollwingMeVariable"(click)="Follow(reel) " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow Back</button>
-            <button *ngIf="LoggedInUser != reel.username && !reel.alreadyFollowing && reel.isRequested" (click)="RemoveRequest(reel)" class="btn btn-secondary px-3 ms-3 btn-sm"  >Requested</button>
-            <button *ngIf="LoggedInUser != reel.username && reel.alreadyFollowing"(click)="UnFollow(reel)" class="btn btn-secondary px-3 ms-3 btn-sm"  >UnFollow</button>
-            <br>
-            <span class="fw-light " style="width: 300px; height: 50px !important;">{{ reel.descripton }}</span>
+          <!-- More Options -->
+          <div class="action-item">
+            <button class="action-btn">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
           </div>
         </div>
-      </div>
-      <!-- 💬 COMMENT SECTION -->
-      <div *ngIf="reel.showComments" [id]="'comment-box-' + reel.id" class="text-white w-100 mt-3"
-        style="background-color: rgba(90, 90, 90, 0.719);border-radius: 4%; max-width: 300px; position: absolute;  top: 90px; height: 400px;">
 
-        <!-- Fixed Heading -->
-        <p class="text-center fs-3 sticky-top   pt-2" style="border-radius: 4%;z-index: 10;   color: white;">Comments
-        </p>
-
-        <!-- Scrollable Middle Comment List -->
-        <div #chatContainer style="border-radius: 4%;height: 300px; overflow-y: auto; scrollbar-width: none;"
-          class="px-2">
-          <div *ngFor="let comment of reel.comments" class="d-flex align-items-start mb-2">
-            <img [src]="getProfileImage(comment.profilePicture)" style="cursor: pointer;"
-              routerLink="/{{comment.userName}}" alt="Profile" class="rounded-circle me-2" width="30" height="30">
-            <div>
-              <strong>{{ comment.userName }}</strong><br>
-              <span>{{ comment.commentText }}</span>
+        <!-- User Info & Description (Bottom) -->
+        <div class="reel-info">
+          <div class="user-section">
+            <img 
+              [src]="getProfileImage(reel.profilePicture)" 
+              routerLink="/{{reel.userName}}" 
+              alt="Profile" 
+              class="profile-pic"
+            >
+            <div class="user-details">
+              <div class="username-row">
+                <strong class="username" routerLink="/{{reel.userName}}">{{ reel.userName }}</strong>
+                <button 
+                  *ngIf="LoggedInUser != reel.userName && !reel.alreadyFollowing && !reel.isRequested"
+                  (click)="Follow(reel)" 
+                  class="follow-btn"
+                >
+                  {{ reel.isSeenUserFollwingMeVariable ? 'Follow Back' : 'Follow' }}
+                </button>
+                <button 
+                  *ngIf="LoggedInUser != reel.userName && reel.isRequested" 
+                  (click)="RemoveRequest(reel)" 
+                  class="follow-btn requested"
+                >
+                  Requested
+                </button>
+                <button 
+                  *ngIf="LoggedInUser != reel.userName && reel.alreadyFollowing"
+                  (click)="UnFollow(reel)" 
+                  class="follow-btn following"
+                >
+                  Following
+                </button>
+              </div>
+              <p class="description" [class.expanded]="reel.showFullDescription">
+                {{ reel.descripton }}
+                <span 
+                  *ngIf="reel.descripton?.length > 100" 
+                  class="more-btn"
+                  (click)="reel.showFullDescription = !reel.showFullDescription"
+                >
+                  {{ reel.showFullDescription ? 'less' : 'more' }}
+                </span>
+              </p>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Fixed Input at Bottom -->
-        <div class="d-flex mt-2 justify-content-center align-items-center px-2 position-absolute bottom-0 w-100  "
-          style="border-radius: 4%;background-color: rgba(90, 90, 90, 0.719);">
-          <input [(ngModel)]="reel.newComment" class="form-control me-2" style="height: 30px;"
-            placeholder="Add a comment..." (keydown.enter)="postComment(reel)" />
-          <button class="btn  text-light" (click)="postComment(reel)">Post</button>
+      <!-- Comments Section (Overlay) -->
+      <div *ngIf="reel.showComments" class="comments-overlay" (click)="onDocumentClick($event)">
+        <div class="comments-panel" (click)="$event.stopPropagation()">
+          
+          <!-- Comments Header -->
+          <div class="comments-header">
+            <h3>Comments</h3>
+            <button class="close-btn" (click)="toggleComments(reel, $event)">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Comments List -->
+          <div class="comments-list" #chatContainer>
+            <div *ngFor="let comment of reel.comments" class="comment-item">
+              <img 
+                [src]="getProfileImage(comment.profilePicture)" 
+                routerLink="/{{comment.userName}}" 
+                alt="Profile" 
+                class="comment-avatar"
+              >
+              <div class="comment-content">
+                <div class="comment-header">
+                  <strong class="comment-username">{{ comment.userName }}</strong>
+                  <span class="comment-time">{{ comment.createdAt  }}</span>
+                </div>
+                <p class="comment-text">{{ comment.commentText }}</p>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="!reel.comments || reel.comments.length === 0" class="empty-comments">
+              <i class="fa-regular fa-comment"></i>
+              <p>No comments yet</p>
+              <span>Be the first to comment</span>
+            </div>
+          </div>
+
+          <!-- Comment Input -->
+          <div class="comment-input-wrapper">
+            <img 
+              [src]="getProfileImage(this.profilePicture)" 
+              alt="Your profile" 
+              class="input-avatar"
+            >
+            <input 
+              [(ngModel)]="reel.newComment" 
+              class="comment-input" 
+              placeholder="Add a comment..." 
+              (keydown.enter)="postComment(reel)"
+            />
+            <button 
+              class="post-btn" 
+              [disabled]="!reel.newComment?.trim()"
+              (click)="postComment(reel)"
+            >
+              Post
+            </button>
+          </div>
         </div>
-
       </div>
 
     </div>
   </div>
 </div>
 
-<!-- Sent Modal -->
-<div class="modal fade" id="HomeSent" tabindex="-1" aria-labelledby="SentLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
-    <div class="modal-content custom-modal">
-
-      <!-- Header -->
-      <div class="modal-header border-0 d-flex justify-content-between align-items-center">
-        <h5 class="modal-title fw-semibold">Share</h5>
-        <button type="button" (click)="ClearSearchQuery()" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Share Modal -->
+<div class="modal fade" id="HomeSent" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content instagram-modal">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Share</h5>
+        <button 
+          type="button" 
+          class="btn-close" 
+          (click)="ClearSearchQuery()" 
+          data-bs-dismiss="modal"
+        ></button>
       </div>
 
       <!-- Search Bar -->
-      <div class=" d-flex justify-content-center align-items-center">
-        <div class="input-group  w-50 border-rounded mb-3">
-          <span class="fa-solid mt-1 text-white border-rounded fa-magnifying-glass input-group-text border-0"
-            style="background-color: rgb(0, 0, 0) !important;"></span>
-          <input type="text" (input)="DeBounce()" class="form-control w-50  border-rounded" [(ngModel)]="searchQuery"
-            placeholder="Search...">
+      <div class="modal-search">
+        <div class="search-input-group">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            (input)="DeBounce()" 
+            [(ngModel)]="searchQuery"
+            placeholder="Search..."
+            class="search-input"
+          >
         </div>
       </div>
 
-      <!-- Dropdown Results -->
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <div 
+          *ngFor="let user of searchResults" 
+          class="share-user-item"
+          (click)="SendPost(user.userName)" 
+          data-bs-dismiss="modal"
+        >
+          <img 
+            [src]="getProfileImage(user.profilePicture)" 
+            alt="User" 
+            class="share-user-avatar"
+          />
+          <span class="share-username">{{ user.userName }}</span>
+          <button class="send-btn">
+            <i class="fa-regular fa-paper-plane"></i>
+          </button>
+        </div>
 
-      <!-- Body -->
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
-        <div *ngFor="let user of searchResults " class="d-flex align-items-center px-3 py-2 user-row"  style="cursor: pointer;" (click)="SendPost(user.userName)" data-bs-dismiss="modal" aria-label="Close" >
-
-          <img [src]="getProfileImage(user.profilePicture)" alt="User" class="rounded-circle me-2" width="48"
-            height="48" style="object-fit: cover;" />
-          <span class="fw-semibold text-white">{{ user.userName }}</span>
+        <!-- Empty State -->
+        <div *ngIf="searchResults?.length === 0 && searchQuery" class="empty-search">
+          <p>No results found</p>
         </div>
       </div>
     </div>
@@ -130,32 +246,38 @@
 </div>
 
 <!-- Likes Modal -->
- <div class="modal fade" id="ReelHomeLikes" tabindex="-1" aria-labelledby="ReelHomeLikes" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
-    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
-
+<div class="modal fade" id="ReelHomeLikes" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content instagram-modal">
+      
       <!-- Modal Header -->
-      <div class="modal-header border-0" style="background-color: #1a1a1a;">
-        <h5 class="modal-title mx-auto" id="ReelHomeLikes" style="font-weight: 600;">Likes</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header">
+        <h5 class="modal-title">Likes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <!-- Modal Body -->
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
-
-        <!-- Loop Over Likes -->
-        <div *ngFor="let like of selectedLikes" class="d-flex align-items-center justify-content-between px-3 py-2 hover-effect">
-
-          <!-- Profile Info -->
-          <div  class="d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close" style="cursor: pointer;" [routerLink]="['/', like.userName]">
-            <img [src]="getProfileImage(like.profilePicture)" alt="User" class="rounded-circle" width="45" height="45" style="object-fit: cover;" />
-            <span class="fw-bold text-white">{{ like.userName }}</span>
-          </div>
-
+      <div class="modal-body">
+        <div 
+          *ngFor="let like of selectedLikes" 
+          class="like-user-item"
+          data-bs-dismiss="modal"
+          [routerLink]="['/', like.userName]"
+        >
+          <img 
+            [src]="getProfileImage(like.profilePicture)" 
+            alt="User" 
+            class="like-user-avatar"
+          />
+          <span class="like-username">{{ like.userName }}</span>
         </div>
 
+        <!-- Empty State -->
+        <div *ngIf="!selectedLikes || selectedLikes.length === 0" class="empty-likes">
+          <i class="fa-regular fa-heart"></i>
+          <p>No likes yet</p>
+        </div>
       </div>
-
     </div>
   </div>
 </div>

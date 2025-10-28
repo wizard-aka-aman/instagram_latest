@@ -1,116 +1,134 @@
-<div class="container py-5" style="max-width: 600px;">
+<div class="profile-edit-container">
+  <!-- Header -->
+  <div class="profile-header">
+    <h5 class="header-title">Edit Profile</h5>
+  </div>
+
   <!-- Profile Image Section -->
-  <div class="d-flex align-items-center mb-4">
-    <img [src]="user.profilePicture || 'assets/avatar.png'" alt="Profile" class="rounded-circle me-3 border"
-         style="width: 60px; height: 60px; object-fit: cover;">
-    <div>
-      <h6 class="mb-1">{{ user.userName }}</h6>
-      <label for="profilePicInput" class="text-primary" style="cursor: pointer; "  data-bs-toggle="modal" data-bs-target="#profileModal" >Change Profile Photo</label>
- 
+  <div class="profile-photo-section">
+    <div class="profile-photo-wrapper">
+      <img [src]="user.profilePicture || 'assets/avatar.png'" 
+           alt="Profile" 
+           class="profile-photo">
+    </div>
+    <div class="profile-info">
+      <h6 class="username">{{ user.userName }}</h6>
+      <button type="button" 
+              class="change-photo-btn" 
+              data-bs-toggle="modal" 
+              data-bs-target="#profileModal">
+        Change profile photo
+      </button>
     </div>
   </div>
 
   <!-- Edit Form -->
-  <form (ngSubmit)="onSubmit()">
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Name</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" [(ngModel)]="user.fullName" name="name">
+  <form (ngSubmit)="onSubmit()" class="profile-form">
+    <!-- Name Field -->
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input type="text" 
+             class="form-input" 
+             [(ngModel)]="user.fullName" 
+             name="name"
+             placeholder="Name">
+    </div>
+
+    <!-- Username Field -->
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input type="text" 
+             class="form-input" 
+             [(ngModel)]="user.userName" 
+             name="username"
+             disabled="true">
+    </div>
+
+    <!-- Bio Field -->
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea class="form-input form-textarea" 
+                rows="3" 
+                [(ngModel)]="user.bio" 
+                name="bio"
+                placeholder="Bio"
+                maxlength="200"></textarea>
+      <small class="char-count">{{ user.bio?.length || 0 }} / 200</small>
+    </div>
+
+    <!-- Gender Field -->
+    <div class="form-group">
+      <label class="form-label">Gender</label>
+      <select class="form-input" [(ngModel)]="user.gender" name="gender">
+        <option value="">Prefer not to say</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+      <small class="helper-text">This won't be part of your public profile.</small>
+    </div>
+
+    <!-- Profile Type Field -->
+    <div class="form-group">
+      <div class="switch-group">
+        <div class="switch-info">
+          <label class="form-label mb-0">Private Account</label>
+          <small class="helper-text">When your account is private, only people you approve can see your photos and videos.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" 
+                 [checked]="!user.isPublic" 
+                 (change)="user.isPublic = !user.isPublic"
+                 name="isPublic">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
 
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Username</label>
-      <div class="col-sm-9">
-        <input type="text" disabled="true" class="form-control" [(ngModel)]="user.userName" name="username">
+    <!-- Location Visible Field -->
+    <div class="form-group">
+      <div class="switch-group">
+        <div class="switch-info">
+          <label class="form-label mb-0">Show Location</label>
+          <small class="helper-text">Allow others to see your location information.</small>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" 
+                 [(ngModel)]="user.isLocationEnable" 
+                 name="isLocationEnable">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
     </div>
 
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Bio</label>
-      <div class="col-sm-9">
-        <textarea class="form-control" rows="3" [(ngModel)]="user.bio" name="bio"></textarea>
-      </div>
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button class="btn-submit" type="submit">Submit</button>
     </div>
 
-    <!-- <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Website</label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" [(ngModel)]="user.website" name="website">
-      </div>
-    </div> -->
- 
-
-    <!-- <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Email</label>
-      <div class="col-sm-9">
-        <input type="email" class="form-control" [(ngModel)]="user.email" name="email">
-      </div>
-    </div>
-
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Phone Number</label>
-      <div class="col-sm-9">
-        <input type="tel" class="form-control" [(ngModel)]="user.phone" name="phone">
-      </div>
-    </div> -->
-
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Gender</label>
-      <div class="col-sm-9">
-        <select class="form-select" [(ngModel)]="user.gender" name="gender">
-          <option value="">Select</option>
-          <option value="Male" >Male</option>
-          <option value="Female" >Female</option>
-          <!-- <option>Prefer not to say</option> -->
-        </select>
-        <span class="fs-small" style="color: rgb(175, 175, 175);" >This won’t be part of your public profile.</span>
-      </div>
-    </div>
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Profile Type</label>
-      <div class="col-sm-9">
-        <select class="form-select" [(ngModel)]="user.isPublic" name="isPublic">
-          <option disabled value="">Select</option>
-          <option [ngValue]="true" >Public</option>
-          <option [ngValue]="false" >Private</option>
-          <!-- <option>Prefer not to say</option> -->
-        </select>
-      </div>
-    </div>
-    <div class="mb-3 row">
-      <label class="col-sm-3 col-form-label text-end">Location Visible</label>
-      <div class="col-sm-9">
-        <select class="form-select" [(ngModel)]="user.isLocationEnable" name="isLocationEnable">
-          <option disabled value="">Select</option>
-          <option [ngValue]="true" >True</option>
-          <option [ngValue]="false" >False</option>
-          <!-- <option>Prefer not to say</option> -->
-        </select>
-      </div>
-    </div>
-
-    <div class="text-center mt-4">
-      <button class="btn btn-primary px-4" type="submit">Submit</button>
-    </div>
-    <div class="text-center mt-4 ">
-      <button class="btn btn-secondary display-none-ok px-4" type="button" (click)="logout()">Logout</button>
+    <!-- Logout Button (Mobile Only) -->
+    <div class="form-actions mobile-only">
+      <button class="btn-logout" type="button" (click)="logout()">Log Out</button>
     </div>
   </form>
 </div>
- 
 
-<!-- Bootstrap Modal -->
+<!-- Profile Photo Modal -->
 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
-      <div class="modal-header border-0">
-        <h5 class="modal-title w-100" id="profileModalLabel">Change Profile Photo</h5>
+    <div class="modal-content profile-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">Change Profile Photo</h5>
       </div>
-      <div class="modal-body p-0">
-        <button class="btn w-100 text-primary fw-bold border-top" (click)="triggerFileInput()">Upload Photo</button>
-        <button class="btn w-100 text-danger border-top" (click)="removePhoto()">Remove Current Photo</button>
-        <button class="btn w-100 border-top text-white" #closeModal data-bs-dismiss="modal">Cancel</button>
+      <div class="modal-body">
+        <button class="modal-action-btn primary" (click)="triggerFileInput()">
+          Upload Photo
+        </button>
+        <button class="modal-action-btn danger" (click)="removePhoto()">
+          Remove Current Photo
+        </button>
+        <button class="modal-action-btn" #closeModal data-bs-dismiss="modal">
+          Cancel
+        </button>
       </div>
     </div>
   </div>

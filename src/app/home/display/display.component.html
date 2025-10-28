@@ -214,7 +214,7 @@
 
           <!-- Add Comment -->
           <div class="d-flex align-items-center pt-2 border-top" style="border-color: rgb(38, 38, 38) !important;">
-            <input #commentInput [(ngModel)]="newComments[post.postId]"
+            <input #commentInput [(ngModel)]="newComments[post.postId]" (keydown.enter)="addComment(post)"
               class="form-control bg-black text-white border-0 px-0" style="box-shadow: none; font-size: 14px;"
               placeholder="Add a comment..." />
             <button *ngIf="newComments[post.postId]?.trim()" style="padding: 0 !important; font-size: 14px;"

@@ -1,22 +1,365 @@
-form {
-  input, textarea, select {
-    font-size: 14px;
-  }
-
-  .form-label {
-    font-weight: 500;
-  }
-
-  .btn-primary {
-    border-radius: 10px;
-  }
+ 
+/* Container */
+.profile-edit-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+  background: #000000;
+  color: #fff;
+  min-height: 100vh;
 }
 
-.display-none-ok{
-  display: none !important;
+/* Header */
+.profile-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #dbdbdb;
+  position: sticky;
+  top: 0;
+  color: #ffffff;
+  background: #000000;
+  z-index: 10;
 }
+
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Profile Photo Section */
+.profile-photo-section {
+  display: flex;
+  align-items: center;
+  padding: 24px 20px;
+  gap: 20px;
+  border-bottom: 1px solid #efefef;
+}
+
+.profile-photo-wrapper {
+  flex-shrink: 0;
+}
+
+.profile-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dbdbdb;
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.username {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.change-photo-btn {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.change-photo-btn:hover {
+  color: #00376b;
+}
+
+/* Form */
+.profile-form {
+  padding: 16px 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #262626;
+  background: #ffffff;
+  border: 1px solid #dbdbdb;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: #a8a8a8;
+}
+
+.form-input:disabled {
+  background: #fafafa;
+  color: #8e8e8e;
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  color: #8e8e8e;
+  margin-top: 6px;
+}
+
+.helper-text {
+  display: block;
+  font-size: 12px;
+  color: #8e8e8e;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Toggle Switch */
+.switch-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.switch-info {
+  flex: 1;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #dbdbdb;
+  transition: 0.3s;
+  border-radius: 28px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: #0095f6;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 32px;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0095f6;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover {
+  background: #1877f2;
+}
+
+.btn-submit:active {
+  background: #00376b;
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ed4956;
+  background: transparent;
+  border: 1px solid #ed4956;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  background: #fff5f5;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Modal */
+.profile-modal {
+  background: #000000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: none; 
+}
+
+.profile-modal .modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #dbdbdb;
+  justify-content: center;
+}
+
+.profile-modal .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.profile-modal .modal-body {
+  padding: 0;
+}
+
+.modal-action-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 14px;
+  background: none;
+  border: none;
+  border-top: 1px solid #dbdbdb;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #ffffff;
+}
+
+.modal-action-btn:hover {
+  background: #636363;
+}
+
+.modal-action-btn.primary {
+  color: #0095f6;
+  font-weight: 600;
+}
+
+.modal-action-btn.danger {
+  color: #ed4956;
+  font-weight: 700;
+}
+
+/* Responsive */
 @media screen and (max-width: 768px) {
-  .display-none-ok{
-    display: block !important;
+  .mobile-only {
+    display: block;
+  }
+  
+  .profile-edit-container {
+    max-width: 100%;
+    height: 117vh;
+  }
+  
+  .profile-header {
+    padding: 12px 16px;
+  }
+  
+  .profile-photo-section {
+    padding: 20px 16px;
+  }
+  
+  .profile-form {
+    padding: 16px;
   }
 }
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .profile-edit-container {
+    background: #000000;
+  }
+  
+  .header-title,
+  .username,
+  .form-label,
+  .form-input,
+  .modal-action-btn {
+    color: #ffffff;
+  }
+  
+  .profile-header,
+  .profile-photo-section {
+    border-color: #262626;
+  }
+  
+  .form-input {
+    background: #000000;
+    border-color: #262626;
+  }
+  
+  .form-input:disabled {
+    background: #121212;
+    color: #737373;
+  }
+  
+  .helper-text,
+  .char-count {
+    color: #737373;
+  }
+  
+  .profile-modal {
+    background: #262626;
+  }
+  
+  .profile-modal .modal-header,
+  .modal-action-btn {
+    border-color: #363636;
+  }
+  
+  .modal-action-btn:hover {
+    background: #1a1a1a;
+  }
+} 
