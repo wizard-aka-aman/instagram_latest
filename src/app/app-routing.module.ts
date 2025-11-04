@@ -4,6 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { PostViewComponent } from './profile/post-view/post-view.component';
 import { ReelViewComponent } from './profile/reel-view/reel-view.component';
+import { CRInfoComponent } from './crinfo/crinfo.component';
 
 const routes: Routes = [
     {
@@ -29,6 +30,10 @@ const routes: Routes = [
     {
         path: 'messages',
         loadChildren: () => import('./message/message.module').then(e => e.MessageModule)
+    },
+    {
+        path: 'cr',
+        component : CRInfoComponent
     },
     {
         path: 'notifications',

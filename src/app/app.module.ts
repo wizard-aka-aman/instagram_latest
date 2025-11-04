@@ -11,13 +11,14 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms'; 
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { TokenInterceptor } from './token.interceptor';
+import { CRInfoComponent } from './crinfo/crinfo.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent, 
-    PagenotfoundComponent 
+    PagenotfoundComponent, CRInfoComponent 
   ],
   imports: [
     BrowserModule,

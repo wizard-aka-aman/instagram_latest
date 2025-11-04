@@ -1,0 +1,288 @@
+<div class="clash-royale-app">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="icon">👑</span>
+        Clash Royale Stats
+      </h1>
+      <p class="hero-subtitle">Track your progress, analyze your cards, and dominate the arena</p>
+      
+      <!-- Search Bar -->
+      <div class="search-container">
+        <div class="search-wrapper">
+          <input 
+            type="text" 
+            [(ngModel)]="playerTag"
+            (keyup.enter)="searchPlayer()"
+            placeholder="Enter Player Tag (e.g., #YJ9LLQGUY)"
+            class="search-input"
+          />
+          <button 
+            (click)="searchPlayer()"
+            [disabled]="loading"
+            class="search-btn"
+          >
+            <span *ngIf="!loading">🔍 Search</span>
+            <span *ngIf="loading" class="loading-spinner">⏳</span>
+          </button>
+        </div>
+        <p class="search-hint">Remove the # symbol from your player tag</p>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        ⚠️ {{ error }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Stats Section -->
+  <div *ngIf="playerData" class="container">
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-info">
+          <h2 class="player-name">{{ playerData.name }}</h2>
+          <p class="player-tag">{{ playerData.tag }}</p>
+          <p class="player-clan" *ngIf="playerData.clan">
+            🏰 {{ playerData.clan.name }}
+          </p>
+        </div>
+        <div class="player-avatar">
+          <div class="level-badge">{{ playerData.expLevel }}</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ playerData.trophies }}</div>
+            <div class="stat-label">Trophies</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ playerData.bestTrophies }}</div>
+            <div class="stat-label">Best</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">⚔️</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ playerData.battleCount }}</div>
+            <div class="stat-label">Battles</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ getWinRate().toFixed(1) }}%</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arena-badge">
+        📍 {{ playerData.arena.name }}
+      </div>
+    </div>
+
+    <!-- Current Deck -->
+    <div class="section-header">
+      <h3>⚡ Current Battle Deck</h3>
+    </div>
+    
+    <div class="deck-container">
+      <div *ngFor="let card of playerData.currentDeck" class="deck-card">
+        <img [src]="card.iconUrls.medium" [alt]="card.name" class="card-image">
+        <div class="card-elixir">{{ card.elixirCost }}</div>
+        <div class="card-level">Lv {{ card.level }}</div>
+        <span *ngIf="card.evolutionLevel" class="evolution-badge">⚡ Evo</span>
+      </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <div class="filters-header">
+        <h3>🎴 All Cards ({{ filteredCards.length }})</h3>
+        <div class="filter-actions">
+          <button 
+            class="filter-toggle-btn"
+            (click)="showFilters = !showFilters"
+          >
+            {{ showFilters ? '🔼 Hide' : '🔽 Show' }} Filters
+          </button>
+          <button 
+            class="view-toggle-btn"
+            (click)="viewMode = viewMode === 'grid' ? 'list' : 'grid'"
+          >
+            {{ viewMode === 'grid' ? '📋' : '🔲' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-panel" [class.show]="showFilters">
+        <!-- Search -->
+        <div class="filter-group full-width">
+          <label>🔍 Search Cards</label>
+          <div class="search-wrapper">
+            <input 
+              type="text"
+              [(ngModel)]="searchTerm"
+              (input)="applyFilters()"
+              placeholder="Search by card name..."
+              class="filter-input"
+            />
+          </div>
+        </div>
+
+        <!-- Rarity Filter -->
+        <div class="filter-group">
+          <label>💎 Rarity</label>
+          <select 
+            [(ngModel)]="selectedRarity"
+            (change)="applyFilters()"
+            class="filter-select"
+          >
+            <option *ngFor="let rarity of rarities" [value]="rarity">
+              {{ rarity | titlecase }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Elixir Cost Filter -->
+        <div class="filter-group">
+          <label>⚡ Elixir Cost</label>
+          <select 
+            [(ngModel)]="selectedElixirCost"
+            (change)="applyFilters()"
+            class="filter-select"
+          >
+            <option *ngFor="let cost of elixirCosts" [value]="cost">
+              {{ cost === 'all' ? 'All' : cost + ' Elixir' }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Level Range -->
+        <div class="filter-group">
+          <label>📊 Min Level: {{ minLevel }}</label>
+          <input 
+            type="range"
+            [(ngModel)]="minLevel"
+            (input)="applyFilters()"
+            min="1"
+            max="14"
+            class="filter-range"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>📊 Max Level: {{ maxLevel }}</label>
+          <input 
+            type="range"
+            [(ngModel)]="maxLevel"
+            (input)="applyFilters()"
+            min="1"
+            max="14"
+            class="filter-range"
+          />
+        </div>
+
+        <!-- Sort Options -->
+        <div class="filter-group">
+          <label>🔄 Sort By</label>
+          <select 
+            [(ngModel)]="sortBy"
+            (change)="applyFilters()"
+            class="filter-select"
+          >
+            <option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>📶 Order</label>
+          <button 
+            class="sort-order-btn"
+            (click)="toggleSortOrder()"
+          >
+            {{ sortOrder === 'asc' ? '⬆️ Ascending' : '⬇️ Descending' }}
+          </button>
+        </div>
+
+        <div class="filter-group full-width">
+          <button class="reset-btn" (click)="resetFilters()">
+            🔄 Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Display -->
+    <div class="cards-container" [class.list-view]="viewMode === 'list'">
+      <div 
+        *ngFor="let card of filteredCards"
+        class="card-item"
+        [style.border-color]="getRarityColor(card.rarity)"
+      >
+        <div class="card-image-wrapper">
+          <img [src]="card.iconUrls.medium" [alt]="card.name" class="card-img">
+          <div class="card-elixir-badge">{{ card.elixirCost }}</div>
+          <div 
+            class="card-rarity-badge"
+            [style.background-color]="getRarityColor(card.rarity)"
+          >
+            {{ card.rarity }}
+          </div>
+        </div>
+        
+        <div class="card-details">
+          <h4 class="card-name">{{ card.name }}</h4>
+          
+          <div class="card-stats">
+            <div class="card-stat">
+              <span class="stat-icon">📊</span>
+              <span>Level {{ card.level }}/{{ card.maxLevel }}</span>
+            </div>
+            
+            <div class="card-stat">
+              <span class="stat-icon">🎴</span>
+              <span>{{ card.count }} cards</span>
+            </div>
+
+            <div *ngIf="card.evolutionLevel" class="card-stat evolution">
+              <span class="stat-icon">⚡</span>
+              <span>Evo {{ card.evolutionLevel }}</span>
+            </div>
+
+            <div *ngIf="card.starLevel" class="card-stat star">
+              <span class="stat-icon">⭐</span>
+              <span>Star {{ card.starLevel }}</span>
+            </div>
+          </div>
+
+          <div class="progress-bar">
+            <div 
+              class="progress-fill"
+              [style.width.%]="(card.level / card.maxLevel) * 100"
+              [style.background-color]="getRarityColor(card.rarity)"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredCards.length === 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <p>No cards found matching your filters</p>
+      <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+  </div>
+</div>
