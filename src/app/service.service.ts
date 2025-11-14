@@ -385,4 +385,7 @@ export class ServiceService {
   GetAllTaggedPost(username:string){
     return this.http.get(`${this.BaseUrl}/Posts/taggedPost/${username}`);
   }
+  SendFile(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Chat/sendfile`,item)
+  }
 }

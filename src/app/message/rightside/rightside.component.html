@@ -58,7 +58,7 @@
       <span *ngIf="msg.postLink == null && msg.reelPublicId == null" >{{ msg.message }}</span>
 
       <!-- Post / Reel -->
-  <div *ngIf="msg.postLink != null || msg.reelPublicId !=null"
+  <div *ngIf="msg.postLink != null || msg.reelPublicId !=null && msg.messageType!= 'file' && msg.mediaUrl == null"
      class="card shadow-sm border-0 rounded-3" style="max-width: 350px; background-color: transparent;">
   
   <!-- Header: profile image + username -->
@@ -72,7 +72,7 @@
   </div>
 
   <!-- Media preview (if exists) -->
-  <ng-container *ngIf="msg.postLink">
+  <ng-container *ngIf="msg.postLink" >
     <img [src]="getProfileImage(msg.postLink)"   routerLink="/{{msg.usernameOfPostReel}}/p/{{msg.postId}}"
          class="card-img-top rounded-3" 
          alt="media preview"
@@ -95,12 +95,37 @@
     </p>
   </div>
 </div>
-
-
-
-
       <!-- Reaction Display -->
     </div>
+    <ng-container *ngIf="msg.mediaUrl != null && msg.message ==='Shared a file'">
+
+  <!-- IMAGE PREVIEW -->
+  <img *ngIf="isImage(msg?.mediaUrl)"
+       [src]="msg.mediaUrl"
+       class="rounded mt-1"
+       style="max-width:200px; max-height:200px; object-fit:cover; cursor:pointer;"
+       (click)="downloadFile(msg)" />
+
+  <!-- VIDEO PREVIEW -->
+  <video *ngIf="isVideo(msg?.mediaUrl)"
+         [src]="msg.mediaUrl"
+         controls
+         class="mt-1"
+         style="max-width:250px; max-height:250px; object-fit:cover; cursor:pointer;">
+  </video>
+
+  <!-- OTHER FILE TYPES (txt, zip, pdf, docx, etc.) -->
+  <div *ngIf="!isImage(msg?.mediaUrl) && !isVideo(msg?.mediaUrl)"
+       class="d-flex align-items-center p-2 rounded  text-white mt-1"
+       style="cursor: pointer;"
+       (click)="downloadFile(msg)">
+
+      <i class="fa-solid fa-file fs-4 me-2"></i>
+      <span>{{ getFileName(msg.mediaUrl) }}</span>
+
+  </div>
+
+</ng-container>
     <div *ngIf="msg.reaction && msg.groupName !== user" class=" ">
       <span class="emoji fs-6">{{ msg.reaction }}</span>
     </div>
@@ -126,11 +151,42 @@
     </div>
 
   </div>
+ 
 </div>
 
 
 
+
+ <div *ngIf="selectedFile" class="mb-3 p-2 border rounded text-white">
+
+  <!-- IMAGE PREVIEW -->
+  <img *ngIf="selectedFileUrl && selectedFile.type.startsWith('image/')"
+       [src]="selectedFileUrl"
+       class="rounded"
+       style="max-width: 150px; max-height: 150px; object-fit: cover;" />
+
+  <!-- VIDEO PREVIEW -->
+  <video *ngIf="selectedFileUrl && selectedFile.type.startsWith('video/')"
+         [src]="selectedFileUrl"
+         controls
+         style="max-width: 200px; max-height: 200px;">
+  </video>
+
+  <!-- OTHER FILES (txt, zip, pdf, docx, etc) -->
+  <div *ngIf="!selectedFileUrl" class="d-flex align-items-center">
+      <i class="fa-solid fa-file fs-4 me-2"></i>
+      <span>{{ selectedFileName }}</span>  
+  </div>
+
+  <!-- Remove Button -->
+  <div class="text-danger mt-2" style="cursor:pointer"
+       (click)="clearSelectedFile()">
+    Remove
+  </div>
+
+</div>
 <div *ngIf="!noUserSelected" class="p-3 border-top mb-5" style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
+  
   <form (ngSubmit)="send()">
     <div class="input-group">
       <input type="text"
@@ -140,11 +196,24 @@
              required
              placeholder="Type a message..."
              aria-label="Message"
-             style="box-shadow: none; outline: none; padding-right: 70px;">
+             style="box-shadow: none; outline: none; padding-right: 70px; padding-left: 35px;">
 
+          <!-- Hidden File Input -->
+            <input type="file"
+                  #fileInput
+                  (change)="onFileSelected($event)"
+                  style="display:none;" />
+
+            <!-- Plus (Add File) Button -->
+            <button type="button"
+                    class="btn position-absolute text-primary start-0 me-3"
+                    style="background-color: transparent; border: none; z-index: 10;"
+                    (click)="fileInput.click()">
+                <i class="fa-regular fa-plus fs-5"></i>
+            </button>
       <!-- Send Button inside input -->
       <button type="submit"
-              class="btn position-absolute text-primary end-0 me-3  "
+              class="btn position-absolute text-primary end-0 me-3"
               style="background-color: transparent; border: none;  z-index: 10;">
         Send
       </button>

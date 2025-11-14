@@ -5,6 +5,7 @@ import { ServiceService } from 'src/app/service.service';
 import { ChatService } from 'src/app/chatservice.service';
 import { EventEmitter } from '@angular/core';
 import { MessageServiceService } from 'src/app/message-service.service';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-rightside',
   templateUrl: './rightside.component.html',
@@ -48,7 +49,9 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     }
   }
 
-  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router , private MessageService : MessageServiceService) {
+  constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router , private MessageService : MessageServiceService,
+    private toastr:ToastrService
+  ) {
     this.user = this.ServiceSrv.getUserName();
     this.router.paramMap.subscribe(params => {
       this.groupName = String(params.get('groupname'));
@@ -237,6 +240,9 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
       this.shouldScrollToBottom = true; 
       
     }
+    if(this.selectedFile){
+      this.SendFileFunction();
+    }
 
   }
   toggleMenu(msgId: string): void {
@@ -282,8 +288,92 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
         console.log(error)
       }
     })
+    }
   }
+  selectedFile: File | null = null;
+  selectedFileUrl: any = null;   // Images/videos ke liye
+  selectedFileName: string = '';
+  MAX_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > this.MAX_SIZE) {
+      this.toastr.error(file.name + " file must be less than 10MB");
+      this.clearSelectedFile();
+      this.selectedFile = undefined as any;
+      return;
+    }
+
+    this.selectedFile = file;
+    this.selectedFileName = file.name;
+
+    const fileType = file.type;
+
+    // IMAGE / VIDEO preview
+    if (fileType.startsWith('image/') || fileType.startsWith('video/')) {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        this.selectedFileUrl = reader.result;
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      // TXT / ZIP / PDF / DOCX → No preview, only file name
+      this.selectedFileUrl = null;
+    }
   }
+  clearSelectedFile() {
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.selectedFileUrl = null;
+  }
+  SendFileFunction() {
+    const fData = new FormData();
+    if (this.selectedFile) {
+      fData.append('GroupName', this.user);
+      fData.append('User', this.username);
+      fData.append('file', this.selectedFile);
+
+      this.ServiceSrv.SendFile(fData).subscribe({
+        next: (data: any) => {
+          console.log(data);
+          this.clearSelectedFile();
+
+        },
+        error: (error: any) => {
+          this.toastr.error(error.error)
+          this.clearSelectedFile();
+          console.error(error);
+        }
+      })
+    }
+  }
+  isImage(url: string) {
+  return url?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+}
+
+isVideo(url: string) {
+  return url?.match(/\.(mp4|mov|webm|avi|mkv)$/i);
+}
+
+getFileName(url: string) {
+  return url?.split('/').pop() || 'file';
+}
+downloadFile(msg: any) {
+  if (!msg.mediaUrl) return;
+
+// Force download via Cloudinary transformation
+const downloadUrl = msg.mediaUrl.replace('/upload/', '/upload/fl_attachment/');
+
+const link = document.createElement('a');
+link.href = downloadUrl;
+link.target = '_blank';
+link.click();
+}
+
+
+
 }
 
 
