@@ -6,6 +6,7 @@ import { ChatService } from 'src/app/chatservice.service';
 import { EventEmitter } from '@angular/core';
 import { MessageServiceService } from 'src/app/message-service.service';
 import { ToastrService } from 'ngx-toastr';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 @Component({
   selector: 'app-rightside',
   templateUrl: './rightside.component.html',
@@ -50,7 +51,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   }
 
   constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router , private MessageService : MessageServiceService,
-    private toastr:ToastrService
+    private toastr:ToastrService,private sanitizer: DomSanitizer
   ) {
     this.user = this.ServiceSrv.getUserName();
     this.router.paramMap.subscribe(params => {
@@ -232,17 +233,24 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   }
 
   send(postlink?: string, profilepicture?: string, usernameofpostreel?: string,postid? :number,publicid?:string ,reelurl?:string) {
-    if (this.newMessage.trim()) {
+    if (this.isUploadingFile) {
+    return;
+  }
+  if (this.selectedFile) {
+    this.SendFileFunction();
+  } else if (this.newMessage.trim()) { 
       const DateTime = new Date(); 
       this.chatService.sendMessage(this.user, this.groupName, this.newMessage, DateTime.toLocaleString(),postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl);
       this.FunctionGetSaveRecentMessage(); 
       this.newMessage = '';
       this.shouldScrollToBottom = true; 
-      
+      setTimeout(() => {
+    const textarea = document.querySelector('.chat-input') as HTMLTextAreaElement;
+    if (textarea) {
+      textarea.style.height = 'auto';
     }
-    if(this.selectedFile){
-      this.SendFileFunction();
-    }
+  }, 0);
+  }
 
   }
   toggleMenu(msgId: string): void {
@@ -294,6 +302,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   selectedFileUrl: any = null;   // Images/videos ke liye
   selectedFileName: string = '';
   MAX_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  isUploadingFile: boolean = false;
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -330,7 +339,9 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   }
   SendFileFunction() {
     const fData = new FormData();
-    if (this.selectedFile) {
+    if (this.selectedFile && !this.isUploadingFile) {
+      this.isUploadingFile = true;
+
       fData.append('GroupName', this.user);
       fData.append('User', this.username);
       fData.append('file', this.selectedFile);
@@ -339,14 +350,16 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
         next: (data: any) => {
           console.log(data);
           this.clearSelectedFile();
-
+          // Upload complete - enable button
+          this.isUploadingFile = false;
         },
         error: (error: any) => {
-          this.toastr.error(error.error)
+          this.toastr.error(error.error);
           this.clearSelectedFile();
           console.error(error);
+          this.isUploadingFile = false;
         }
-      })
+      });
     }
   }
   isImage(url: string) {
@@ -371,9 +384,63 @@ link.href = downloadUrl;
 link.target = '_blank';
 link.click();
 }
-
-
-
+copyMessage(msg: any): void {
+  let textToCopy = '';
+    textToCopy = msg.message
+  if (textToCopy) {
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      this.toastr.success('copied!');
+    }).catch(err => {
+      console.error('Failed to copy message:', err);
+    });
+  }
+  this.menuOpenId = null;
+}
+formatMessageWithLinks(message: string): SafeHtml {
+  if (!message) return '';
+  
+  // Escape HTML special characters first to prevent XSS
+  const escaped = message
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+  
+  // Regular expression to match URLs
+  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+|(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?)/g;
+  
+  // Replace URLs with clickable links
+  const formatted = escaped.replace(urlRegex, (url) => {
+    let href = url;
+    
+    // Add https:// if the URL starts with www. or doesn't have a protocol
+    if (url.startsWith('www.')) {
+      href = 'https://' + url;
+    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      href = 'https://' + url;
+    }
+    
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color: #8bf7ffff; text-decoration: underline;">${url}</a>`;
+  });
+  
+  return this.sanitizer.bypassSecurityTrustHtml(formatted);
+}
+// Handle Enter key press
+handleEnterKey(event: any): void {
+  if (!event.shiftKey) {
+    event.preventDefault();
+    if (this.newMessage && this.newMessage.trim()) {
+      this.send();
+    }
+  }
+}
+autoResize(event: any): void {
+  const textarea = event.target;
+  textarea.style.height = 'auto';
+  const newHeight = Math.min(textarea.scrollHeight, 150);
+  textarea.style.height = newHeight + 'px';
+}  
 }
 
 

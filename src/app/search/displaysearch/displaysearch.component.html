@@ -1,31 +1,78 @@
-<div class="search-box position-relative">
-  <p class="text-center fs-2 my-3" >Search</p>
- 
-<div class=" d-flex justify-content-center align-items-center">
-   <div class="input-group  w-50 border-rounded mb-3" >
-  <span class="fa-solid mt-1 text-white border-rounded fa-magnifying-glass input-group-text border-0" style="background-color: rgb(0, 0, 0) !important;"></span>
-  <input type="text"  (input)="DeBounce()" class="form-control w-50  border-rounded"   [(ngModel)]="searchQuery"   placeholder="Search..." >
-</div>
-</div>
+<div #myDiv class="search-container  d-flex flex-column">
+  <!-- Search Input -->
+  <div class="search-input-wrapper px-3 px-md-4 py-3">
+    <div class="position-relative w-100">
+      <input 
+        type="text" 
+        class="form-control search-input ps-5 pe-4" 
+        [(ngModel)]="searchQuery"
+        (input)="DeBounce()"
+        placeholder="Search users..." 
+        autocomplete="off"
+      >
+      <i class="fa-solid fa-magnifying-glass search-icon position-absolute" 
+         style="left: 16px; top: 50%; transform: translateY(-50%); color: #8e8e8e;"></i>
+      
+      <!-- Clear Button -->
+      <button 
+        *ngIf="searchQuery.length > 0"
+        class="btn btn-sm position-absolute end-0 top-50 translate-middle-y me-2"
+        (click)="clearSearch()"
+        style="background: transparent; border: none; color: #8e8e8e; padding: 4px 8px;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
 
-  <!-- Dropdown Results -->
-  <div
-    class="search-dropdown position-absolute bg-dark flex-column d-flex    rounded w-100 mt-1 z-3"
-    *ngIf="showDropdown"
-    style=" height: 300px !important; overflow-y: auto;background-color: black!important; "
-  >
-    <div
-      class="search-item w-50 d-flex py-2 align-items-center hover-effect "
-      *ngFor="let user of searchResults"
-      [routerLink]="['/', user.userName]"
-      (click)="showDropdown = false"
-      style="cursor: pointer;"
-    >
-      <img [src]="getProfileImage(user.profilePicture)" class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;" />
-      <div>
-        <div class="fw-bold text-white">{{ user.userName }}</div>
-        <div class=" small">{{ user.fullName }}</div>
+  <!-- Search Results -->
+  <div class="search-results flex-grow-1 overflow-auto px-3 px-md-4" style="margin-bottom: 50px !important;">
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <i class="fa fa-spinner fa-spin fs-1 text-white"></i>
+      <p class="text-white mt-3">Searching...</p>
+    </div>
+
+    <!-- Empty State - No Search Yet -->
+    <div *ngIf="!searchQuery && !isLoading" class="text-center py-5">
+      <i class="fa-solid fa-magnifying-glass fs-1 mb-3" style="color: #8e8e8e;"></i>
+      <p class="text-white fs-5">Search for users</p>
+      <p class="small" style="color: #8e8e8e;">Find people by username or name</p>
+    </div>
+
+    <!-- No Results Found -->
+    <div *ngIf="searchQuery && !isLoading && searchResults.length === 0" class="text-center py-5">
+      <i class="fa-solid fa-user-slash fs-1 mb-3" style="color: #8e8e8e;"></i>
+      <p class="text-white fs-5">No results found</p>
+      <p class="small" style="color: #8e8e8e;">Try searching with different keywords</p>
+    </div>
+
+    <!-- Results List -->
+    <div *ngIf="searchResults.length > 0 && !isLoading" class="results-list">
+      <p class="small mb-3" style="color: #8e8e8e;">{{ searchResults.length }} result(s) found</p>
+      
+      <div
+        class="search-item d-flex align-items-center p-3 rounded-3 mb-2 position-relative"
+        *ngFor="let user of searchResults"
+        [routerLink]="['/', user.userName]"
+        (click)="clearSearch()"
+      >
+        <img 
+          [src]="getProfileImage(user.profilePicture)" 
+          class="rounded-circle me-3 flex-shrink-0" 
+          width="50" 
+          height="50" 
+          style="object-fit: cover;" 
+        />
+        <div class="flex-grow-1 overflow-hidden">
+          <div class="fw-bold text-white text-truncate">{{ user.userName }}</div>
+          <div class="small text-truncate" style="color: #8e8e8e;">{{ user.fullName }}</div>
+        </div>
+        <i class="fa-solid fa-chevron-right ms-2" style="color: #8e8e8e; font-size: 12px;"></i>
       </div>
     </div>
   </div>
+</div>
+<div *ngIf="width<=768">
+  <app-display-explore></app-display-explore>
 </div>

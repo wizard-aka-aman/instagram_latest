@@ -5,6 +5,7 @@ import { SearchRoutingModule } from './search-routing.module';
 import { DisplaysearchComponent } from './displaysearch/displaysearch.component';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ExploreModule } from '../explore/explore.module';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     SearchRoutingModule,
     RouterModule,
-    FormsModule
+    FormsModule,
+    ExploreModule
   ]
 })
 export class SearchModule { }

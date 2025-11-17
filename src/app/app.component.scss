@@ -57,3 +57,20 @@ input::placeholder {
   width: 4rem;
   height: 4rem;
 }
+/* Fix autocomplete background + text */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+  box-shadow: 0 0 0 1000px #000 inset !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+  caret-color: #fff !important; /* IMPORTANT — visible cursor */
+}
+
+/* Global cursor color */
+input {
+  caret-color: #fff !important;
+}

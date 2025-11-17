@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ServiceService } from 'src/app/service.service';
 
 @Component({
@@ -7,49 +6,89 @@ import { ServiceService } from 'src/app/service.service';
   templateUrl: './displaysearch.component.html',
   styleUrls: ['./displaysearch.component.scss']
 })
-export class DisplaysearchComponent implements OnInit {
+export class DisplaysearchComponent implements OnInit, OnDestroy {
   searchQuery = '';
   searchResults: any[] = []; 
-  showDropdown = false;
+  isLoading = false;
   debounceTimer: any;
-   constructor(private service: ServiceService) { 
-   
+  width= 0;
+  @ViewChild('myDiv') myDiv!: ElementRef;
+  constructor(private service: ServiceService) { }
+
+  ngOnInit(): void { }
+  ngAfterViewInit() {
+    this.updateWidth(); // initial width
   }
-  ngOnInit(): void { 
-  } 
+  ngOnDestroy(): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+  }
 
   performSearch(query: string) {
     if (!query || query.trim().length === 0) {
       this.searchResults = [];
-      this.showDropdown = false;
+      this.isLoading = false;
       return;
     }
+
+    this.isLoading = true;
 
     this.service.SearchUsers(query).subscribe({
       next: (res: any) => {
         this.searchResults = res;
-        this.showDropdown = true;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error(err);
         this.searchResults = [];
-        this.showDropdown = false;
+        this.isLoading = false;
       }
     });
-  } 
-  getProfileImage(image: string | null): string {
-    return !image || image === 'null' ? 'assets/avatar.png' : 'data:image/jpeg;base64,' + image;
   }
-   DeBounce() { 
-    // Clear previous timer
+
+  DeBounce() { 
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
 
-    // Set new timer
+    if (!this.searchQuery || this.searchQuery.trim().length === 0) {
+      this.searchResults = [];
+      this.isLoading = false;
+      return;
+    }
+
+    this.isLoading = true;
+
     this.debounceTimer = setTimeout(() => { 
       this.performSearch(this.searchQuery);
-      // 🔍 API Call or logic here
-    }, 300); // ⏱ 300ms delay
+    }, 300);
   }
+
+  clearSearch() {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.isLoading = false;
+    
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+  }
+
+  getProfileImage(image: string | null): string {
+    return !image || image === 'null' 
+      ? 'assets/avatar.png' 
+      : 'data:image/jpeg;base64,' + image;
+  }
+    // Listen to window resize
+    @HostListener('window:resize', ['$event'])
+    onWindowResize() {
+      console.log(this.width);
+      
+      this.updateWidth();
+    }
+  
+    updateWidth() {
+      this.width = this.myDiv.nativeElement.offsetWidth; 
+    }
 }

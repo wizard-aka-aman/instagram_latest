@@ -1,18 +1,104 @@
-.search-box input {
-  background-color: #262626;
-  color: white;
-  border: 1px solid #444;
+.search-container {
+  background-color: #000;
+   
 }
 
-.search-dropdown {
-  background-color: #262626;
-  color: white;
+.search-input {
+  background-color: #262626 !important;
+  color: white !important;
+  border: 1px solid #3a3a3a !important;
+  border-radius: 12px !important;
+  padding: 12px 16px 12px 48px !important;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.3) !important;
+  border-color: #0095f6 !important;
+}
+
+.search-input::placeholder {
+  color: #8e8e8e !important;
+}
+
+.search-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
 }
 
 .search-item:hover {
-  background-color: #383838;
-  cursor: pointer;
+  background-color: #1a1a1a;
+  border-color: #3a3a3a;
 }
-input::placeholder{
-  color: white !important;
+
+.search-item:active {
+  background-color: #262626;
+}
+
+.results-list {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Styling */
+.search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 4px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .search-header h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .search-input {
+    font-size: 14px;
+    padding: 10px 14px 10px 44px !important;
+  }
+  
+  .search-item {
+    padding: 12px !important;
+  }
+  
+  .search-item img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-input-wrapper {
+    padding: 12px 16px !important;
+  }
+  
+  .search-results {
+    padding: 0 16px !important;
+  }
 }

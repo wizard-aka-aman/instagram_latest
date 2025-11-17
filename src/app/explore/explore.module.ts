@@ -12,6 +12,9 @@ import { DisplayExploreComponent } from './display-explore/display-explore.compo
   imports: [
     CommonModule,
     ExploreRoutingModule
+  ],
+  exports: [
+    DisplayExploreComponent
   ]
 })
 export class ExploreModule { }
