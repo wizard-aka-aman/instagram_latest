@@ -440,7 +440,165 @@ autoResize(event: any): void {
   textarea.style.height = 'auto';
   const newHeight = Math.min(textarea.scrollHeight, 150);
   textarea.style.height = newHeight + 'px';
-}  
+}
+isRecording = false;
+mediaRecorder: any;
+audioChunks: any[] = [];
+audioBlob: Blob | null = null;
+audioUrl: any = null;
+recordStartTime: number = 0;
+recordingDuration: number = 0;
+recordingInterval: any;
+
+minRecordDuration = 500; // 0.5 sec
+maxAudioDuration = 60000; // 60 sec
+
+async startHoldRecording() {
+  // Prevent multiple recordings
+  if (this.isRecording) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    this.mediaRecorder = new MediaRecorder(stream);
+
+    this.audioChunks = [];
+    this.isRecording = true;
+    this.recordStartTime = Date.now();
+    this.recordingDuration = 0;
+
+    // Update recording duration every 100ms
+    this.recordingInterval = setInterval(() => {
+      this.recordingDuration = (Date.now() - this.recordStartTime) / 1000;
+    }, 100);
+
+    this.mediaRecorder.ondataavailable = (event: any) => {
+      this.audioChunks.push(event.data);
+    };
+
+    this.mediaRecorder.start();
+
+    // Auto-stop after 60 seconds
+    setTimeout(() => {
+      if (this.isRecording) {
+        this.stopHoldRecording();
+        this.toastr.info("Maximum recording duration reached (60s)");
+      }
+    }, this.maxAudioDuration);
+
+  } catch (err) {
+    console.error("Microphone error:", err);
+    this.toastr.error("Microphone permission denied or not available");
+    this.isRecording = false;
+  }
+}
+
+stopHoldRecording() {
+  if (!this.isRecording) return;
+
+  this.isRecording = false;
+  
+  // Clear the recording interval
+  if (this.recordingInterval) {
+    clearInterval(this.recordingInterval);
+    this.recordingInterval = null;
+  }
+
+  // Stop all media tracks
+  if (this.mediaRecorder && this.mediaRecorder.stream) {
+    this.mediaRecorder.stream.getTracks().forEach((track: any) => track.stop());
+  }
+
+  this.mediaRecorder.stop();
+
+  this.mediaRecorder.onstop = () => {
+    const duration = Date.now() - this.recordStartTime;
+
+    // Check minimum duration
+    if (duration < this.minRecordDuration) {
+      this.toastr.warning("Recording too short. Hold for at least 0.5 seconds.");
+      this.audioBlob = null;
+      this.audioUrl = null;
+      this.recordingDuration = 0;
+      return;
+    }
+
+    // Valid recording → process audio
+    this.audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
+
+    const unsafeUrl = URL.createObjectURL(this.audioBlob);
+    this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeUrl);
+    
+    this.recordingDuration = 0;
+    this.toastr.success("Voice message recorded successfully!");
+  };
+}
+
+cancelRecordedAudio() {
+  // Revoke the object URL to free memory
+  if (this.audioUrl) {
+    const url = this.audioUrl.changingThisBreaksApplicationSecurity || this.audioUrl;
+    if (typeof url === 'string') {
+      URL.revokeObjectURL(url);
+    }
+  }
+  
+  this.audioBlob = null;
+  this.audioUrl = null;
+  this.audioChunks = [];
+}
+
+sendRecordedAudio() {
+  if (!this.audioBlob) {
+    this.toastr.error("No audio to send");
+    return;
+  }
+
+  const formData = new FormData();
+  
+  // Use appropriate file extension based on blob type
+  const fileName = this.audioBlob.type.includes('webm') 
+    ? 'voiceMessage.webm' 
+    : 'voiceMessage.mp3';
+  
+  formData.append("file", this.audioBlob, fileName);
+  formData.append("GroupName", this.user);
+  formData.append("User", this.groupName);
+
+  this.isUploadingFile = true;
+
+  this.ServiceSrv.SendVM(formData).subscribe({
+    next: (data: any) => {
+      this.isUploadingFile = false;
+      this.cancelRecordedAudio(); // Clean up
+      this.toastr.success("Voice message sent!");
+    },
+    error: (error) => {
+      this.isUploadingFile = false;
+      this.toastr.error("Failed to send voice message");
+      console.error("Upload error:", error);
+    }
+  });
+}
+
+// Optional: Clean up on component destroy
+ngOnDestroy() {
+  if (this.recordingInterval) {
+    clearInterval(this.recordingInterval);
+  }
+  if (this.mediaRecorder && this.mediaRecorder.stream) {
+    this.mediaRecorder.stream.getTracks().forEach((track: any) => track.stop());
+  }
+  this.cancelRecordedAudio();
+}
+
+  async toggleRecording() {
+    if (!this.isRecording) { 
+      await this.startHoldRecording(); 
+    }
+    else {
+       this.stopHoldRecording(); 
+      }
+  }
 }
 
 

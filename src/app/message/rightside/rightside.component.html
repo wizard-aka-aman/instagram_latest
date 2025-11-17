@@ -95,13 +95,15 @@
           </ng-container>
 
           <!-- Caption -->
-          <div class="card-body p-2">
+          <div class="card-body p-2" *ngIf="msg.message !== 'Voice Message' && !msg.mediaUrl">
             <p class="card-text mb-1 text-white">
               {{ msg.message }}
             </p>
           </div>
         </div>
-
+        <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl">
+          <audio [src]="msg.mediaUrl" controls></audio>
+        </div>
         <!-- File Section (Shared a file) -->
         <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
 
@@ -184,43 +186,88 @@
       Remove
     </div>
 
+  </div> 
+<div *ngIf="isRecording" class="recording-bar">
+  <div class="d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-2">
+      <div class="recording-dot"></div>
+      <span class="recording-text">Recording...</span>
+    </div>
+    <div class="recording-timer">
+      {{ recordingDuration | number:'1.0-0' }}s / 60s
+    </div>
   </div>
- <div *ngIf="!noUserSelected" class="p-3 border-top mb-5"
-    style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
+  <div class="recording-progress">
+    <div class="progress-fill" [style.width.%]="(recordingDuration / 60) * 100"></div>
+  </div>
+</div>
 
-    <form (ngSubmit)="send()">
-      <div class="input-group position-relative d-flex align-items-end">
-        <div class="input-wrapper flex-grow-1">
-          <textarea class="chat-input" 
-                    [(ngModel)]="newMessage" 
-                    name="message"
-                    (input)="autoResize($event)"
-                    (keydown.enter)="handleEnterKey($event)" 
-                    placeholder="Type a message..."></textarea>
-        </div>
+<!-- Preview After Recording -->
+<div *ngIf="audioUrl && !isRecording" class="au dio-preview-card">
+  <div class="d-flex align-items-center gap-3">
+    <div class="flex-grow-1">
+      <audio [src]="audioUrl" controls class="w-100"></audio>
+    </div>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-success " (click)="sendRecordedAudio()">
+        <i class="fa-solid fa-paper-plane me-2"></i>Send
+      </button>
+      <button class="btn btn-outline-danger" (click)="cancelRecordedAudio()">
+        <i class="fa-solid fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</div>
 
-        <!-- Hidden File Input -->
-        <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none;" />
+<!-- Message Input Area -->
+<div *ngIf="!noUserSelected" class="p-3 border-top mb-5"
+     style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
 
-        <!-- Plus (Add File) Button -->
-        <button type="button" 
-                class="btn text-primary input-btn-left"
-                (click)="fileInput.click()">
-          <i class="fa-regular fa-plus fs-5"></i>
-        </button>
-        
-        <!-- Send Button -->
-        <button type="submit" 
-                class="btn text-primary input-btn-right"
-                [disabled]="isUploadingFile">
-          <span *ngIf="!isUploadingFile">Send</span>
-          <span *ngIf="isUploadingFile">
-            <i class="fa fa-spinner fa-spin"></i>
-          </span>
-        </button>
+  <form (ngSubmit)="send()">
+    <div class="input-group position-relative d-flex align-items-end">
+      <div class="input-wrapper flex-grow-1">
+        <textarea class="chat-input" 
+                  [(ngModel)]="newMessage" 
+                  name="message"
+                  (input)="autoResize($event)"
+                  (keydown.enter)="handleEnterKey($event)" 
+                  placeholder="Type a message..."></textarea>
       </div>
-    </form>
-  </div>
+
+      <!-- Hidden File Input -->
+      <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none;" />
+
+      <!-- Plus (Add File) Button -->
+      <button type="button" 
+              class="btn text-primary input-btn-left"
+              (click)="fileInput.click()">
+        <i class="fa-regular fa-plus fs-5"></i>
+      </button>
+
+      <!-- Mic Button (show only when message is empty) - CLICK EVENT -->
+      <button *ngIf="!newMessage || newMessage.trim() === ''"
+              type="button"
+              class="btn text-primary input-btn-right ms-5"
+              (click)="toggleRecording()">
+        <i [class.fa-microphone]="!isRecording"
+           [class.fa-stop]="isRecording"
+           class="fa-solid fs-5"></i>
+      </button>
+
+      <!-- Send Button (show only when message is NOT empty) -->
+      <button *ngIf="newMessage && newMessage.trim() !== ''"
+              type="submit"
+              class="btn text-primary input-btn-right"
+              [disabled]="isUploadingFile">
+        <span *ngIf="!isUploadingFile">Send</span>
+        <span *ngIf="isUploadingFile">
+          <i class="fa fa-spinner fa-spin"></i>
+        </span>
+      </button>
+
+    </div>
+  </form>
+</div>
 
 
 </div>

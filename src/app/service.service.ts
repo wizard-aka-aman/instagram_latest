@@ -388,4 +388,7 @@ export class ServiceService {
   SendFile(item:any){
     return this.http.post(`${this.BaseUrl}/api/Chat/sendfile`,item)
   }
+  SendVM(item:any){
+    return this.http.post(`${this.BaseUrl}/api/Chat/SendVoiceMessage`,item)
+  }
 }
