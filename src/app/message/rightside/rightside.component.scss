@@ -632,7 +632,15 @@ input::placeholder {
 
   .chat-input {
     font-size: 14px;
-    padding: 8px 10px;
+    line-height: 1;
+    padding: 12px 40px;
+    max-height: 150px;
+    min-height: 20px;
+    overflow-y: auto;
+    outline: none;
+    line-height: 1;
+    scrollbar-width: none;
+        height: 44px;
   }
 
   .input-btn-left, .input-btn-right {
@@ -641,3 +649,214 @@ input::placeholder {
   }
 }
 
+
+/* Recording Indicator */
+.recording-indicator {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, rgba(185, 28, 28, 0.2) 100%);
+  border-top: 1px solid rgba(220, 38, 38, 0.3);
+  padding: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.recording-pulse {
+  width: 12px;
+  height: 12px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.recording-time {
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.recording-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.recording-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+  transition: width 0.3s ease;
+}
+
+/* Audio Preview */
+.audio-preview {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+  border-top: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.audio-preview-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.audio-waveform {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.audio-player {
+  flex: 1;
+  height: 40px;
+  outline: none;
+}
+
+.audio-preview-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.audio-preview-actions .btn {
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.audio-preview-actions .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+ .audio-container {
+  max-width: 100%;
+  padding: 0.5rem;
+}
+ .audio-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.audio-player {
+  max-width: 100%;
+}
+.recording-active {
+  animation: button-pulse 1.5s infinite;
+}
+
+.recording-pulse {
+  animation: icon-pulse 1s infinite;
+}
+
+@keyframes button-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+  }
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.mic-permission-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.mic-box {
+  background: #ffffff;
+  width: 320px;
+  padding: 22px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0px 0px 22px rgba(255,255,255,0.15);
+}
+
+.mic-icon {
+  font-size: 55px;
+  color: #ff4444;
+  margin-bottom: 10px;
+}
+
+.mic-box h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.mic-box p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+/* Audio Processing Loader */
+.audio-processing { 
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #dee2e6;
+}
+
+.audio-processing i {
+  font-size: 1.2rem;
+}
+
+.audio-processing span {
+  color: #bdc1c5;
+  font-weight: 500;
+}
+
+/* Disabled textarea styling */
+textarea.chat-input:disabled { 
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Recording Active Button */
+.recording-active {
+  background-color: #ff4444 !important;
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+  }
+}
+
+/* Button disabled state */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

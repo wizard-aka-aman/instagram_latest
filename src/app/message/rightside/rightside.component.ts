@@ -496,6 +496,7 @@ stopHoldRecording() {
   if (!this.isRecording) return;
 
   this.isRecording = false;
+  this.isProcessingAudio = true; // Show loader
   
   // Clear the recording interval
   if (this.recordingInterval) {
@@ -519,6 +520,7 @@ stopHoldRecording() {
       this.audioBlob = null;
       this.audioUrl = null;
       this.recordingDuration = 0;
+      this.isProcessingAudio = false; // Hide loader
       return;
     }
 
@@ -529,9 +531,11 @@ stopHoldRecording() {
     this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeUrl);
     
     this.recordingDuration = 0;
+    this.isProcessingAudio = false; // Hide loader after processing
     this.toastr.success("Voice message recorded successfully!");
   };
 }
+
 
 cancelRecordedAudio() {
   // Revoke the object URL to free memory
@@ -546,34 +550,37 @@ cancelRecordedAudio() {
   this.audioUrl = null;
   this.audioChunks = [];
 }
-
+isSendAudio = false;
 sendRecordedAudio() {
   if (!this.audioBlob) {
     this.toastr.error("No audio to send");
     return;
   }
-
+  this.isSendAudio = true
+  
   const formData = new FormData();
   
   // Use appropriate file extension based on blob type
   const fileName = this.audioBlob.type.includes('webm') 
-    ? 'voiceMessage.webm' 
-    : 'voiceMessage.mp3';
+  ? 'voiceMessage.webm' 
+  : 'voiceMessage.mp3';
   
   formData.append("file", this.audioBlob, fileName);
   formData.append("GroupName", this.user);
   formData.append("User", this.groupName);
-
+  
   this.isUploadingFile = true;
-
+  
   this.ServiceSrv.SendVM(formData).subscribe({
     next: (data: any) => {
+      this.isSendAudio = false;
       this.isUploadingFile = false;
       this.cancelRecordedAudio(); // Clean up
       this.toastr.success("Voice message sent!");
     },
     error: (error) => {
       this.isUploadingFile = false;
+      this.isSendAudio = false;
       this.toastr.error("Failed to send voice message");
       console.error("Upload error:", error);
     }
@@ -591,14 +598,105 @@ ngOnDestroy() {
   this.cancelRecordedAudio();
 }
 
-  async toggleRecording() {
-    if (!this.isRecording) { 
-      await this.startHoldRecording(); 
+async toggleRecording() {
+  if (!this.isRecording) {
+    // Check if browser supports getUserMedia
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.toastr.error("Your browser doesn't support audio recording");
+      return;
     }
-    else {
-       this.stopHoldRecording(); 
+
+    try {
+      // Request microphone permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Permission granted - start recording
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.audioChunks = [];
+      this.isRecording = true;
+      this.isProcessingAudio = false; // Reset processing state
+      this.recordStartTime = Date.now();
+      this.recordingDuration = 0;
+
+      // Update recording duration every 100ms
+      this.recordingInterval = setInterval(() => {
+        this.recordingDuration = (Date.now() - this.recordStartTime) / 1000;
+      }, 100);
+
+      this.mediaRecorder.ondataavailable = (event: any) => {
+        this.audioChunks.push(event.data);
+      };
+
+      this.mediaRecorder.start();
+
+      // Auto-stop after 60 seconds
+      setTimeout(() => {
+        if (this.isRecording) {
+          this.stopHoldRecording();
+          this.toastr.info("Maximum recording duration reached (60s)");
+        }
+      }, this.maxAudioDuration);
+
+    } catch (error: any) {
+      // Handle different types of errors
+      console.error("Microphone error:", error);
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        this.showMicPermissionPopup = true;
+        this.toastr.error("🎤 Microphone permission denied! Please allow microphone access in your browser settings.", 
+          "Permission Required", 
+          { timeOut: 5000 });
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        this.toastr.error("🎤 No microphone found on your device!", 
+          "Microphone Not Found");
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        this.toastr.error("🎤 Microphone is already in use by another application", 
+          "Microphone Busy");
+      } else if (error.name === 'OverconstrainedError') {
+        this.toastr.error("🎤 Audio recording not supported on this device", 
+          "Not Supported");
+      } else if (error.name === 'SecurityError') {
+        this.toastr.error("🎤 Microphone access requires HTTPS connection", 
+          "Security Error");
+      } else {
+        this.toastr.error("🎤 Failed to access microphone: " + error.message, 
+          "Microphone Error");
       }
+      
+      this.isRecording = false;
+    }
+  } else {
+    // Stop recording
+    this.stopHoldRecording();
   }
+}
+showMicPermissionPopup = false;
+closeMicPopup() {
+  this.showMicPermissionPopup = false;
+}
+
+// Browser settings open karne ka try
+openBrowserSettings() {
+  this.showMicPermissionPopup = false;
+
+  // Chrome mobile & desktop
+  if (navigator.userAgent.includes("Chrome")) {
+    window.open("chrome://settings/content/microphone");
+    return;
+  }
+
+  // Android WebView / Samsung
+  if (navigator.userAgent.includes("Android")) {
+    window.open("about:preferences#privacy", "_blank");
+    return;
+  }
+
+  // Safari iPhone
+  this.toastr.info("Please go to Settings > Safari > Microphone and Allow");
+}
+isProcessingAudio = false;
+
+
 }
 
 

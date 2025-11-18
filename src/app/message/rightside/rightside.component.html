@@ -101,9 +101,9 @@
             </p>
           </div>
         </div>
-        <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl">
-          <audio [src]="msg.mediaUrl" controls></audio>
-        </div>
+          <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl" class="audio-wrapper">
+            <audio [src]="msg.mediaUrl" controls class="audio-player"></audio>
+          </div>
         <!-- File Section (Shared a file) -->
         <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
 
@@ -187,29 +187,37 @@
     </div>
 
   </div> 
-<div *ngIf="isRecording" class="recording-bar">
-  <div class="d-flex align-items-center justify-content-between">
+<!-- Recording Indicator -->
+<div *ngIf="isRecording" class="recording-indicator">
+  <div class="d-flex align-items-center justify-content-between mb-2">
     <div class="d-flex align-items-center gap-2">
-      <div class="recording-dot"></div>
-      <span class="recording-text">Recording...</span>
+      <div class="recording-pulse"></div>
+      <span class="fw-medium">Recording...</span>
     </div>
-    <div class="recording-timer">
-      {{ recordingDuration | number:'1.0-0' }}s / 60s
-    </div>
+    <span class="recording-time">{{ recordingDuration | number:'1.0-0' }}s / 60s</span>
   </div>
-  <div class="recording-progress">
-    <div class="progress-fill" [style.width.%]="(recordingDuration / 60) * 100"></div>
+  <div class="recording-progress-bar">
+    <div class="recording-progress-fill" [style.width.%]="(recordingDuration / 60) * 100"></div>
   </div>
 </div>
 
-<!-- Preview After Recording -->
-<div *ngIf="audioUrl && !isRecording" class="au dio-preview-card">
-  <div class="d-flex align-items-center gap-3">
-    <div class="flex-grow-1">
-      <audio [src]="audioUrl" controls class="w-100"></audio>
+<!-- Processing Audio Loader -->
+<div *ngIf="isProcessingAudio" class="audio-processing">
+  <div class="d-flex align-items-center gap-2">
+    <i class="fa fa-spinner fa-spin text-primary"></i>
+    <span>Processing audio...</span>
+  </div>
+</div>
+
+<!-- Audio Preview (After Recording) -->
+<div *ngIf="audioUrl && !isRecording && !isProcessingAudio" class="audio-preview">
+  <div class="audio-preview-content">
+    <div class="audio-waveform">
+      <i class="fa-solid fa-microphone-lines fs-4 text-primary me-3"></i>
+      <audio [src]="audioUrl" controls class="audio-player"></audio>
     </div>
-    <div class="d-flex gap-2 mt-3">
-      <button class="btn btn-success " (click)="sendRecordedAudio()">
+    <div class="audio-preview-actions">
+      <button class="btn btn-success px-4" [disabled]="isSendAudio" (click)="sendRecordedAudio()">
         <i class="fa-solid fa-paper-plane me-2"></i>Send
       </button>
       <button class="btn btn-outline-danger" (click)="cancelRecordedAudio()">
@@ -231,34 +239,43 @@
                   name="message"
                   (input)="autoResize($event)"
                   (keydown.enter)="handleEnterKey($event)" 
-                  placeholder="Type a message..."></textarea>
+                  placeholder="Type a message..."
+                  [disabled]="isRecording || isProcessingAudio"></textarea>
       </div>
 
       <!-- Hidden File Input -->
       <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none;" />
 
-      <!-- Plus (Add File) Button -->
+      <!-- Plus (Add File) Button - Disabled when recording or audio preview -->
       <button type="button" 
               class="btn text-primary input-btn-left"
-              (click)="fileInput.click()">
+              (click)="fileInput.click()"
+              [disabled]="isRecording || isProcessingAudio || audioUrl">
         <i class="fa-regular fa-plus fs-5"></i>
       </button>
 
-      <!-- Mic Button (show only when message is empty) - CLICK EVENT -->
-      <button *ngIf="!newMessage || newMessage.trim() === ''"
+      <!-- Mic Button - Show when no message and no audio preview -->
+      <button *ngIf="(!newMessage || newMessage.trim() === '') && !audioUrl"
               type="button"
-              class="btn text-primary input-btn-right ms-5"
+              class="btn input-btn-right ms-5"
+              
+              [disabled]="isUploadingFile || isProcessingAudio"
               (click)="toggleRecording()">
-        <i [class.fa-microphone]="!isRecording"
-           [class.fa-stop]="isRecording"
-           class="fa-solid fs-5"></i>
+        <i *ngIf="!isProcessingAudio"
+           [class.fa-microphone]="!isRecording"
+           [class.fa-stop-circle]="isRecording"
+           [class.recording-pulse]="isRecording"
+           [class.recording-active]="isRecording"
+           class="fa-solid fs-5 text-white"
+           [style.color]="isRecording ? '#ff4444' : ''"></i>
+        <i *ngIf="isProcessingAudio" class="fa fa-spinner fa-spin"></i>
       </button>
 
-      <!-- Send Button (show only when message is NOT empty) -->
-      <button *ngIf="newMessage && newMessage.trim() !== ''"
+      <!-- Send Button - Show only when message is NOT empty -->
+      <button *ngIf="newMessage && newMessage.trim() !== '' && !audioUrl"
               type="submit"
               class="btn text-primary input-btn-right"
-              [disabled]="isUploadingFile">
+              [disabled]="isUploadingFile || isRecording || isProcessingAudio">
         <span *ngIf="!isUploadingFile">Send</span>
         <span *ngIf="isUploadingFile">
           <i class="fa fa-spinner fa-spin"></i>
@@ -270,4 +287,18 @@
 </div>
 
 
+</div>
+<!-- Custom Microphone Permission Popup -->
+<div *ngIf="showMicPermissionPopup" class="mic-permission-overlay">
+  <div class="mic-box">
+    <i class="fa-solid fa-microphone-slash mic-icon"></i>
+    <h3>Microphone Permission Needed</h3>
+    <p>To record voice messages, please allow microphone access.</p>
+    <button class="btn btn-primary" (click)="openBrowserSettings()">
+      Open Browser Settings
+    </button>
+    <button class="btn btn-secondary mt-2" (click)="closeMicPopup()">
+      Cancel
+    </button>
+  </div>
 </div>
