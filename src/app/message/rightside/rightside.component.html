@@ -164,7 +164,7 @@
 
 
 
-  <div *ngIf="selectedFile" class="mb-3 p-2 border rounded text-white">
+  <div *ngIf="selectedFile" class="mb-3 p-2 border rounded text-white d-flex">
 
     <!-- IMAGE PREVIEW -->
     <img *ngIf="selectedFileUrl && selectedFile.type.startsWith('image/')" [src]="selectedFileUrl" class="rounded"
@@ -180,11 +180,15 @@
       <i class="fa-solid fa-file fs-4 me-2"></i>
       <span>{{ selectedFileName }}</span>
     </div>
-
-    <!-- Remove Button -->
+ 
+      <!-- Remove Button -->
     <div class="text-danger mt-2" style="cursor:pointer" (click)="clearSelectedFile()">
       Remove
     </div>
+    <!-- Send Button -->
+    <div class="text-primary mt-2 ms-4" style="cursor:pointer" (click)="send()">
+      Send
+    </div> 
 
   </div> 
 <!-- Recording Indicator -->
