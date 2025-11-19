@@ -525,7 +525,7 @@ stopHoldRecording() {
     }
 
     // Valid recording → process audio
-    this.audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
+    this.audioBlob = new Blob(this.audioChunks, { type: "audio/aac" });
 
     const unsafeUrl = URL.createObjectURL(this.audioBlob);
     this.audioUrl = this.sanitizer.bypassSecurityTrustUrl(unsafeUrl);
@@ -681,7 +681,8 @@ openBrowserSettings() {
 
   // Chrome mobile & desktop
   if (navigator.userAgent.includes("Chrome")) {
-    window.open("chrome://settings/content/microphone");
+    // window.open("chrome://settings/content/microphone");
+    this.route.navigateByUrl("/chrome//settings/content/microphone")
     return;
   }
 

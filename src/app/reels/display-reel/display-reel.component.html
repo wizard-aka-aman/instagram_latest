@@ -145,7 +145,7 @@
               <div class="comment-content">
                 <div class="comment-header">
                   <strong class="comment-username">{{ comment.userName }}</strong>
-                  <span class="comment-time">{{ comment.createdAt  }}</span>
+                  <span class="comment-time">{{ comment.commentedAt | date : "medium"  }}</span>
                 </div>
                 <p class="comment-text">{{ comment.commentText }}</p>
               </div>
@@ -237,7 +237,7 @@
         </div>
 
         <!-- Empty State -->
-        <div *ngIf="searchResults?.length === 0 && searchQuery" class="empty-search">
+        <div *ngIf="searchResults.length === 0 && searchQuery" class="empty-search">
           <p>No results found</p>
         </div>
       </div>
