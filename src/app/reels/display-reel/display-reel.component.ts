@@ -45,8 +45,9 @@ export class DisplayReelComponent implements OnInit {
   }
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    this.reels.forEach(reel => {
-      const commentBox = document.getElementById('comment-box-' + reel.id);
+    // Corrected to check the element clicked instead of a hardcoded ID
+    this.reels.forEach((reel, i) => {
+      const commentBox = document.getElementById('comment-box-' + i); // Use index 'i' for the ID
       if (reel.showComments && commentBox && !commentBox.contains(event.target as Node)) {
         reel.showComments = false;
       }
@@ -225,8 +226,10 @@ export class DisplayReelComponent implements OnInit {
     // Scroll after comment box opens
     if (selectedReel.showComments) {
       setTimeout(() => {
-        const el = this.chatContainer.nativeElement;
-        el.scrollTop = el.scrollHeight;
+        if (this.chatContainer) {
+          const el = this.chatContainer.nativeElement;
+          el.scrollTop = el.scrollHeight;
+        }
       }, 150);
     }
 
@@ -247,8 +250,10 @@ export class DisplayReelComponent implements OnInit {
         reel.newComment = '';
         reel.commentsCount += 1;
         setTimeout(() => {
-          const el = this.chatContainer.nativeElement;
-          el.scrollTop = el.scrollHeight;
+          if (this.chatContainer) {
+            const el = this.chatContainer.nativeElement;
+            el.scrollTop = el.scrollHeight;
+          }
         }, 150);
     this.serviceSrv.CommentReel(commentPayload).subscribe({
       next: (data: any) => {
@@ -259,8 +264,10 @@ export class DisplayReelComponent implements OnInit {
         reel.newComment = '';
         reel.commentsCount -= 1;
         setTimeout(() => {
-          const el = this.chatContainer.nativeElement;
-          el.scrollTop = el.scrollHeight;
+          if (this.chatContainer) {
+            const el = this.chatContainer.nativeElement;
+            el.scrollTop = el.scrollHeight;
+          }
         }, 150);
       }
     });
@@ -421,4 +428,94 @@ export class DisplayReelComponent implements OnInit {
     this.selectedLikes = reel.likes;
     
   }
+  // Add these properties to your existing DisplayReelComponent class
+private touchStartY: number = 0;
+private touchCurrentY: number = 0;
+private isDragging: boolean = false;
+private commentsPanelElement: HTMLElement | null = null;
+private currentDraggingReel: any = null;
+
+// Add this method to handle drag start
+onDragStart(event: TouchEvent | MouseEvent, reel: any): void {
+  this.isDragging = true;
+  this.currentDraggingReel = reel;
+  
+  if (event instanceof TouchEvent) {
+    this.touchStartY = event.touches[0].clientY;
+  } else {
+    this.touchStartY = event.clientY;
+  }
+  
+  this.commentsPanelElement = (event.target as HTMLElement).closest('.comments-panel');
+  
+  if (this.commentsPanelElement) {
+    this.commentsPanelElement.style.transition = 'none';
+  }
+}
+
+// Add this method to handle dragging
+onDragMove(event: TouchEvent | MouseEvent, reel: any): void {
+  if (!this.isDragging || !this.commentsPanelElement || this.currentDraggingReel !== reel) return;
+  
+  if (event instanceof TouchEvent) {
+    this.touchCurrentY = event.touches[0].clientY;
+  } else {
+    this.touchCurrentY = event.clientY;
+  }
+  
+  const deltaY = this.touchCurrentY - this.touchStartY;
+  
+  // Only allow dragging down (positive deltaY)
+  if (deltaY > 0) {
+    this.commentsPanelElement.style.transform = `translateY(${deltaY}px)`;
+  }
+}
+
+// Add this method to handle drag end
+onDragEnd(event: TouchEvent | MouseEvent, reel: any): void {
+  if (!this.isDragging || !this.commentsPanelElement || this.currentDraggingReel !== reel) return;
+  
+  const deltaY = this.touchCurrentY - this.touchStartY;
+  const threshold = 150; // Distance to trigger close
+  
+  this.commentsPanelElement.style.transition = 'transform 0.3s ease';
+  
+  if (deltaY > threshold) {
+    // Close comments
+    this.commentsPanelElement.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+      reel.showComments = false;
+      if (this.commentsPanelElement) {
+        this.commentsPanelElement.style.transform = '';
+        this.commentsPanelElement.style.transition = '';
+      }
+    }, 300);
+  } else {
+    // Snap back
+    this.commentsPanelElement.style.transform = 'translateY(0)';
+    setTimeout(() => {
+      if (this.commentsPanelElement) {
+        this.commentsPanelElement.style.transition = '';
+      }
+    }, 300);
+  }
+  
+  this.isDragging = false;
+  this.touchStartY = 0;
+  this.touchCurrentY = 0;
+  this.commentsPanelElement = null;
+  this.currentDraggingReel = null;
+}
+
+// Prevent scrolling when dragging from header
+onHeaderTouchStart(event: TouchEvent, reel: any): void {
+  this.onDragStart(event, reel);
+}
+
+onHeaderTouchMove(event: TouchEvent, reel: any): void {
+  if (this.isDragging && this.currentDraggingReel === reel) {
+    event.preventDefault(); // Prevent scroll when dragging from header
+  }
+  this.onDragMove(event, reel);
+}
 }

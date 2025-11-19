@@ -210,20 +210,7 @@ $border-color: #363636;
   transition: all 0.2s ease;
   white-space: nowrap;
 
-  &:hover {
-    background: $text-primary;
-    color: $bg-dark;
-  }
 
-  &.requested {
-    background: $bg-tertiary;
-    border-color: $border-color;
-  }
-
-  &.following {
-    background: $bg-secondary;
-    border-color: $border-color;
-  }
 }
 
 .description {
@@ -284,7 +271,7 @@ $border-color: #363636;
   background: $bg-secondary;
   border-radius: 16px 16px 0 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; // Use flex-direction column
   animation: slideUp 0.3s ease;
   margin: 0 auto;
 }
@@ -304,7 +291,7 @@ $border-color: #363636;
   justify-content: space-between;
   padding: 16px 20px;
   border-bottom: 1px solid $border-color;
-  flex-shrink: 0;
+  flex-shrink: 0; // Header should not shrink
 
   h3 {
     margin: 0;
@@ -335,13 +322,13 @@ $border-color: #363636;
 }
 
 .comments-list {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1; // List should take up all available space
+  overflow-y: auto; // List is scrollable
   padding: 16px 20px;
   scrollbar-width: thin;
   scrollbar-color: $border-color transparent;
   min-height: 0; // Important for flex scrolling
-
+  // margin-bottom: 30px; // Removed this offset to fix overlap
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -445,7 +432,8 @@ $border-color: #363636;
   padding: 12px 20px;
   border-top: 1px solid $border-color;
   background: $bg-secondary;
-  flex-shrink: 0;
+  flex-shrink: 0; // Input should not shrink
+  position: static; // Reset positioning
 }
 
 .input-avatar {
@@ -725,10 +713,8 @@ $border-color: #363636;
   }
 
   .comments-panel {
-    height: 65vh;
-    height: 65dvh;
     border-radius: 12px 12px 0 0;
-    margin-bottom: 55px;
+    margin-bottom: 60px;
   }
 }
 
@@ -788,8 +774,6 @@ $border-color: #363636;
 
   // Comments panel optimized for mobile
   .comments-panel {
-    height: 70vh;
-    height: 70dvh;
     border-radius: 12px 12px 0 0;
   }
 
@@ -836,8 +820,8 @@ $border-color: #363636;
   .comment-input-wrapper {
     padding: 10px 16px;
     gap: 10px;
-    bottom: 55px !important;
-    position: relative;
+    // bottom: 55px !important; // REMOVED
+    position: static; // RESET
   }
 
   .input-avatar {
@@ -942,8 +926,8 @@ $border-color: #363636;
   }
 
   .comments-panel {
-    height: 75vh;
-    height: 75dvh;
+    // height: 75vh;
+    // height: 75dvh;
   }
 }
 
@@ -979,8 +963,8 @@ $border-color: #363636;
   }
 
   .comments-panel {
-    height: 85vh;
-    height: 85dvh;
+    // height: 85vh;
+    // height: 85dvh;
   }
 }
 
@@ -1008,4 +992,144 @@ $border-color: #363636;
 @media (prefers-color-scheme: light) {
   // Keep dark theme for reels regardless of system preference
   // as Instagram Reels is always dark
+}
+// Add these styles to your existing SCSS file
+
+.comments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  // padding: 16px 20px;
+  border-bottom: 1px solid $border-color;
+  flex-shrink: 0;
+  position: relative;
+  
+  // Make header draggable
+  &.draggable-area {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: $text-primary;
+    pointer-events: none; // Prevent text selection while dragging
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: $text-primary;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+    z-index: 1; // Ensure close button is clickable
+
+    &:hover {
+      background: $bg-tertiary;
+    }
+  }
+}
+
+// Drag handle indicator at the top
+.drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 4px;
+  background: $border-color;
+  border-radius: 2px;
+  opacity: 0.5;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.comments-header.draggable-area:active .drag-handle {
+  opacity: 0.8;
+}
+
+// Add padding to the top of comments header to accommodate drag handle
+.comments-header {
+  padding-top: 20px;
+}
+
+// Prevent text selection while dragging
+.comments-panel {
+  &.dragging {
+    user-select: none;
+    -webkit-user-select: none;
+    
+    * {
+      pointer-events: none;
+    }
+  }
+}
+
+// Smooth transition when snapping back
+.comments-panel {
+  will-change: transform;
+  
+  &.transitioning {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+// Improve touch scrolling in comments list
+.comments-list {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+// Mobile optimizations
+@media (max-width: 480px) {
+  .comments-header {
+    padding: 18px 16px 14px;
+
+    h3 {
+      font-size: 15px;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      font-size: 20px;
+    }
+  }
+
+  .drag-handle {
+    width: 32px;
+    height: 4px;
+    top: 6px;
+  }
+}
+
+// Extra small devices
+@media (max-width: 380px) {
+  .drag-handle {
+    width: 28px;
+    height: 3px;
+  }
+}
+
+// Accessibility - maintain focus visibility
+.comments-header.draggable-area:focus-visible {
+  outline: 2px solid $accent-color;
+  outline-offset: 2px;
 }
