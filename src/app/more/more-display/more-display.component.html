@@ -1,113 +1,173 @@
-<div class="container mt-4">
+<div class="container-xl p-4 p-md-5">
 
-  <!-- Pending Requests -->
-  <h4 class="mb-3 text-center text-md-start">Pending Requests</h4>
-  <div class="requests-wrapper row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
-    <div class="col" *ngFor="let request of pendingRequests">
-      <div
-        class="card shadow-sm d-flex flex-column justify-content-center align-items-center p-3 text-center border-1 border-danger border h-100"
-        style="background-color: rgb(0, 0, 0); color: white;">
-        <img routerLink="/{{request.userNameOfReqTo}}"
-             [src]="getProfileImage(request.profilePictureOfReqTo) || 'assets/avatar.png'"
-             class="rounded-circle mb-2 img-fluid"
-             style="width:50px; height:50px; object-fit:contain;"
-             alt="profile">
-        <h6 class="text-truncate">{{ request.userNameOfReqTo }}</h6>
-        <div class="d-flex justify-content-center gap-2 mt-2 flex-wrap">
-          <button class="btn btn-outline-danger btn-sm" (click)="RemoveRequest(request)">Remove Requested</button>
+  <section class="mb-5">
+    <h3 class="section-title">⌛ Pending Requests ({{ pendingRequests?.length || 0 }})</h3>
+    <p *ngIf="!pendingRequests || pendingRequests.length === 0" class=" text-center py-4">
+      You have no pending requests.
+    </p>
+
+    <div class="requests-grid">
+      <div class="request-card" *ngFor="let request of pendingRequests">
+        <div class="card-inner">
+          <img routerLink="/{{request.userNameOfReqTo}}"
+               [src]="getProfileImage(request.profilePictureOfReqTo)"
+               class="profile-img"
+               alt="profile of {{ request.userNameOfReqTo }}">
+          
+          <h6 class="username text-truncate mt-2">{{ request.userNameOfReqTo }}</h6>
+          
+          <button class="btn btn-sm btn-action" 
+                  (click)="RemoveRequest(request)"
+                  title="Remove request for {{ request.userNameOfReqTo }}">
+            Remove Requested
+          </button>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <hr class="my-4">
- 
+  <hr>
 
-  <!-- Previous Stories -->
-  <div class="d-flex justify-content-around align-items-center mb-3">
-    <h4 class=" ">Previous Stories</h4> 
-    <div class="btn btn-primary " [ngClass]="pageNumber==totalPages || this.totalPages==0 ? 'disabled' : ''" (click)="Next()" >Next</div>
-  </div>
-<div class="stories-wrapper ">
-  <div class="story-card mx-2" *ngFor="let story of previousStories" >
-    <div class="card story-card-fixed mx-2"  data-bs-toggle="modal" data-bs-target="#storylikemodalStory"  (click)="displayLike(story)" style="background-color: rgb(0, 0, 0); color: white;">
-      <img [src]="getProfileImage(story.imageUrl)" class="card-img-top story-img"   alt="story">
-      <div class="card-body">
-        <p class="card-text">{{ story.expirationTime | date : 'medium'}}</p> 
+  <section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="section-title">📖 Your Stories</h3>
+      <button class="btn btn-primary next-btn" 
+              [ngClass]="{'disabled': pageNumber >= totalPages || totalPages === 0}" 
+              (click)="Next()" 
+              [disabled]="pageNumber >= totalPages || totalPages === 0"
+              title="Load next set of stories">
+        Next ({{ pageNumber }} / {{ totalPages }})
+      </button>
+    </div>
+
+    <div class="stories-grid">
+      <div class="story-item" *ngFor="let story of previousStories">
+        <div class="card story-card" 
+             data-bs-toggle="modal" 
+             data-bs-target="#storyViewsModal" 
+             (click)="displayLike(story)"
+             tabindex="0"
+             role="button">
+          
+          <img [src]="getProfileImage(story.imageUrl)" class="story-img" alt="Story image">
+          
+          <div class="story-footer">
+            <p class="story-date">{{ story.expirationTime | date : 'medium'}}</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    
+    <p *ngIf="!previousStories || previousStories.length === 0" class=" text-center py-4">
+        You haven't posted any stories yet.
+    </p>
+  </section>
+
+  <hr>
+
+  <section class="utility-links row g-4 text-center text-md-start mb-5">
+    <div class="col-12 col-md-6">
+      <div class="utility-card p-4">
+        <h4 class="mb-3">🗺️ Map for Stories and Posts</h4>
+        <button class="btn btn-lg btn-secondary w-100 w-md-auto" routerLink="/map">Go to Map</button>
+      </div>
+    </div>
+    
+    <div class="col-12 col-md-6">
+      <div class="utility-card p-4">
+        <h4 class="mb-3">🤝 Manage Close Friends</h4>
+        <button class="btn btn-lg btn-secondary w-100 w-md-auto" 
+                data-bs-toggle="modal" 
+                data-bs-target="#closeFriendModal"
+                (click)="GetCloseFriendFunction()">
+          Edit List
+        </button>
+      </div>
+    </div>
+  </section>
+
 </div>
 
-  <div class="row text-center text-md-start mt-4 g-3 " style="height: 240px !important; padding-bottom: 90px ;">
-    <div class="col-12 col-md-6">
-      <h4>Map for Stories And Posts</h4>
-      <div class="btn btn-primary w-100 w-md-auto" routerLink="/map">Map</div>
-    </div>
-    <div class="col-12 col-md-6">
-      <h4>Close Friends</h4>
-      <div class="btn btn-primary w-100 w-md-auto" data-bs-toggle="modal" data-bs-target="#closefriend">Close Friend</div>
-    </div>
-  </div>
+<div class="modal fade" id="storyViewsModal" tabindex="-1" aria-labelledby="storyViewsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal-dark">
 
-</div>
-
-<!-- View Modal -->
-<div class="modal fade" id="storylikemodalStory" tabindex="-1" aria-labelledby="storylikeLabelmodal" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
-
-      <div class="modal-header border-0" style="background-color: #1a1a1a;">
-        <h5 class="modal-title mx-auto" id="storylikeLabelmodal" style="font-weight: 600;">Views</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3"
-                data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header border-0 modal-dark-header">
+        <h5 class="modal-title w-100 text-center" id="storyViewsLabel">👀 Views</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <ng-container *ngIf="displayLikeUser as seenList">
-        <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-             *ngFor="let view of seenList"
-             data-bs-dismiss="modal" aria-label="Close"
-             style="cursor: pointer;"
-             [routerLink]="['/', view.seenByUsername]">
-          <img [src]="getProfileImage(view.profilePicture)" class="rounded-circle"
-               width="40" height="40" style="object-fit: cover;" />
-          <div>
+      <div class="modal-body p-0 modal-scrollable-body">
+        <ng-container *ngIf="displayLikeUser as seenList">
+          <div class="list-item d-flex align-items-center gap-3 p-3"
+               *ngFor="let view of seenList"
+               data-bs-dismiss="modal" 
+               [routerLink]="['/', view.seenByUsername]">
+            
+            <img [src]="getProfileImage(view.profilePicture)" 
+                 class="rounded-circle"
+                 alt="{{ view.seenByUsername }}'s profile"
+                 width="45" height="45">
+            
             <div class="fw-bold text-white text-truncate">{{ view.seenByUsername }}</div>
           </div>
-        </div>
-        <div *ngIf="seenList.length == 0" class="text-center text-white p-4">
-          <h5>No one has viewed this story yet</h5>
-        </div>
-      </ng-container>
+          
+          <div *ngIf="seenList.length === 0" class="text-center text-white p-4">
+            <h6 class="mb-0">No one has viewed this story yet.</h6>
+          </div>
+        </ng-container>
+      </div>
 
     </div>
   </div>
 </div>
 
-<!-- Close Friends Modal -->
-<div class="modal fade" id="closefriend" tabindex="-1" aria-labelledby="closefriendLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+<div class="modal fade" id="closeFriendModal" tabindex="-1" aria-labelledby="closeFriendLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal-dark">
 
-      <div class="modal-header border-0" style="background-color: #1a1a1a;">
-        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Close Friends</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute me-3"
-                data-bs-dismiss="modal" aria-label="Close" (click)="closeCF()"></button>
-        <button type="button" class="btn btn-primary position-absolute end-0 me-3"
-                data-bs-dismiss="modal" aria-label="Close" (click)="AddCloseFriendFunction()">Close Friend</button>
+      <div class="modal-header border-0 modal-dark-header">
+        <h5 class="modal-title" id="closeFriendLabel">🤝 Close Friends</h5>
+        
+        <button type="button" class="btn btn-success btn-sm ms-auto me-2"
+                data-bs-dismiss="modal" 
+                (click)="AddCloseFriendFunction()"
+                title="Save Close Friends list">
+          Save Changes
+        </button>
+
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal" 
+                aria-label="Close" 
+                (click)="closeCF()">
+        </button>
       </div>
 
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
-        <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-             *ngFor="let like of followingdata">
-          <img [src]="getProfileImage(like.profilePicture)" alt="Profile Picture"
-               class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+      <div class="modal-body p-0 modal-scrollable-body">
+        <div class="list-item d-flex align-items-center gap-3 p-3"
+             *ngFor="let follower of followingdata">
+          
+          <img [src]="getProfileImage(follower.profilePicture)" 
+               alt="{{ follower.userName }}'s profile"
+               class="rounded-circle" width="45" height="45">
+          
           <div class="flex-grow-1">
-            <div class="fw-bold text-white text-truncate">{{ like.userName }}</div>
-            <div class="small  text-truncate">{{ like.fullName }}</div>
+            <div class="fw-bold text-white text-truncate">{{ follower.userName }}</div>
+            <div class="small  text-truncate">{{ follower.fullName }}</div>
           </div>
-          <input type="checkbox" class="form-check-input mx-auto"
-                 [checked]="like.isCF" (change)="onCFChange(like.userName, $event)" />
+          
+          <div class="form-check form-switch ms-auto">
+             <input type="checkbox" class="form-check-input"
+                    [id]="'cf-check-' + follower.userName"
+                    [checked]="follower.isCF" 
+                    (change)="onCFChange(follower.userName, $event)">
+             <label class="form-check-label visually-hidden" [for]="'cf-check-' + follower.userName">
+                 Add to Close Friends
+             </label>
+          </div>
+        </div>
+        <div *ngIf="!followingdata || followingdata.length === 0" class="text-center text-white p-4">
+            <h6 class="mb-0">You are not following anyone yet.</h6>
         </div>
       </div>
 

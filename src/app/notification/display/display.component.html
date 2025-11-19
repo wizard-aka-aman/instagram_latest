@@ -1,61 +1,82 @@
-<div class="container mt-4">
-  <h4 class="mb-3">Notifications</h4>
+<div class="container py-3">
+  <h4 class="fw-bold mb-4">Notifications</h4>
+  <hr class="text-white-50">
 
-  <ul class="list-group w-100 w-md-75 mt-5">
-    <li *ngFor="let n of notifications" #NotificationList
-        class="list-group-item d-flex justify-content-between align-items-center  
-        mb-3 border-0 border-bottom"
-        style="background-color: black; color: white; cursor: pointer;">
+  <ul class="list-unstyled mb-5">
+    <li *ngFor="let n of notifications; let i = index" #NotificationList
+        class="d-flex align-items-center mb-3"
+        [attr.data-index]="i"
+        style="min-height: 56px;">
 
-      <!-- Left side: profile image -->
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center flex-grow-1">
+        
         <img [src]="getProfileImage(n.profilePicture)" routerLink="/{{n.loggedInUserName}}"
              class="rounded-circle me-3"
-             alt="user" width="40" height="40">
+             alt="{{n.loggedInUserName}} profile" width="44" height="44"
+             style="cursor: pointer; object-fit: cover;">
 
-        <!-- Middle content -->
-        <div>
-          <span class="fw-bold">{{ n.loggedInUserName }}</span> {{ n.notificationText }}
-          <div class="small " style="color: rgb(196, 196, 196)">
+        <div class="text-white">
+          <span class="fw-bold me-1" routerLink="/{{n.loggedInUserName}}" style="cursor: pointer;">
+            {{ n.loggedInUserName }}
+          </span>
+          <span>
+            {{ n.notificationText }}
+          </span>
+          <div class="small mt-1" style="color: rgb(168, 168, 168);">
             {{ TimeSincePost(n.createdAt) }}
           </div>
         </div>
       </div>
 
-      <!-- Right side content -->
-      <div class="d-flex align-items-center">
-        <!-- Post image -->
-        <img *ngIf="n.postId != null && n.postId.imageUrl != 'multiple'" routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
-             [src]="getProfileImage(n.postId.imageUrl)" 
-             alt="post"
-             class="rounded"
-             width="60" height="60"
-             style="object-fit: cover; border-radius: 8px;">
-             
-        <img *ngIf="n.postId != null && n.postId.imageUrl == 'multiple'" routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
-             [src]="getProfileImage(n.mediaUrl[0])" 
-             alt="post"
-             class="rounded"
-             width="60" height="60"
-             style="object-fit: cover; border-radius: 8px;">
-
+      <div class="ms-3 flex-shrink-0 d-flex align-items-center">
         
-
-        <!-- Reel video -->
-        <video *ngIf="n.reelId != null" routerLink="/{{n.userName}}/reel/{{n.reelId.publicId}}"
-               [src]="n.reelId.url" 
+        <ng-container *ngIf="n.postId != null || n.reelId != null">
+          <img *ngIf="n.postId != null && n.postId.imageUrl != 'multiple'" 
+               routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
+               [src]="getProfileImage(n.postId.imageUrl)" 
+               alt="post image"
                class="rounded"
-               width="60" height="60"
-               style="object-fit: cover; border-radius: 8px;"></video>
+               width="48" height="48"
+               style="object-fit: cover; cursor: pointer;">
+               
+          <img *ngIf="n.postId != null && n.postId.imageUrl == 'multiple'" 
+               routerLink="/{{n.userName}}/p/{{n.postId.postId}}"
+               [src]="getProfileImage(n.mediaUrl[0])" 
+               alt="multi-media post image"
+               class="rounded"
+               width="48" height="48"
+               style="object-fit: cover; cursor: pointer;">
 
-        <!-- Confirm/Delete buttons -->
-        <div *ngIf="n.notificationText == 'Requested to follow you.'" class="ms-2">
-          <button class="btn btn-primary btn-sm me-1" (click)="ConfirmFollow(n.loggedInUserName , n)">Confirm</button>
-          <button class="btn btn-secondary btn-sm" (click)="RemoveRequest(n.loggedInUserName ,n)">Delete</button>
+          <video *ngIf="n.reelId != null" 
+                 routerLink="/{{n.userName}}/reel/{{n.reelId.publicId}}"
+                 [src]="n.reelId.url" 
+                 class="rounded"
+                 width="48" height="48"
+                 style="object-fit: cover; cursor: pointer;"></video>
+        </ng-container>
+
+        <div *ngIf="n.notificationText == 'Requested to follow you.'" class="ms-3">
+          <button class="btn btn-primary btn-sm me-2" (click)="ConfirmFollow(n.loggedInUserName , n)"
+                  style="font-weight: 600;">
+            Confirm
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="RemoveRequest(n.loggedInUserName ,n)"
+                  style="font-weight: 600; color: rgb(168, 168, 168); border-color: rgb(168, 168, 168);">
+            Delete
+          </button>
         </div>
       </div>
     </li>
 
-    <li *ngIf="notifications.length == 0" style="background-color: black; color: white;" class="list-group-item text-center">No Notifications Yet</li>
+    <li *ngIf="loading && notifications.length > 0" class="text-center py-3 text-white-50">
+      Loading more...
+    </li>
+    <li *ngIf="notifications.length == 0 && !loading" class="text-center py-5 text-white-50">
+      No Notifications Yet
+    </li>
+    <li *ngIf="totalPages === notifications.length && notifications.length > 0 && !loading" class="text-center py-3 text-white-50 small">
+      You've seen all notifications.
+    </li>
+
   </ul>
 </div>

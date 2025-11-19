@@ -113,7 +113,7 @@
                 <div *ngFor="let img of post.mediaUrl; let i = index" class="carousel-item"
                   [class.active]="i === 0">
                   <img [src]="getProfileImage(img)" alt="Post image {{ i + 1 }}" class="d-block w-100 post-image"
-                    style="max-height: 600px; object-fit: contain; background-color: black;" />
+                    style="object-fit: contain; background-color: black;" />
 
                   <!-- Tagged Users (Per Image) -->
                   <div *ngIf="post.showTag && post.taggedUsers[i]?.taggedUsers">

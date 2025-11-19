@@ -1,39 +1,44 @@
-<div class="container  ">
-  <div class="d-flex justify-content-center pt-4 ">
-    <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4">
-      <!-- Profile Image -->
-      <div>
-        <img [src]="avatarUrl || 'assets/avatar.png'"  data-bs-toggle="modal" data-bs-target="#profileModal"  alt="Profile" class="rounded-circle border"
-          style="width: 120px; height: 120px; object-fit: cover;">
+<div class="container instagram-container">
+  <div class="d-flex justify-content-center pt-4 pb-3 profile-header-wrapper">
+    <div class="d-flex w-100 flex-column flex-md-row align-items-center gap-4 profile-content">
+      <div class="profile-image-container">
+        <img [src]="avatarUrl || 'assets/avatar.png'" data-bs-toggle="modal" data-bs-target="#profileModal"
+          alt="Profile" class="profile-avatar"
+          [class.clickable]="loggedInUserName == username">
       </div>
 
-      <!-- Profile Info -->
-      <div class="flex-grow-1 ms-md-5 text-center text-md-start">
-        <!-- Username + Edit -->
-        <div class="d-flex align-items-center justify-content-center justify-content-md-start mb-3 flex-wrap gap-2">
-          <h3 class="mb-0 me-2">{{ username }}</h3>
-          <button *ngIf="loggedInUserName == username" class="btn btn-outline-secondary btn-sm" routerLink="/accounts/edit-profile">Edit Profile</button>
-          <button *ngIf="loggedInUserName != username && !alreadyFollowing && !isRequested && !isSeenUserFollwingMeVariable"(click)="Follow() " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow</button>
-          <button *ngIf="loggedInUserName != username && !alreadyFollowing && !isRequested && isSeenUserFollwingMeVariable"(click)="Follow() " class="btn btn-primary px-3 ms-3 btn-sm"  >Follow Back</button>
-          <button *ngIf="loggedInUserName != username && !alreadyFollowing && isRequested" (click)="RemoveRequest()" class="btn btn-secondary px-3 ms-3 btn-sm"  >Requested</button>
-          <button *ngIf="loggedInUserName != username && alreadyFollowing"(click)="UnFollow()" class="btn btn-secondary px-3 ms-3 btn-sm"  >UnFollow</button>
-          <!-- <button *ngIf="loggedInUserName != username"  class="btn btn-primary px-3 ms-3  btn-sm"  >Follow</button> -->
+      <div class="flex-grow-1 profile-details-wrapper">
+        <div class="d-flex align-items-center mb-3 profile-action-row">
+          <h3 class="mb-0 me-3 username-text">{{ username }}</h3>
+          <ng-container *ngIf="loggedInUserName == username">
+            <button class="btn btn-sm btn-outline-secondary" routerLink="/accounts/edit-profile">Edit Profile</button>
+          </ng-container>
+          <ng-container *ngIf="loggedInUserName != username">
+            <button *ngIf="!alreadyFollowing && !isRequested && !isSeenUserFollwingMeVariable" (click)="Follow()"
+              class="btn btn-sm btn-primary px-3 fw-bold">Follow</button>
+            <button *ngIf="!alreadyFollowing && !isRequested && isSeenUserFollwingMeVariable" (click)="Follow()"
+              class="btn btn-sm btn-primary px-3 fw-bold">Follow Back</button>
+            <button *ngIf="!alreadyFollowing && isRequested" (click)="RemoveRequest()"
+              class="btn btn-sm btn-secondary px-3">Requested</button>
+            <button *ngIf="alreadyFollowing" (click)="UnFollow()"
+              class="btn btn-sm btn-secondary px-3">UnFollow</button>
+          </ng-container>
         </div>
 
-        <!-- Stats -->
-        <div class="d-flex justify-content-center justify-content-md-start gap-5 mb-3">
-          <span><strong>{{ numberposts }}</strong> <span style="color: rgb(172, 172, 172);"> posts</span></span>
-          <span (click)="GetFollowers()" data-bs-toggle="modal" data-bs-target="#follower" ><strong>{{ followers }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> followers</span></span>
-          <span (click)="GetFollowing()" data-bs-toggle="modal" data-bs-target="#following" ><strong>{{ following }}</strong> <span style="color: rgb(172, 172, 172); cursor: pointer;"> following</span></span>
+        <div class="d-none d-md-flex gap-5 mb-3 profile-stats-desktop">
+          <span class="stat-item"><strong>{{ numberposts }}</strong> posts</span>
+          <span (click)="GetFollowers()" data-bs-toggle="modal" data-bs-target="#follower"
+            class="stat-item clickable"><strong>{{ followers }}</strong> followers</span>
+          <span (click)="GetFollowing()" data-bs-toggle="modal" data-bs-target="#following"
+            class="stat-item clickable"><strong>{{ following }}</strong> following</span>
         </div>
 
-       <!-- Bio -->
-        <div style=" word-wrap: break-word; overflow-wrap: break-word; max-height: 200px; overflow: auto;">
-          <p class="fs-5">{{ fullname }}</p>
-          <span [innerText]="bio"></span>
+        <div class="bio-section">
+          <p class="fs-6 fw-bold mb-1">{{ fullname }}</p>
+          <span class="bio-text" [innerText]="bio"></span>
         </div>
-        <!-- Mutual Friends Section -->
-        <div *ngIf="mutualFriends.length > 0" class="d-flex align-items-center mt-2">
+
+        <div *ngIf="mutualFriends.length > 0" class="d-flex  align-items-center mt-2">
           <div class="d-flex align-items-center">
             <!-- Show up to 3 mutual friends profile pictures -->
             <ng-container *ngFor="let friend of mutualFriends.slice(0, 2)">
@@ -55,266 +60,228 @@
             </span>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-
-
-  <!-- New Post Section --> 
-   <div
-  class="d-flex align-items-center justify-content-start w-100 mt-4 highlight-container"
->
-  <!-- Add Highlight Button -->
-  <div *ngIf="loggedInUserName == username"
-    class="highlight-add d-flex flex-column align-items-center me-3"
-  >
-    <img data-bs-toggle="modal"
-    data-bs-target="#hightlight"
-      [src]="plusIconUrl"
-      alt="Add Highlight"
-      class="highlight-avatar"
-    />
-    <div class="text-center small mt-1">New</div>
-  </div>
-
-  <!-- Scrollable Highlights -->
-  <div class="highlight-scroll flex-nowrap overflow-auto">
-    <div
-      *ngFor="let high of highlight"
-      class="highlight-item text-center me-3"
-    >
-      <div class="highlight-ring p-1" *ngIf="loggedInUserName == username">
-        <img (click)="onWhichAddImage(high);" data-bs-toggle="modal" data-bs-target="#hightlightimage"  
-          [src]="getProfileImage(high.thumbnailUrl) || 'assets/avatar.png'"
-          class="highlight-avatar"
-          alt="Highlight"
-          style="cursor: pointer;"
-        />
-      </div>
-      <div class="highlight-ring p-1" *ngIf="loggedInUserName != username">
-        <img (click)="openHighlightStory(high);"
-          [src]="getProfileImage(high.thumbnailUrl) || 'assets/avatar.png'"
-          class="highlight-avatar"
-          alt="Highlight"
-          style="cursor: pointer;"
-        />
-      </div>
-      <div class="small mt-1 text-truncate">{{ high.title }}</div>
+  <div class="d-flex d-md-none justify-content-around py-2 border-top border-bottom profile-stats-mobile">
+    <div class="text-center">
+      <div class="fw-bold">{{ numberposts }}</div>
+      <div class="small text-muted">posts</div>
+    </div>
+    <div class="text-center clickable" (click)="GetFollowers()" data-bs-toggle="modal" data-bs-target="#follower">
+      <div class="fw-bold">{{ followers }}</div>
+      <div class="small text-muted">followers</div>
+    </div>
+    <div class="text-center clickable" (click)="GetFollowing()" data-bs-toggle="modal" data-bs-target="#following">
+      <div class="fw-bold">{{ following }}</div>
+      <div class="small text-muted">following</div>
     </div>
   </div>
-</div>
-    
 
-    <!-- Tabs -->
-<ul class="nav justify-content-center   py-2" *ngIf="loggedInUserName != username && ( isPublic|| alreadyFollowing ) || loggedInUserName == username">
-  <li class="nav-item">
-    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'posts'}" (click)="activeTab = 'posts'">
-      <i class="fa-solid fa-table-cells"></i> POSTS
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'reels'}"  (click)="activeTab = 'reels'" >
-      <i class="fa-solid fa-film"></i> REELS
-    </a>
-  </li>
-  <li class="nav-item" *ngIf="loggedInUserName == username">
-    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'saved'}" (click)="activeTab = 'saved'" >
-      <i class="fa-solid fa-bookmark"></i> SAVED
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link text-white" style="cursor: pointer;" [ngClass]="{active: activeTab === 'tagged'}"  (click)="activeTab = 'tagged'"  >
-      <i class="fa-solid fa-user-tag"></i> TAGGED
-    </a>
-  </li>
-</ul>
+  <div class="highlight-section py-3 border-bottom">
+    <div class="d-flex align-items-center highlight-scroll-container">
+      <div *ngIf="loggedInUserName == username" class="highlight-item highlight-add" data-bs-toggle="modal" data-bs-target="#hightlight">
+        <img [src]="plusIconUrl" alt="Add Highlight" class="highlight-avatar-image highlight-add-icon" />
+        <div class="text-center small mt-1">New</div>
+      </div>
 
-<!-- Posts Grid     -->
-<div class="container mt-3 pb-5">
- <div *ngIf="activeTab === 'posts' && (isPublic || alreadyFollowing || loggedInUserName == username)" 
-     class="post-grid mb-3">
-  
-  <div class="post-card" *ngFor="let post of fullDetailPost">
-    <img *ngIf="post.imageUrl != 'multiple'" [src]="'data:image/jpeg;base64,' + post.imageUrl" 
-         alt="Post" 
-         class="post-image">
-
-         <div
-    class="flex-shrink-0 d-flex justify-content-center align-items-center"
-    style="max-width: 300px;"
-  >
-    <!-- Bootstrap Carousel -->
-    <div id="previewCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div
-          *ngFor="let img of post.mediaUrl; let i = index"
-          class="carousel-item"
-          [class.active]="i === 0"
-        >
-          <img
-            [src]="getProfileImage(img)"
-            alt="Preview"
-            class="d-block w-100 rounded"
-            style="object-fit: contain; height: 300px;"
-          />
+      <div class="highlight-scroll d-flex overflow-auto flex-nowrap">
+        <div *ngFor="let high of highlight" class="highlight-item text-center">
+          <div class="highlight-ring p-1">
+            <img 
+              [src]="getProfileImage(high.thumbnailUrl) || 'assets/avatar.png'"
+              class="highlight-avatar-image"
+              alt="Highlight"
+              style="cursor: pointer;"
+              (click)="loggedInUserName == username ? onWhichAddImage(high) : openHighlightStory(high)"
+              [attr.data-bs-toggle]="loggedInUserName == username ? 'modal' : null"
+              [attr.data-bs-target]="loggedInUserName == username ? '#hightlightimage' : null"
+            />
+          </div>
+          <div class="small mt-1 text-truncate highlight-title">{{ high.title }}</div>
         </div>
       </div>
-
-      <!-- Carousel controls -->
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#previewCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
     </div>
   </div>
-    
-    <!-- Overlay -->
-    <div class="overlay d-flex justify-content-center align-items-center"
-         (click)="openPostPage(post.postId)">
-      <div class="text-white d-flex gap-3 fs-5 fw-bold">
-        <span><i class="fas fa-heart"></i> {{ post.likesCount }}</span>
-        <span><i class="fas fa-comment"></i> {{ post.commentsCount }}</span>
+
+
+  <ul class="nav nav-tabs justify-content-center pt-2 tab-navigation"
+    *ngIf="loggedInUserName != username && (isPublic || alreadyFollowing) || loggedInUserName == username">
+    <li class="nav-item">
+      <a class="nav-link" [ngClass]="{active: activeTab === 'posts'}" (click)="activeTab = 'posts'">
+        <i class="fa-solid fa-table-cells"></i> <span class="d-none d-md-inline ms-2">POSTS</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [ngClass]="{active: activeTab === 'reels'}" (click)="activeTab = 'reels'">
+        <i class="fa-solid fa-film"></i> <span class="d-none d-md-inline ms-2">REELS</span>
+      </a>
+    </li>
+    <li class="nav-item" *ngIf="loggedInUserName == username">
+      <a class="nav-link" [ngClass]="{active: activeTab === 'saved'}" (click)="activeTab = 'saved'">
+        <i class="fa-solid fa-bookmark"></i> <span class="d-none d-md-inline ms-2">SAVED</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [ngClass]="{active: activeTab === 'tagged'}" (click)="activeTab = 'tagged'">
+        <i class="fa-solid fa-user-tag"></i> <span class="d-none d-md-inline ms-2">TAGGED</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="container mt-3 pb-5 tab-content-wrapper">
+    <div *ngIf="activeTab === 'posts' && (isPublic || alreadyFollowing || loggedInUserName == username)"
+      class="post-grid-instagram mb-3">
+
+      <div class="post-card-instagram" *ngFor="let post of fullDetailPost">
+        <ng-container *ngIf="post.imageUrl != 'multiple'">
+          <img [src]="'data:image/jpeg;base64,' + post.imageUrl" alt="Post" class="post-image-instagram">
+        </ng-container>
+        
+        <ng-container *ngIf="post.imageUrl == 'multiple' && post.mediaUrl && post.mediaUrl.length > 0">
+          <img [src]="getProfileImage(post.mediaUrl[0])" alt="Post" class="post-image-instagram">
+          <i class="fa-solid fa-clone multiple-media-icon text-white"></i>
+        </ng-container>
+
+
+        <div class="overlay-instagram d-flex justify-content-center align-items-center"
+          (click)="openPostPage(post.postId)">
+          <div class="text-white d-flex gap-4 fs-5 fw-bold">
+            <span class="d-flex align-items-center"><i class="fas fa-heart me-2"></i> {{ post.likesCount }}</span>
+            <span class="d-flex align-items-center"><i class="fas fa-comment me-2"></i> {{ post.commentsCount }}</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div class="" *ngIf="activeTab === 'reels'">
-  <app-displayreels [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-displayreels> 
-</div>
-<div class="" *ngIf="activeTab === 'saved'">
-  <app-display-saved [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-display-saved> 
-</div>
-<div class="" *ngIf="activeTab === 'tagged'">
-  <app-display-tagged [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName" [username]="username" ></app-display-tagged> 
-</div>
-  
-  <div *ngIf="!isPostAvailable && loggedInUserName == username && activeTab=='posts'" class="text-center py-2 " >
-    <i class="fa-solid fs-1 fa-table-cells"></i>
-    <p class="fw-bold fs-2" >Share Photos</p>
-    <p> When you share photos, they will appear on your profile.</p> 
+    
+    <div class="" *ngIf="activeTab === 'reels'">
+      <app-displayreels [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName"
+        [username]="username"></app-displayreels>
+    </div>
+    <div class="" *ngIf="activeTab === 'saved'">
+      <app-display-saved [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName"
+        [username]="username"></app-display-saved>
+    </div>
+    <div class="" *ngIf="activeTab === 'tagged'">
+      <app-display-tagged [isPublic]="isPublic" [alreadyFollowing]="alreadyFollowing" [loggedInUserName]="loggedInUserName"
+        [username]="username"></app-display-tagged>
+    </div>
 
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"  >Share your first photo</button>
-  </div>
-  <div *ngIf="!isPostAvailable && loggedInUserName != username && ( isPublic|| alreadyFollowing ) && activeTab === 'posts'" class="text-center py-2 " >
-    <i class="fa-solid fa-camera  fs-1"></i>
-    <p class="fw-bold fs-2 mt-3" >No Posts Yet</p>  
-  </div>
-  <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) && activeTab === 'posts'" class="text-center py-2 " >
-    <i class="fa-solid fa-lock  fs-1"></i>
-    <p class="fw-bold fs-2 mt-3" >This account is private</p>
-    <p>Follow to see their photos and videos.</p>  
+    <div *ngIf="!isPostAvailable && loggedInUserName == username && activeTab=='posts'" class="text-center py-5 empty-state">
+      <div class="empty-state-icon"><i class="fa-solid fs-1 fa-table-cells"></i></div>
+      <p class="fw-bold fs-2 mt-3">Share Photos</p>
+      <p class="text-muted">When you share photos, they will appear on your profile.</p>
+      <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createModal">Share your first photo</button>
+    </div>
+    <div *ngIf="!isPostAvailable && loggedInUserName != username && (isPublic || alreadyFollowing) && activeTab === 'posts'"
+      class="text-center py-5 empty-state">
+      <div class="empty-state-icon"><i class="fa-solid fa-camera fs-1"></i></div>
+      <p class="fw-bold fs-2 mt-3">No Posts Yet</p>
+    </div>
+    <div *ngIf="loggedInUserName != username && !(isPublic || alreadyFollowing) && activeTab === 'posts'"
+      class="text-center py-5 private-state">
+      <div class="private-state-icon"><i class="fa-solid fa-lock fs-1"></i></div>
+      <p class="fw-bold fs-2 mt-3">This account is private</p>
+      <p class="text-muted">Follow to see their photos and videos.</p>
+    </div>
   </div>
 </div>
 
-<!-- Bootstrap profile Modal -->
 <div *ngIf="loggedInUserName == username" class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center " style="background-color: rgb(38, 38, 38);">
-      <div class="modal-header border-0">
-        <h5 class="modal-title w-100" id="profileModalLabel">Change Profile Photo</h5>
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content text-center instagram-modal-content">
+      <div class="modal-header border-0 pb-1">
+        <h5 class="modal-title w-100 fw-bold" id="profileModalLabel">Change Profile Photo</h5>
       </div>
       <div class="modal-body p-0">
-        <button class="btn w-100 text-primary fw-bold border-top" (click)="triggerFileInput()">Upload Photo</button>
-        <button class="btn w-100 text-danger border-top" (click)="removePhoto()">Remove Current Photo</button>
-        <button class="btn w-100 border-top text-white" #closeModal data-bs-dismiss="modal">Cancel</button>
+        <button class="btn w-100 text-primary fw-bold instagram-modal-button" (click)="triggerFileInput()">Upload Photo</button>
+        <button class="btn w-100 text-danger instagram-modal-button" (click)="removePhoto()">Remove Current Photo</button>
+        <button class="btn w-100 text-white instagram-modal-button" #closeModal data-bs-dismiss="modal">Cancel</button>
       </div>
-    </div>
-  </div>
-</div> 
-
-<!-- follower Modal -->
-<div class="modal fade" id="follower" tabindex="-1" aria-labelledby="followerLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
-    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
-
-      <!-- Modal Header -->
-      <div class="modal-header border-0" style="background-color: #1a1a1a;">
-        <h5 class="modal-title mx-auto" id="followerLabel" style="font-weight: 600;">Follower</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-
-      <!-- Modal Body -->
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
-
-        <!-- Loop Over Likes -->
-        
-         <ng-template #elseBlock>
-            <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-              *ngFor="let like of follower" 
-              data-bs-dismiss="modal" aria-label="Close"
-              [routerLink]="['/', like.userName]"
-              
-            >
-              <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
-              <div>
-                <div class="fw-bold text-white">{{ like.userName }}</div>
-                <div class=" small">{{ like.fullName }}</div>
-              </div>
-           </div>
-         </ng-template>
-
-    <div  *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlock" class="search-item d-flex align-items-center gap-2 p-2 hover-effect">
-        <div class="fw-bold text-white">ID is Private</div>
-    </div>
-
-
-      </div>
-
     </div>
   </div>
 </div>
-<!-- following Modal -->
-<div class="modal fade" id="following" tabindex="-1" aria-labelledby="followingLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <!-- 👈 Centered and limited width -->
-    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
 
-      <!-- Modal Header -->
-      <div class="modal-header border-0" style="background-color: #1a1a1a;">
-        <h5 class="modal-title mx-auto" id="followingLabel" style="font-weight: 600;">Following</h5>
-        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="follower" tabindex="-1" aria-labelledby="followerLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content instagram-modal-content">
+      <div class="modal-header instagram-modal-header">
+        <h5 class="modal-title mx-auto fw-bold" id="followerLabel">Followers</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <!-- Modal Body -->
-      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;"> <!-- 👈 Scroll when needed -->
-
-        <ng-template #elseBlockfollowing>
-          <!-- Loop Over Likes -->
-          <div class="search-item d-flex align-items-center gap-2 p-2 hover-effect"
-      *ngFor="let like of followingdata" 
-      data-bs-dismiss="modal" aria-label="Close"
-      [routerLink]="['/', like.userName]"
-       
-    >
-      <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
-      <div>
-        <div class="fw-bold text-white">{{ like.userName }}</div>
-        <div class=" small">{{ like.fullName }}</div>
-      </div>
-    </div>
+      <div class="modal-body p-0 instagram-modal-body">
+        <ng-template #elseBlock>
+          <div class="search-item d-flex align-items-center gap-2 p-3 hover-effect"
+            *ngFor="let like of follower" 
+            data-bs-dismiss="modal" aria-label="Close"
+            [routerLink]="['/', like.userName]"
+          >
+            <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+            <div class="flex-grow-1">
+              <div class="fw-bold text-white">{{ like.userName }}</div>
+              <div class="small text-muted">{{ like.fullName }}</div>
+            </div>
+          </div>
         </ng-template>
-    <div  *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlockfollowing" class="search-item d-flex align-items-center gap-2 p-2 hover-effect">
-        <div class="fw-bold text-white">ID is Private</div>
-    </div>
 
-
+        <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlock" class="text-center p-4">
+          <div class="fw-bold text-white">Account is Private</div>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
 
+<div class="modal fade" id="following" tabindex="-1" aria-labelledby="followingLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content instagram-modal-content">
+      <div class="modal-header instagram-modal-header">
+        <h5 class="modal-title mx-auto fw-bold" id="followingLabel">Following</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0 instagram-modal-body">
+        <ng-template #elseBlockfollowing>
+          <div class="search-item d-flex align-items-center gap-2 p-3 hover-effect"
+            *ngFor="let like of followingdata" 
+            data-bs-dismiss="modal" aria-label="Close"
+            [routerLink]="['/', like.userName]"
+          >
+            <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+            <div class="flex-grow-1">
+              <div class="fw-bold text-white">{{ like.userName }}</div>
+              <div class="small text-muted">{{ like.fullName }}</div>
+            </div>
+          </div>
+        </ng-template>
+        <div *ngIf="loggedInUserName != username && !( isPublic|| alreadyFollowing ) else elseBlockfollowing" class="text-center p-4">
+          <div class="fw-bold text-white">Account is Private</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="mutual" tabindex="-1" aria-labelledby="mutualLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content instagram-modal-content">
+      <div class="modal-header instagram-modal-header">
+        <h5 class="modal-title mx-auto fw-bold" id="mutualLabel">Mutual Friends</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0 instagram-modal-body">
+          <div class="search-item d-flex align-items-center gap-2 p-3 hover-effect"
+            *ngFor="let like of mutualFriends" 
+            data-bs-dismiss="modal" aria-label="Close"
+            [routerLink]="['/', like.userName]"
+          >
+            <img [src]="getProfileImage(like.profilePicture)" class="rounded-circle" width="40" height="40" style="object-fit: cover;" />
+            <div class="flex-grow-1">
+              <div class="fw-bold text-white">{{ like.userName }}</div>
+              <div class="small text-muted">{{ like.fullName }}</div>
+            </div>
+          </div>
+      </div>
     </div>
   </div>
 </div>
@@ -498,8 +465,6 @@
     </div>
   </div>
 </div>
- 
-</div>
+  
 
-
-<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" /> 
+<input type="file" accept="image/*" style="display:none" #fileInput (change)="handleFileUpload($event)" />

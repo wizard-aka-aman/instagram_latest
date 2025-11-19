@@ -185,3 +185,318 @@ input::placeholder{
   height: 300px;        /* Fixed height for uniformity */
   object-fit: cover;    /* Cover ensures image fills the box without distortion */
 }
+// General Cleanup and Variables (Assuming a Dark Theme is intended for Instagram look)
+$primary-text: white;
+$secondary-text: #a8a8a8; // Light gray for subtle text
+$background-color: #121212;
+$card-background: #262626;
+$border-color: #363636;
+$highlight-ring-color: linear-gradient(to right, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+
+// Apply base Instagram-like dark theme to the component container
+.instagram-container {
+  max-width: 935px; // Typical Instagram content width
+  margin: 0 auto;
+  color: $primary-text;
+  background-color: $background-color;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+// Global utility classes
+.text-muted {
+  color: $secondary-text !important;
+}
+.clickable {
+  cursor: pointer;
+}
+
+// --- Profile Header ---
+.profile-header-wrapper {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.profile-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid $border-color;
+  &.clickable {
+    cursor: pointer;
+  }
+}
+
+.profile-action-row {
+  margin-left: 0;
+  .username-text {
+    font-size: 1.5rem; // Bigger username
+    font-weight: 300; // Lighter font-weight
+  }
+  .btn-secondary {
+    background-color: $border-color;
+    border-color: $border-color;
+    color: $primary-text;
+  }
+  .btn-primary {
+    background-color: #0095f6;
+    border-color: #0095f6;
+  }
+  .btn-outline-secondary {
+    border-color: $border-color;
+    color: $primary-text;
+  }
+}
+
+.profile-details-wrapper {
+  margin-left: 50px;
+}
+
+.profile-stats-desktop {
+  .stat-item {
+    font-size: 1rem;
+    strong {
+      margin-right: 4px;
+    }
+    span {
+      color: $secondary-text !important;
+    }
+  }
+}
+
+.bio-section {
+  max-width: 400px;
+  .bio-text {
+    color: $secondary-text;
+  }
+}
+
+// Mutual Friends Overlap Effect
+.mutual-friends-section {
+  .mutual-friend-avatar {
+    border: 1px solid $background-color !important;
+  }
+  .avatar-overlap {
+    margin-left: -8px; // Overlap effect
+  }
+}
+
+// --- Responsive Overrides for Mobile ---
+@media (max-width: 768px) {
+  .profile-header-wrapper {
+    padding-top: 20px !important;
+    padding-bottom: 0 !important;
+  }
+  .profile-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px !important;
+  }
+  .profile-details-wrapper {
+    margin-left: 0;
+    text-align: center;
+    width: 100%;
+  }
+  .profile-image-container {
+    // Make profile image smaller on mobile
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  .profile-action-row {
+    justify-content: center;
+    .username-text {
+      font-size: 1.2rem;
+    }
+  }
+  .bio-section {
+    text-align: center;
+    padding: 0 1rem;
+    .bio-text {
+      font-size: 0.9rem;
+    }
+  }
+  .mutual-friends-section {
+    justify-content: center;
+  }
+  .profile-stats-mobile {
+    margin-bottom: 10px;
+    border-color: $border-color !important;
+  }
+}
+
+// --- Highlights Section ---
+.highlight-section {
+  border-color: $border-color !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  overflow: hidden; // to contain the scrollable area
+}
+
+.highlight-scroll-container {
+  max-width: 100%;
+}
+
+.highlight-scroll {
+  gap: 15px;
+  padding-bottom: 5px; // space for scrollbar (if visible)
+}
+
+.highlight-item {
+  flex-shrink: 0;
+  width: 90px;
+}
+
+.highlight-avatar-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid $border-color;
+  background-color: $background-color;
+}
+
+.highlight-ring {
+  background: $highlight-ring-color;
+  border-radius: 50%;
+  padding: 3px;
+  display: inline-block;
+}
+
+.highlight-add .highlight-avatar-image {
+  border: 1px solid $secondary-text;
+  background-color: transparent;
+  width: 76px;
+  height: 76px;
+  padding: 10px;
+}
+
+.highlight-title {
+  color: $secondary-text;
+}
+
+// --- Tab Navigation ---
+.tab-navigation {
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
+  .nav-link {
+    color: $secondary-text !important;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+  }
+  .nav-link.active {
+    color: $primary-text !important;
+    border-bottom: 1px solid $primary-text; // Active indicator
+    background-color: transparent;
+  }
+}
+
+// --- Post Grid ---
+.tab-content-wrapper {
+  max-width: 935px;
+  padding: 0 1rem;
+}
+
+.post-grid-instagram {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px; // Minimal gap for Instagram look
+}
+
+.post-card-instagram {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #000;
+  cursor: pointer;
+}
+
+.post-image-instagram {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.multiple-media-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1rem;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-instagram {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.post-card-instagram:hover .overlay-instagram {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.6); // Darker hover
+}
+
+// --- Empty/Private States ---
+.empty-state, .private-state {
+  color: $primary-text;
+  .empty-state-icon, .private-state-icon {
+    border: 2px solid $primary-text;
+    border-radius: 50%;
+    width: 96px;
+    height: 96px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    i {
+      font-size: 2.5rem !important;
+    }
+  }
+}
+
+// --- Modal Styling ---
+.instagram-modal-content {
+  background-color: $card-background !important;
+  color: $primary-text;
+  border-radius: 12px;
+}
+.instagram-modal-header {
+  border-bottom: 1px solid $border-color !important;
+  background-color: $card-background !important;
+  border-radius: 12px 12px 0 0;
+  position: relative;
+  .btn-close-white {
+    filter: invert(1);
+    position: absolute;
+    right: 15px;
+  }
+}
+.instagram-modal-button {
+  background: transparent;
+  border-top: 1px solid $border-color !important;
+  border-bottom: none !important;
+  padding: 12px 0;
+  &:last-child {
+    border-bottom: none !important;
+  }
+}
+
+// --- Cleanup (Removing old/redundant styles) ---
+.post-grid {
+  display: none !important;
+}
+.highlight-container {
+  max-width: none;
+}
