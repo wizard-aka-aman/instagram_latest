@@ -127,53 +127,78 @@ export class AppComponent implements OnInit {
       }
     })
   }
-  SignUpInsta(){
-  if(this.signupemail == "" || this.signupname == "" || this.signuppassword == "" ||this.signupusername == "" ){
+  SignUpInsta() {
+  if (
+    !this.signupemail ||
+    !this.signupname ||
+    !this.signuppassword ||
+    !this.signupusername
+  ) {
     this.toastr.error('Please fill all the fields');
     return;
   }
+
+  const ReservedUsernames = [
+    "login","accounts","search","reels","messages","notifications","map","more",
+    "explore","stories","story","not-found","home","profile","post","p","reel",
+    "admin","root","system","settings","about","help","api","v1","static",
+    "assets","public","private","server","auth","config","feed","follow",
+    "unfollow","like","comment"
+  ];
+
+  const username = this.signupusername.trim().toLowerCase();
+
+  if (ReservedUsernames.includes(username)) {
+    this.toastr.error("UserName already exists.");
+    return;
+  }
+
   this.isLoading = true;
-    this.signUpFormData.Email = this.signupemail;
-    this.signUpFormData.UserName = this.signupusername;
-    this.signUpFormData.Password = this.signuppassword;
-    this.signUpFormData.FullName = this.signupname;
 
-    this.ServiceSrv.Authsignup(this.signUpFormData).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.toastr.success('You have been Register in successfully',res.message);
-        localStorage.setItem("jwt" , res.token);
-        this.isLoggedIn = true;
-        this.signupemail = "";
-        this.signuppassword = "";
-        this.signupusername = "";
-        this.signupname = "";
-        this.isLoading = false;
+  this.signUpFormData = {
+    Email: this.signupemail,
+    UserName: this.signupusername,
+    Password: this.signuppassword,
+    FullName: this.signupname
+  };
 
-      },
-      error: (error: any) => {
-        this.isLoading = false;
-        console.log(error);
-       if (error.status === 400 && error.error && error.error.errors) {
-      const validationErrors = error.error.errors;
+  this.ServiceSrv.Authsignup(this.signUpFormData).subscribe({
+    next: (res: any) => {
+      this.toastr.success('You have been registered successfully');
+      localStorage.setItem("jwt", res.token);
+      
+      this.isLoggedIn = true;
+
+      // Clear fields
+      this.signupemail = "";
+      this.signuppassword = "";
+      this.signupusername = "";
+      this.signupname = "";
+      
+      this.isLoading = false;
+    },
+    error: (error: any) => {
+      this.isLoading = false;
+
       this.errorMessages = [];
 
-      for (const field in validationErrors) {
-        if (validationErrors.hasOwnProperty(field)) {
+      if (error.status === 400 && error.error?.errors) {
+        const validationErrors = error.error.errors;
+
+        for (const field in validationErrors) {
           this.errorMessages.push(...validationErrors[field]);
         }
       }
-    }else if(error.message){
-      this.errorMessages = [];
-      this.errorMessages.push(error.error.message);
-    } 
-    else {
-      this.errorMessages = [];
-      this.errorMessages = ['An unexpected error occurred.'];
-    }
+      else if (error.error?.message) {
+        this.errorMessages.push(error.error.message);
+      } 
+      else {
+        this.errorMessages.push('An unexpected error occurred.');
       }
-    })
-  }
+    }
+  });
+}
+
 
 
 }

@@ -53,7 +53,7 @@
                 name="bio"
                 placeholder="Bio"
                 maxlength="200"></textarea>
-      <small class="char-count">{{ user.bio.length || 0 }} / 200</small>
+      <small class="char-count">{{ user?.bio?.length || 0 }} / 200</small>
     </div>
 
     <!-- Gender Field -->
