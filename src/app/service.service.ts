@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { jwtDecode } from 'jwt-decode';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, tap, throwError } from 'rxjs';
 import { isNgTemplate } from '@angular/compiler';
+import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,6 +11,7 @@ export class ServiceService {
 
    public BaseUrl :string= 'https://xatavop939.bsite.net';
   // public BaseUrl: string = 'https://localhost:7246';
+  // public BaseUrl: string = 'https://10.0.0.204:5000';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   private isSeenNoti = new BehaviorSubject<boolean>(true);
@@ -66,8 +68,11 @@ export class ServiceService {
 
   private mapStories$ = new BehaviorSubject<any[] | null>(null);
   private mapPosts$ = new BehaviorSubject<any[] | null>(null);
+  private isRefreshing = false;
+  private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+
   
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
 
   }
   setNoti(bol : boolean){
@@ -391,4 +396,109 @@ export class ServiceService {
   SendVM(item:any){
     return this.http.post(`${this.BaseUrl}/api/Chat/SendVoiceMessage`,item)
   }
+   register(userData: any): Observable<any> {
+    return this.http.post<any>(`${this.BaseUrl}/api/Account/register`, userData)
+      .pipe(
+        tap(response => this.handleAuthentication(response)),
+        catchError(this.handleError)
+      );
+  }
+
+  login(credentials: any): Observable<any> {
+    return this.http.post<any>(`${this.BaseUrl}/api/Account/login`, credentials)
+      .pipe(
+        tap(response => this.handleAuthentication(response)),
+        catchError(this.handleError)
+      );
+  }
+
+  refreshToken(): Observable<any> {
+    const refreshToken = this.getRefreshToken();
+    
+    if (!refreshToken) {
+      this.logout();
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.http.post<any>(`${this.BaseUrl}/api/Account/refresh`, { refreshToken })
+      .pipe(
+        tap(response => {
+          this.handleAuthentication(response);
+          this.refreshTokenSubject.next(response.accessToken);
+        }),
+        catchError(error => {
+          this.logout();
+          return throwError(() => error);
+        })
+      );
+  }
+
+  logout(): void {
+    const refreshToken = this.getRefreshToken();
+    
+    if (refreshToken) {
+      // Call backend to revoke token
+      this.http.post(`${this.BaseUrl}/api/Account/logout`, {})
+        .subscribe({
+          error: (err) => console.error('Logout error:', err)
+        });
+    }
+
+    this.clearTokens();
+    this.router.navigate(['/']);
+  }
+
+  private handleAuthentication(response: any): void {
+    localStorage.setItem('jwt', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    
+    // Calculate and store expiration time
+    const expiresAt = new Date().getTime() + (response.expiresIn * 1000);
+    localStorage.setItem('expiresAt', expiresAt.toString());
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('jwt');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
+  isTokenExpired(): boolean {
+    const expiresAt = localStorage.getItem('expiresAt');
+    if (!expiresAt) return true;
+    
+    // Add 30 second buffer before actual expiration
+    return new Date().getTime() > (parseInt(expiresAt) - 30000);
+  }
+
+  isAuthenticated(): boolean {
+    const token = this.getAccessToken();
+    return !!token && !this.isTokenExpired();
+  }
+
+  private clearTokens(): void {
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('expiresAt');
+  }
+
+  getRefreshingStatus(): boolean {
+    return this.isRefreshing;
+  }
+
+  setRefreshingStatus(status: boolean): void {
+    this.isRefreshing = status;
+  }
+
+  getRefreshTokenSubject(): BehaviorSubject<any> {
+    return this.refreshTokenSubject;
+  }
+
+  private handleError(error: any): Observable<never> {
+    console.error('Auth error:', error);
+    return throwError(() => error);
+  }
+  
 }

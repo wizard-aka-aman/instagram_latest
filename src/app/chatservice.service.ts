@@ -12,6 +12,7 @@ export class ChatService {
 
   private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
   // public baseUrl: string = 'https://localhost:7246';
+  // public baseUrl: string = 'https://10.0.0.204:5000';
   
   constructor(private http: HttpClient,private service : ServiceService) { }
 

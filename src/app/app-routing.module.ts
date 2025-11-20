@@ -7,10 +7,6 @@ import { ReelViewComponent } from './profile/reel-view/reel-view.component';
 
 const routes: Routes = [
     {
-        path: 'login',
-        component: LoginComponent
-    },
-    {
         path: '',
         loadChildren: () => import('./home/home.module').then(e => e.HomeModule)
     },

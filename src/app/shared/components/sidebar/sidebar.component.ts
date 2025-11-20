@@ -213,8 +213,7 @@ export class SidebarComponent {
   logout() {
     const pakka = confirm("Sure you want to Logout?");
     if (pakka) {
-      localStorage.removeItem('jwt');
-      this.route.navigateByUrl("/")
+      this.Service.logout();
       setTimeout(() => {
         window.location.reload()
       }, 200);
