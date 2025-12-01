@@ -324,3 +324,324 @@
     </div>
   </div>
 </div>
+
+<!--
+ 
+<div class="mobile-topbar d-md-none">
+  <img src="../../assets/instalogo.png" alt="Instagram" class="img-fluid" />
+  <div class="d-flex">
+    <div class="">
+      <div class="dropdown">
+        <i class="fa-solid fa-square-plus fs-1" data-bs-toggle="dropdown" aria-expanded="false" data-bs-placement="top"
+          title="Reel"></i>
+        <ul class="dropdown-menu" style="background-color: rgb(37, 37, 37); color: white; width: auto;">
+          <li style="padding-left: 25px;height: 35px; color: white;" data-bs-toggle="modal"
+            data-bs-target="#createModal">Create Post</li>
+          <li style="padding-left: 25px;height: 35px; color: white; " data-bs-toggle="modal"
+            data-bs-target="#storyModal">Story</li>
+          <li style="padding-left: 25px;height: 35px; color: white;" data-bs-toggle="modal" data-bs-target="#reelModal">
+            Upload Reel</li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="">
+      <i class="fa-solid fa-bell fs-1  mx-4" routerLink="/notifications" data-bs-toggle="tooltip"
+        data-bs-placement="top" title="Notifications"></i>
+    </div>
+
+  </div>
+</div>
+<div class="story-top-bar   ">
+ 
+  <div class="d-flex overflow-auto story-scroll py-2 m-4" style="width: calc(100vw - 30vw);">
+
+    <div class="circle-image me-3 " *ngIf="isStoryAvailable">
+      <img src="../../../assets/instagram_loading_seen.png" width="100" height="100" alt="" srcset="">
+      <img [src]="getProfileImage(loggedInUserStory?.profilePicture) || 'assets/avatar.png'"
+        routerLink="stories/{{loggedInUserStory.username}}/{{loggedInUserStory.displayStories[0].storyId}}"
+        class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div class="text-center small">Your Story</div>
+    </div>
+
+    <div class="circle-image me-3 " *ngIf="!isStoryAvailable" style="position: relative;">
+      <img src="../../../assets/instagram_loading_seen.png" width="100" height="100" alt="" srcset="">
+      <i style="position: absolute;bottom: 17px;right: 10px;" class="fa-solid fa-circle-plus"></i>
+      <img [src]="getProfileImage(loggedInUserStory?.profilePicture) || 'assets/avatar.png'" data-bs-toggle="modal"
+        data-bs-target="#storyModal" class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div class="text-center small">Add Story</div>
+    </div>
+
+    <div *ngFor="let user of storiesGroupedByUser" class="circle-image me-3 ">
+      <img *ngIf="!user.isSeen && !user.isCloseFriend" src="../../../assets/instagram_loading.png" width="100"
+        height="100" alt="" srcset="">
+      <img *ngIf="!user.isSeen && user.isCloseFriend" src="../../../assets/instagram_loading_cf.png" width="100"
+        height="100" alt="" srcset="">
+      <img *ngIf="user.isSeen" src="../../../assets/instagram_loading_seen.png" width="100" height="100" alt=""
+        srcset="">
+      <img [src]="getProfileImage(user.profilePicture) || 'assets/avatar.png'" (click)="openStory(user)"
+        routerLink="stories/{{user.username}}/{{user.displayStories[0].storyId}}"
+        class="story-avatar rounded-circle me-3 " width="88" height="88">
+      <div class="text-center small">{{ user.username }}</div>
+    </div>
+  </div>
+</div> 
+<div class="container-fluid px-0" style="overflow: hidden !important;">
+  <div class="row justify-content-start g-0">
+    <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+ 
+      <div class="post-card mb-0"
+        style="background-color: black; color: white; border-bottom: 1px solid rgb(38, 38, 38);" #postCard
+        *ngFor="let post of posts">
+ 
+        <div class="post-header d-flex align-items-center justify-content-between px-3 py-2"
+          style="background-color: black; color: white;">
+          <div class="d-flex align-items-center" style="cursor: pointer;">
+            <img routerLink="/{{post.userName}}" [src]="getProfileImage(post.profilePicture)"
+              class="rounded-circle me-3" width="32" height="32" style="object-fit: cover;" />
+            <div>
+              <strong routerLink="/{{post.userName}}" class="d-block"
+                style="font-size: 14px; line-height: 1.2;">{{ post.userName }}</strong>
+              <span class="" style="font-size: 12px;">{{TimeSincePost(post.createdAt)}}</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-ellipsis" style="cursor: pointer; font-size: 20px;"></i>
+        </div>
+ 
+        <div class="post-image-container position-relative">
+           
+          <div *ngIf="post.contentType === 'post' && post.imageUrl != 'multiple'" class="position-relative">
+            <img class="post-image w-100" [src]="getProfileImage(post.imageUrl)" alt="Post image"
+              style="display: block; max-height: 600px; object-fit: contain; background-color: black;" />
+ 
+            <div *ngIf="post.showTag && post.taggedUsers.length > 0">
+              <div class="tag-marker position-absolute" *ngFor="let tag of post.taggedUsers[0].taggedUsers"
+                [ngStyle]="{
+                  top: tag.y + '%',
+                  left: tag.x + '%'
+                }">
+                <div class="tag-label">
+                  <i class="fa-solid fa-user" style="font-size: 10px;"></i>
+                  <span>{{ tag.username }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+ 
+          <div *ngIf="post.contentType === 'post' && post.imageUrl == 'multiple'" class="position-relative">
+            <div [id]="'carousel-' + post.postId" class="carousel slide" data-bs-ride="false">
+              <div class="carousel-inner">
+                <div *ngFor="let img of post.mediaUrl; let i = index" class="carousel-item"
+                  [class.active]="i === 0">
+                  <img [src]="getProfileImage(img)" alt="Post image {{ i + 1 }}" class="d-block w-100 post-image"
+                    style="object-fit: contain; background-color: black;" />
+ 
+                  <div *ngIf="post.showTag && post.taggedUsers[i]?.taggedUsers">
+                    <div class="tag-marker position-absolute" *ngFor="let tag of post.taggedUsers[i].taggedUsers"
+                      [ngStyle]="{
+                        top: tag.y + '%',
+                        left: tag.x + '%'
+                      }">
+                      <div class="tag-label">
+                        <i class="fa-solid fa-user" style="font-size: 10px;"></i>
+                        <span>{{ tag.username }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+ 
+              <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + post.postId"
+                data-bs-slide="prev">
+                <div class="carousel-arrow">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </div>
+              </button>
+              <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + post.postId"
+                data-bs-slide="next">
+                <div class="carousel-arrow">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+              </button>
+ 
+              <div class="carousel-indicators-custom">
+                <span *ngFor="let img of post.mediaUrl; let i = index"
+                  [class.active]="i === 0"></span>
+              </div>
+            </div>
+          </div>
+ 
+          <div *ngIf="post.contentType === 'reel'" class="position-relative">
+            <video class="post-image w-100" [src]="post.url" controls
+              style="display: block; max-height: 600px; object-fit: contain; background-color: black;"></video>
+          </div>
+ 
+          <button *ngIf="post.contentType === 'post' && post.taggedUsers.length > 0"
+            class="btn btn-sm position-absolute toggle-tags-btn"
+            (click)="toggleTags(post)">
+            <i class="fa-solid fa-user-tag me-1"></i>
+            {{ post.showTag ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+ 
+        <div class="post-actions px-3 py-2" style="background-color: black; color: white;">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-3"> 
+              <i *ngIf="post.contentType === 'post'" style="cursor: pointer;" [class.fa-regular]="!post.isLikedByMe" [class.fa-solid]="post.isLikedByMe"
+                class="fa-heart action-icon" [style.color]="post.isLikedByMe ? '#ff3040' : ''"
+                (click)="post.isLikedByMe ? UnLike(post) : Like(post)"></i>
+               
+              <i *ngIf="post.contentType === 'reel'" style="cursor: pointer;" [class.fa-regular]="!post.isLikedLoggedInUser" [class.fa-solid]="post.isLikedLoggedInUser"
+                class="fa-heart action-icon" [style.color]="post.isLikedLoggedInUser ? '#ff3040' : ''"
+                (click)="post.isLikedLoggedInUser ? UnLikeReel(post) : LikeReel(post)"></i>
+
+              <i class="fa-regular fa-comment action-icon" (click)="FocusComment(post)"
+                style="cursor: pointer;"></i>
+              <i class="fa-regular fa-paper-plane action-icon" data-bs-toggle="modal" data-bs-target="#HomeSent"
+                style="cursor: pointer;" (click)="AddPostId(post)"></i>
+            </div>
+
+            <div>
+              
+              <i *ngIf="post.contentType === 'post'" [class.fa-regular]="!post.isSaved" [class.fa-solid]="post.isSaved"
+                class="fa-bookmark action-icon" style="cursor: pointer;"
+                (click)="post.isSaved ? RemoveSaved(post) : AddSaved(post)"></i>
+              
+              
+              <i *ngIf="post.contentType === 'reel'" [class.fa-regular]="!post.isSaved" [class.fa-solid]="post.isSaved"
+                class="fa-bookmark action-icon" style="cursor: pointer;"
+                (click)="post.isSaved ? RemoveSavedReel(post) : AddSavedReel(post)"></i>
+            </div>
+          </div>
+
+          
+          <div class="mb-2">
+            <span (click)="openLikesModal(post)" style="cursor: pointer; font-size: 14px; font-weight: 600;"
+              data-bs-toggle="modal" data-bs-target="#HomeLikes">
+              {{ post.likesCount }} {{ post.likesCount === 1 ? 'like' : 'likes' }}
+            </span>
+          </div>
+ 
+          <div class="mb-2" style="font-size: 14px; line-height: 1.4;">
+            <strong style="font-weight: 600;">{{ post.userName }}</strong>
+            <span class="ms-1" style="color: rgb(245, 245, 245);">{{ post.contentType === 'post' ? post.caption : post.descripton }}</span>
+          </div>
+ 
+          <div *ngIf="post.commentsCount > 2" class="mb-2">
+            <span *ngIf="post.contentType === 'post'" style="color: rgb(168, 168, 168); cursor: pointer; font-size: 14px;"
+              routerLink="/{{post.userName}}/p/{{post.postId}}">
+              View all {{post.commentsCount}} comments
+            </span>
+            <span *ngIf="post.contentType === 'reel'" style="color: rgb(168, 168, 168); cursor: pointer; font-size: 14px;">
+              View all {{post.commentsCount}} comments
+            </span>
+          </div>
+ 
+          <div *ngFor="let comment of post.comments" class="mb-1" style="font-size: 14px; line-height: 1.4;">
+            <strong style="font-weight: 600;">{{ comment.userName }}</strong>
+            <span class="ms-1">{{ comment.commentText }}</span>
+          </div>
+ 
+          <div class="d-flex align-items-center pt-2 border-top" style="border-color: rgb(38, 38, 38) !important;">
+            <input *ngIf="post.contentType === 'post'" #commentInput [(ngModel)]="newComments[post.postId]" (keydown.enter)="addComment(post)"
+              class="form-control bg-black text-white border-0 px-0" style="box-shadow: none; font-size: 14px;"
+              placeholder="Add a comment..." />
+            <input *ngIf="post.contentType === 'reel'" #commentInput [(ngModel)]="newReelComments[post.reelId]" (keydown.enter)="addReelComment(post)"
+              class="form-control bg-black text-white border-0 px-0" style="box-shadow: none; font-size: 14px;"
+              placeholder="Add a comment..." />
+            <button *ngIf="(post.contentType === 'post' && newComments[post.postId]?.trim()) || (post.contentType === 'reel' && newReelComments[post.reelId]?.trim())" 
+              style="padding: 0 !important; font-size: 14px;"
+              class="btn border-0 text-primary fw-semibold" 
+              (click)="post.contentType === 'post' ? addComment(post) : addReelComment(post)">Post</button>
+          </div>
+        </div>
+      </div>
+ 
+      <div *ngIf="loading" class="text-center text-white py-4">
+        <div class="spinner-border text-light" style="width: 2rem; height: 2rem;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+ 
+<div class="modal fade show d-block" tabindex="-1" *ngIf="showModal" style="background-color: rgba(0, 0, 0, 0.9);">
+  <div class="d-flex justify-content-center align-items-center h-100 w-100">
+    <div class="position-relative">
+      <button class="btn btn-light position-absolute top-0 end-0 m-2" (click)="closeStory()">✕</button>
+      <img [src]="getProfileImage(currentUserStories[currentStoryIndex]?.imageUrl)" class="rounded story-image"
+        alt="story" />
+ 
+      <button class="position-absolute top-50 start-0 translate-middle-y btn btn-dark btn-sm px-2" (click)="prevStory()"
+        *ngIf="currentStoryIndex > 0">‹</button>
+
+      <button class="position-absolute top-50 end-0 translate-middle-y btn btn-dark btn-sm px-2" (click)="nextStory()"
+        *ngIf="currentStoryIndex < currentUserStories.length - 1">›</button>
+    </div>
+  </div>
+</div>
+ 
+<div class="modal fade" id="HomeLikes" tabindex="-1" aria-labelledby="LikesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+    <div class="modal-content" style="background-color: #121212; color: white; border-radius: 12px;">
+ 
+      <div class="modal-header border-0" style="background-color: #1a1a1a;">
+        <h5 class="modal-title mx-auto" id="LikesLabel" style="font-weight: 600;">Likes</h5>
+        <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+ 
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
+ 
+        <div *ngFor="let like of selectedLikes"
+          class="d-flex align-items-center justify-content-between px-3 py-2 hover-effect">
+ 
+          <div class="d-flex align-items-center gap-2" data-bs-dismiss="modal" aria-label="Close"
+            style="cursor: pointer;" [routerLink]="['/', like.userName]">
+            <img [src]="getProfileImage(like.profilePicture)" alt="User" class="rounded-circle" width="45" height="45"
+              style="object-fit: cover;" />
+            <span class="fw-bold text-white">{{ like.userName }}</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+ 
+<div class="modal fade" id="HomeSent" tabindex="-1" aria-labelledby="SentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+    <div class="modal-content custom-modal">
+ 
+      <div class="modal-header border-0 d-flex justify-content-between align-items-center">
+        <h5 class="modal-title fw-semibold">Share</h5>
+        <button type="button" (click)="ClearSearchQuery()" class="btn-close btn-close-white" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+ 
+      <div class=" d-flex justify-content-center align-items-center">
+        <div class="input-group  w-50 border-rounded mb-3">
+          <span class="fa-solid mt-1 text-white border-rounded fa-magnifying-glass input-group-text border-0"
+            style="background-color: rgb(0, 0, 0) !important;"></span>
+          <input type="text" (input)="DeBounce()" class="form-control w-50  border-rounded" [(ngModel)]="searchQuery"
+            placeholder="Search...">
+        </div>
+      </div>
+  
+      <div class="modal-body p-0" style="max-height: 350px; overflow-y: auto;">
+        <div *ngFor="let user of searchResults " class="d-flex align-items-center px-3 py-2 user-row"
+          style="cursor: pointer;" (click)="SendPost(user.userName)" data-bs-dismiss="modal" aria-label="Close">
+
+          <img [src]="getProfileImage(user.profilePicture)" alt="User" class="rounded-circle me-2" width="48"
+            height="48" style="object-fit: cover;" />
+          <span class="fw-semibold text-white">{{ user.userName }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+-->

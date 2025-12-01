@@ -456,4 +456,106 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
    toggleTags(post:any) {
     post.showTag = !post.showTag;
 }
+// // Add this property at the top with other properties
+// newReelComments: { [reelId: number]: string } = {};
+
+// // Add these methods to your component class
+
+// // ================= REEL LIKE =================
+// LikeReel(reel: any) {
+//   if (reel.isLikedLoggedInUser) return;
+
+//   // Optimistic UI
+//   reel.isLikedLoggedInUser = true;
+//   reel.likesCount++;
+
+//   this.serviceSrv
+//     .LikeReel({
+//       reelId: reel.reelId,
+//       userName: this.loggedInUser
+//     })
+//     .subscribe({
+//       error: () => {
+//         // Rollback on error
+//         reel.isLikedLoggedInUser = false;
+//         reel.likesCount--;
+//       }
+//     });
+// }
+
+// UnLikeReel(reel: any) {
+//   if (!reel.isLikedLoggedInUser) return;
+
+//   // Optimistic UI
+//   reel.isLikedLoggedInUser = false;
+//   reel.likesCount--;
+
+//   this.serviceSrv
+//     .UnLikeReel({
+//       reelId: reel.reelId,
+//       userName: this.loggedInUser
+//     })
+//     .subscribe({
+//       error: () => {
+//         // Rollback on error
+//         reel.isLikedLoggedInUser = true;
+//         reel.likesCount++;
+//       }
+//     });
+// }
+
+// // ================= REEL COMMENT =================
+// addReelComment(reel: any) {
+//   const commentText = this.newReelComments[reel.reelId]?.trim();
+//   if (!commentText) return;
+
+//   // Optimistic UI
+//   const newComment = {
+//     userName: this.loggedInUser,
+//     commentText
+//   };
+//   reel.comments.push(newComment);
+//   reel.commentsCount++;
+//   this.newReelComments[reel.reelId] = '';
+
+//   this.serviceSrv
+//     .CommentReel({
+//       commentText: commentText,
+//       reelId: reel.reelId,
+//       userName: this.loggedInUser
+//     })
+//     .subscribe({
+//       error: () => {
+//         // Rollback
+//         reel.comments.pop();
+//         reel.commentsCount--;
+//         this.newReelComments[reel.reelId] = commentText;
+//       }
+//     });
+// }
+
+// // ================= REEL SAVE =================
+// AddSavedReel(reel: any) {
+//   if (reel.isSaved) return;
+
+//   reel.isSaved = true;
+
+//   this.serviceSrv
+//     .AddToSavedReel({ reelId: reel.reelId, userName: this.loggedInUser })
+//     .subscribe({
+//       error: () => (reel.isSaved = false)
+//     });
+// }
+
+// RemoveSavedReel(reel: any) {
+//   if (!reel.isSaved) return;
+
+//   reel.isSaved = false;
+
+//   this.serviceSrv
+//     .RemoveSavedReel({ reelId: reel.reelId, userName: this.loggedInUser })
+//     .subscribe({
+//       error: () => (reel.isSaved = true)
+//     });
+// }
 }
