@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
 })
 export class ServiceService {
 
-   public BaseUrl :string= 'https://xatavop939.bsite.net';
+  //  public BaseUrl :string= 'https://xatavop939.bsite.net';
   // public BaseUrl: string = 'https://localhost:7246';
-  // public BaseUrl: string = 'https://10.0.0.204:5000';
+  public BaseUrl: string = 'https://10.0.0.204:5000';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
   private isSeenNoti = new BehaviorSubject<boolean>(true);

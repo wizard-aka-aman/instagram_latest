@@ -10,14 +10,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'; 
 import { ToastrModule } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms'; 
 import { AuthInterceptor } from './interceptor/auth.interceptor';
-import { TokenInterceptor } from './token.interceptor';
+import { TokenInterceptor } from './token.interceptor'; 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent, 
-    PagenotfoundComponent 
+    LoginComponent,  
   ],
   imports: [
     BrowserModule,

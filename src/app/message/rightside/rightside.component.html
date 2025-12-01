@@ -6,28 +6,145 @@
     <p class="fs-6">Send a message to start a chat.</p>
     <div class="btn btn-primary p-1 rounded-3 px-3 " data-bs-toggle="modal" data-bs-target="#message">Send Message</div>
   </div>
-  <!-- Chat Header -->
-  <div *ngIf="!noUserSelected" class="p-3 border-bottom d-flex align-items-center justify-content-start"
-    style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
-    <!-- Mobile Back Button -->
-    <button class="btn btn-sm  text-white" (click)="goBack()">
-      <i class="fa fa-arrow-left"></i>
-    </button>
 
-    <div class="search-item d-flex align-items-center  p-2  ">
-      <img [src]="getProfileImage(profilePicture) || 'assets/avatar.png'" class="rounded-circle mx-3" width="40"
-        height="40" style="object-fit: cover; cursor: pointer;" routerLink="/{{groupName}}" />
-      <div>
-        <div class="fw-bold text-white" routerLink="/{{groupName}}" style="cursor: pointer;">{{ groupName }}</div>
-        <div class=" small">{{ fullName }}</div>
+  <!-- Chat Header -->
+  <div *ngIf="!noUserSelected" class="p-3 border-bottom d-flex align-items-center justify-content-between"
+    style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important; ">
+    <div class="d-flex align-items-center">
+      <!-- Mobile Back Button -->
+      <button class="btn btn-sm text-white" (click)="goBack()">
+        <i class="fa fa-arrow-left"></i>
+      </button>
+
+      <div class="search-item d-flex align-items-center p-2">
+        <img [src]="getProfileImage(profilePicture) || 'assets/avatar.png'" class="rounded-circle mx-3" width="40"
+          height="40" style="object-fit: cover; cursor: pointer;" routerLink="/{{groupName}}" />
+        <div>
+          <div class="fw-bold text-white" routerLink="/{{groupName}}" style="cursor: pointer;">{{ groupName }}</div>
+          <div class="small">{{ fullName }}</div>
+        </div>
       </div>
     </div>
-    <div class="d-md-none" style="width: 30px;"></div> <!-- placeholder -->
+
+    <!-- Call Button -->
+    <button class="btn btn-sm text-white" (click)="initiateCall()" *ngIf="!isInCall">
+      <i class="fa fa-phone fs-5"></i>
+    </button>
   </div>
+
+  <!-- Incoming Call Modal -->
+  <div *ngIf="incomingCall" class="incoming-call-overlay">
+    <div class="incoming-call-box">
+      <img [src]="getProfileImage(incomingCall.callerProfilePicture)" class="caller-avatar" />
+      <h3 class="mt-3">{{ incomingCall.callerName }}</h3>
+      <p class="text-muted">Incoming audio call...</p>
+      
+      <div class="call-animation">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring delay-1"></div>
+        <div class="pulse-ring delay-2"></div>
+      </div>
+
+      <div class="d-flex gap-3 mt-4">
+        <button class="btn btn-danger btn-lg rounded-circle" (click)="rejectCall()">
+          <i class="fa fa-phone-slash"></i>
+        </button>
+        <button class="btn btn-success btn-lg rounded-circle" (click)="answerCall()">
+          <i class="fa fa-phone"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Call Overlay -->
+<div *ngIf="callState === 'active' || callState === 'calling'" class="active-call-overlay">
+  <div class="active-call-box">
+    <img [src]="getProfileImage(profilePicture)" class="caller-avatar-large" />
+    <h3 class="mt-3 text-white">{{ groupName }}</h3>
+    
+    <div *ngIf="callState === 'calling'" class="call-status">
+      <p class="text-muted">Calling...</p>
+      <div class="calling-animation">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <div *ngIf="callState === 'active'" class="call-status">
+      <p class="text-success">Connected</p>
+      <p class="call-duration">{{ callDuration }}</p>
+      
+      <!-- ✅ Speaker Status Indicator -->
+      <div class="speaker-status mt-2">
+        <i [class.fa-volume-high]="isSpeakerOn" 
+           [class.fa-volume-low]="!isSpeakerOn" 
+           class="fa-solid me-2"
+           [style.color]="isSpeakerOn ? '#00ff00' : '#ffffff'"></i>
+        <span class="small">{{ isSpeakerOn ? 'Loudspeaker' : 'Earpiece' }}</span>
+      </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio #remoteAudio autoplay playsinline [muted]="false" [volume]="1" style="display: none;"></audio>
+    <audio #localAudio muted autoplay playsinline style="display:none;"></audio>
+
+    <!-- ✅ UPDATED Call Controls with Speaker Button -->
+    <div class="call-controls mt-4 d-flex gap-3 justify-content-center align-items-center">
+      
+      <!-- Mute Button -->
+      <button class="btn btn-lg rounded-circle" 
+              [class.btn-secondary]="!isMuted" 
+              [class.btn-warning]="isMuted"
+              (click)="toggleMute()"
+              title="Toggle Mute">
+        <i [class.fa-microphone]="!isMuted" 
+           [class.fa-microphone-slash]="isMuted" 
+           class="fa-solid"></i>
+      </button>
+
+      <!-- ✅ NEW: Speaker Toggle Button -->
+      <button class="btn btn-lg rounded-circle speaker-button position-relative" 
+              [class.btn-secondary]="!isSpeakerOn" 
+              [class.btn-success]="isSpeakerOn"
+              (click)="toggleSpeaker()"
+              title="Toggle Speaker">
+        <i [class.fa-volume-high]="isSpeakerOn" 
+           [class.fa-volume-low]="!isSpeakerOn" 
+           class="fa-solid"></i>
+      </button>
+
+      <!-- ✅ NEW: Advanced Speaker Selection (Optional) -->
+      <button class="btn btn-sm btn-outline-light rounded-circle speaker-button"
+              (click)="showSpeakerSelection()"
+              title="Select Speaker"
+              *ngIf="availableSpeakers.length > 1">
+        <i class="fa-solid fa-caret-down"></i>
+      </button>
+
+      <!-- End Call Button -->
+      <button class="btn btn-danger btn-lg rounded-circle" 
+              (click)="endCall()"
+              title="End Call">
+        <i class="fa-solid fa-phone-slash"></i>
+      </button>
+    </div>
+
+    <!-- ✅ NEW: Speaker Selection Menu -->
+    <div *ngIf="showSpeakerMenu" class="speaker-menu position-absolute bg-dark rounded shadow p-3">
+      <h6 class="text-white mb-3">Select Speaker</h6>
+      <div *ngFor="let speaker of availableSpeakers" 
+           class="speaker-option p-2 rounded mb-2"
+           (click)="selectSpeaker(speaker.deviceId)">
+        <i class="fa-solid fa-volume-high me-2"></i>
+        <span>{{ speaker.label || 'Speaker ' + (availableSpeakers.indexOf(speaker) + 1) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Messages Wrapper -->
   <div [ngClass]="noUserSelected ? '':'messages-wrapper'" #scrollContainer>
-
     <div *ngFor="let msg of messages" class="mb-2 message-text position-relative"
       [class.text-end]="msg.groupName === user">
 
@@ -38,6 +155,7 @@
       <div *ngIf="msg.reaction &&  msg.groupName === user" class=" ">
         <span class="emoji fs-6">{{ msg.reaction }}</span>
       </div>
+
       <!-- 3-dot Menu Button -->
       <div class="menu position-relative" *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
         <i class="fa-solid fa-ellipsis-vertical"></i>
@@ -53,13 +171,12 @@
         </div>
       </div>
 
-
       <!-- Message Bubble -->
       <div class="d-inline-block fs-small px-2 py-1 rounded-5 position-relative"
         [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}"
         style="max-width: 70%; word-wrap: break-word; word-break: break-word; white-space: pre-wrap; text-align: left;">
 
-        <!-- Simple Text Message (no post, no reel, no file) -->
+        <!-- Simple Text Message -->
         <span
           *ngIf="msg.postLink == null && msg.reelPublicId == null && (msg.message !== 'Shared a file' || msg.mediaUrl == null)"
           [innerHTML]="formatMessageWithLinks(msg.message)">
@@ -70,7 +187,7 @@
           class="card shadow-sm border-0 rounded-3"
           style="max-width: 100%; width: 100%; background-color: transparent;">
 
-          <!-- Header: profile image + username -->
+          <!-- Header -->
           <div class="d-flex align-items-center p-2">
             <img [src]="getProfileImage(msg.profilePicture)" routerLink="/{{msg.usernameOfPostReel}}"
               class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" />
@@ -96,37 +213,33 @@
 
           <!-- Caption -->
           <div class="card-body p-2" *ngIf="msg.message !== 'Voice Message' && !msg.mediaUrl">
-            <p class="card-text mb-1 text-white">
-              {{ msg.message }}
-            </p>
+            <p class="card-text mb-1 text-white">{{ msg.message }}</p>
           </div>
         </div>
-          <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl" class="audio-wrapper">
-            <audio [src]="msg.mediaUrl" controls class="audio-player"></audio>
-          </div>
-        <!-- File Section (Shared a file) -->
-        <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
 
-          <!-- IMAGE PREVIEW -->
+        <!-- Voice Message -->
+        <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl" class="audio-wrapper">
+          <audio [src]="msg.mediaUrl" controls class="audio-player"></audio>
+        </div>
+
+        <!-- File Section -->
+        <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
           <img *ngIf="isImage(msg?.mediaUrl)" [src]="msg.mediaUrl" class="rounded mt-1"
             style="max-width:200px; max-height:200px; object-fit:cover; cursor:pointer;" (click)="downloadFile(msg)" />
 
-          <!-- VIDEO PREVIEW -->
           <video *ngIf="isVideo(msg?.mediaUrl)" [src]="msg.mediaUrl" controls class="mt-1"
             style="max-width:250px; max-height:250px; object-fit:cover; cursor:pointer;">
           </video>
 
-          <!-- OTHER FILE TYPES (txt, zip, pdf, docx, etc.) -->
           <div *ngIf="!isImage(msg?.mediaUrl) && !isVideo(msg?.mediaUrl)"
             class="d-flex align-items-center p-2 rounded text-white mt-1" style="cursor: pointer;"
             (click)="downloadFile(msg)">
             <i class="fa-solid fa-file fs-4 me-2"></i>
             <span>{{ getFileName(msg.mediaUrl) }}</span>
           </div>
-
         </ng-container>
-
       </div>
+
       <div *ngIf="msg.reaction && msg.groupName !== user" class=" ">
         <span class="emoji fs-6">{{ msg.reaction }}</span>
       </div>
@@ -140,7 +253,6 @@
       <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName !== user">
         <i class="fa-regular fa-face-smile"></i>
       </div>
-
 
       <!-- Emoji Picker -->
       <div *ngIf="emojiPickerIndex === msg.id"
@@ -156,153 +268,113 @@
           </span>
         </span>
       </div>
-
     </div>
-
   </div>
 
-
-
-
+  <!-- File Preview -->
   <div *ngIf="selectedFile" class="mb-3 p-2 border rounded text-white d-flex">
-
-    <!-- IMAGE PREVIEW -->
     <img *ngIf="selectedFileUrl && selectedFile.type.startsWith('image/')" [src]="selectedFileUrl" class="rounded"
       style="max-width: 150px; max-height: 150px; object-fit: cover;" />
 
-    <!-- VIDEO PREVIEW -->
     <video *ngIf="selectedFileUrl && selectedFile.type.startsWith('video/')" [src]="selectedFileUrl" controls
       style="max-width: 200px; max-height: 200px;">
     </video>
 
-    <!-- OTHER FILES (txt, zip, pdf, docx, etc) -->
     <div *ngIf="!selectedFileUrl" class="d-flex align-items-center">
       <i class="fa-solid fa-file fs-4 me-2"></i>
       <span>{{ selectedFileName }}</span>
     </div>
- 
-      <!-- Remove Button -->
-    <div class="text-danger mt-2" style="cursor:pointer" (click)="clearSelectedFile()">
-      Remove
-    </div>
-    <!-- Send Button -->
-    <div class="text-primary mt-2 ms-4" style="cursor:pointer" (click)="send()">
-      Send
-    </div> 
 
-  </div> 
-<!-- Recording Indicator -->
-<div *ngIf="isRecording" class="recording-indicator">
-  <div class="d-flex align-items-center justify-content-between mb-2">
-    <div class="d-flex align-items-center gap-2">
-      <div class="recording-pulse"></div>
-      <span class="fw-medium">Recording...</span>
-    </div>
-    <span class="recording-time">{{ recordingDuration | number:'1.0-0' }}s / 60s</span>
+    <div class="text-danger mt-2" style="cursor:pointer" (click)="clearSelectedFile()">Remove</div>
+    <div class="text-primary mt-2 ms-4" style="cursor:pointer" (click)="send()">Send</div>
   </div>
-  <div class="recording-progress-bar">
-    <div class="recording-progress-fill" [style.width.%]="(recordingDuration / 60) * 100"></div>
-  </div>
-</div>
 
-<!-- Processing Audio Loader -->
-<div *ngIf="isProcessingAudio" class="audio-processing">
-  <div class="d-flex align-items-center gap-2">
-    <i class="fa fa-spinner fa-spin text-primary"></i>
-    <span>Processing audio...</span>
-  </div>
-</div>
-
-<!-- Audio Preview (After Recording) -->
-<div *ngIf="audioUrl && !isRecording && !isProcessingAudio" class="audio-preview">
-  <div class="audio-preview-content">
-    <div class="audio-waveform">
-      <i class="fa-solid fa-microphone-lines fs-4 text-primary me-3"></i>
-      <audio [src]="audioUrl" controls class="audio-player"></audio>
-    </div>
-    <div class="audio-preview-actions">
-      <button class="btn btn-success px-4" [disabled]="isSendAudio" (click)="sendRecordedAudio()">
-        <i class="fa-solid fa-paper-plane me-2"></i>Send
-      </button>
-      <button class="btn btn-outline-danger" (click)="cancelRecordedAudio()">
-        <i class="fa-solid fa-trash"></i>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Message Input Area -->
-<div *ngIf="!noUserSelected" class="p-3 border-top mb-5"
-     style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
-
-  <form (ngSubmit)="send()">
-    <div class="input-group position-relative d-flex align-items-end">
-      <div class="input-wrapper flex-grow-1">
-        <textarea class="chat-input" 
-                  [(ngModel)]="newMessage" 
-                  name="message"
-                  (input)="autoResize($event)"
-                  (keydown.enter)="handleEnterKey($event)" 
-                  placeholder="Type a message..."
-                  [disabled]="isRecording || isProcessingAudio"></textarea>
+  <!-- Recording Indicator -->
+  <div *ngIf="isRecording" class="recording-indicator">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <div class="recording-pulse"></div>
+        <span class="fw-medium">Recording...</span>
       </div>
-
-      <!-- Hidden File Input -->
-      <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none;" />
-
-      <!-- Plus (Add File) Button - Disabled when recording or audio preview -->
-      <button type="button" 
-              class="btn text-primary input-btn-left"
-              (click)="fileInput.click()"
-              [disabled]="isRecording || isProcessingAudio || audioUrl">
-        <i class="fa-regular fa-plus fs-5"></i>
-      </button>
-
-      <!-- Mic Button - Show when no message and no audio preview -->
-      <button *ngIf="(!newMessage || newMessage.trim() === '') && !audioUrl"
-              type="button"
-              class="btn input-btn-right ms-5"
-              
-              [disabled]="isUploadingFile || isProcessingAudio"
-              (click)="toggleRecording()">
-        <i *ngIf="!isProcessingAudio"
-           [class.fa-microphone]="!isRecording"
-           [class.fa-stop-circle]="isRecording"
-           [class.recording-pulse]="isRecording"
-           [class.recording-active]="isRecording"
-           class="fa-solid fs-5 text-white"
-           [style.color]="isRecording ? '#ff4444' : ''"></i>
-        <i *ngIf="isProcessingAudio" class="fa fa-spinner fa-spin"></i>
-      </button>
-
-      <!-- Send Button - Show only when message is NOT empty -->
-      <button *ngIf="newMessage && newMessage.trim() !== '' && !audioUrl"
-              type="submit"
-              class="btn text-primary input-btn-right"
-              [disabled]="isUploadingFile || isRecording || isProcessingAudio">
-        <span *ngIf="!isUploadingFile">Send</span>
-        <span *ngIf="isUploadingFile">
-          <i class="fa fa-spinner fa-spin"></i>
-        </span>
-      </button>
-
+      <span class="recording-time">{{ recordingDuration | number:'1.0-0' }}s / 60s</span>
     </div>
-  </form>
-</div>
+    <div class="recording-progress-bar">
+      <div class="recording-progress-fill" [style.width.%]="(recordingDuration / 60) * 100"></div>
+    </div>
+  </div>
 
+  <!-- Processing Audio -->
+  <div *ngIf="isProcessingAudio" class="audio-processing">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fa fa-spinner fa-spin text-primary"></i>
+      <span>Processing audio...</span>
+    </div>
+  </div>
 
-</div>
-<!-- Custom Microphone Permission Popup -->
-<div *ngIf="showMicPermissionPopup" class="mic-permission-overlay">
-  <div class="mic-box">
-    <i class="fa-solid fa-microphone-slash mic-icon"></i>
-    <h3>Microphone Permission Needed</h3>
-    <p>To record voice messages, please allow microphone access.</p>
-    <button class="btn btn-primary" (click)="openBrowserSettings()">
-      Open Browser Settings
-    </button>
-    <button class="btn btn-secondary mt-2" (click)="closeMicPopup()">
-      Cancel
-    </button>
+  <!-- Audio Preview -->
+  <div *ngIf="audioUrl && !isRecording && !isProcessingAudio" class="audio-preview">
+    <div class="audio-preview-content">
+      <div class="audio-waveform">
+        <i class="fa-solid fa-microphone-lines fs-4 text-primary me-3"></i>
+        <audio [src]="audioUrl" controls class="audio-player"></audio>
+      </div>
+      <div class="audio-preview-actions">
+        <button class="btn btn-success px-4" [disabled]="isSendAudio" (click)="sendRecordedAudio()">
+          <i class="fa-solid fa-paper-plane me-2"></i>Send
+        </button>
+        <button class="btn btn-outline-danger" (click)="cancelRecordedAudio()">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Input -->
+  <div *ngIf="!noUserSelected" class="p-3 border-top mb-5"
+    style="border-color: rgb(39, 39, 39)!important; border-width: 1px !important;">
+    <form (ngSubmit)="send()">
+      <div class="input-group position-relative d-flex align-items-end">
+        <div class="input-wrapper flex-grow-1">
+          <textarea class="chat-input" [(ngModel)]="newMessage" name="message" (input)="autoResize($event)"
+            (keydown.enter)="handleEnterKey($event)" placeholder="Type a message..."
+            [disabled]="isRecording || isProcessingAudio"></textarea>
+        </div>
+
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display:none;" />
+
+        <button type="button" class="btn text-primary input-btn-left" (click)="fileInput.click()"
+          [disabled]="isRecording || isProcessingAudio || audioUrl">
+          <i class="fa-regular fa-plus fs-5"></i>
+        </button>
+
+        <button *ngIf="(!newMessage || newMessage.trim() === '') && !audioUrl" type="button"
+          class="btn input-btn-right ms-5" [disabled]="isUploadingFile || isProcessingAudio"
+          (click)="toggleRecording()">
+          <i *ngIf="!isProcessingAudio" [class.fa-microphone]="!isRecording" [class.fa-stop-circle]="isRecording"
+            [class.recording-pulse]="isRecording" [class.recording-active]="isRecording"
+            class="fa-solid fs-5 text-white" [style.color]="isRecording ? '#ff4444' : ''"></i>
+          <i *ngIf="isProcessingAudio" class="fa fa-spinner fa-spin"></i>
+        </button>
+
+        <button *ngIf="newMessage && newMessage.trim() !== '' && !audioUrl" type="submit"
+          class="btn text-primary input-btn-right" [disabled]="isUploadingFile || isRecording || isProcessingAudio">
+          <span *ngIf="!isUploadingFile">Send</span>
+          <span *ngIf="isUploadingFile"><i class="fa fa-spinner fa-spin"></i></span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Microphone Permission Popup -->
+  <div *ngIf="showMicPermissionPopup" class="mic-permission-overlay">
+    <div class="mic-box">
+      <i class="fa-solid fa-microphone-slash mic-icon"></i>
+      <h3>Microphone Permission Needed</h3>
+      <p>To record voice messages, please allow microphone access.</p>
+      <button class="btn btn-primary" (click)="openBrowserSettings()">Open Browser Settings</button>
+      <button class="btn btn-secondary mt-2" (click)="closeMicPopup()">Cancel</button>
+    </div>
   </div>
 </div>
+
+
