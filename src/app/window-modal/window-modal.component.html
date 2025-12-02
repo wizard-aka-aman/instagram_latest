@@ -1,0 +1,34 @@
+<div class="window-xp" 
+     [ngStyle]="windowStyle"
+     (mousedown)="bringToFront()">
+  
+  <div class="title-bar" (mousedown)="startDrag($event)">
+    <div class="title-bar-text">{{ title }}</div>
+    <div class="title-bar-controls">
+      <button (click)="minimize($event)" aria-label="Minimize">
+        <span class="minimize-icon">_</span>
+      </button>
+      <button (click)="toggleMaximize($event)" aria-label="Maximize">
+        <span class="maximize-icon">□</span>
+      </button>
+      <button class="close-btn" (click)="close($event)" aria-label="Close">
+        <span class="close-icon">×</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="window-body">
+    <ng-content></ng-content>
+  </div>
+
+  <ng-container *ngIf="!isMaximized">
+    <div class="resize-handle top" (mousedown)="startResize($event, 'top')"></div>
+    <div class="resize-handle bottom" (mousedown)="startResize($event, 'bottom')"></div>
+    <div class="resize-handle left" (mousedown)="startResize($event, 'left')"></div>
+    <div class="resize-handle right" (mousedown)="startResize($event, 'right')"></div>
+    <div class="resize-handle top-left" (mousedown)="startResize($event, 'top-left')"></div>
+    <div class="resize-handle top-right" (mousedown)="startResize($event, 'top-right')"></div>
+    <div class="resize-handle bottom-left" (mousedown)="startResize($event, 'bottom-left')"></div>
+    <div class="resize-handle bottom-right" (mousedown)="startResize($event, 'bottom-right')"></div>
+  </ng-container>
+</div>

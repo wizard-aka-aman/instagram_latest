@@ -11,13 +11,17 @@ import { ToastrModule } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms'; 
 import { AuthInterceptor } from './interceptor/auth.interceptor';
 import { TokenInterceptor } from './token.interceptor';
+import { WindowModalComponent } from './window-modal/window-modal.component';
+import { DesktopComponent } from './desktop/desktop.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent, 
-    PagenotfoundComponent 
+    PagenotfoundComponent,
+    WindowModalComponent,
+    DesktopComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,7 @@ import { TokenInterceptor } from './token.interceptor';
     SharedModule, 
     HttpClientModule, 
     BrowserAnimationsModule, 
-    ToastrModule.forRoot(),  
+    ToastrModule.forRoot()
 ],
   providers: [
     {

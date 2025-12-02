@@ -4,8 +4,14 @@ import { LoginComponent } from './login/login.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { PostViewComponent } from './profile/post-view/post-view.component';
 import { ReelViewComponent } from './profile/reel-view/reel-view.component';
+import { DesktopComponent } from './desktop/desktop.component';
 
 const routes: Routes = [
+    
+    {
+        path:'desktop',
+        component:DesktopComponent
+    },
     {
         path: '',
         loadChildren: () => import('./home/home.module').then(e => e.HomeModule)

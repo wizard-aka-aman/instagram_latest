@@ -1,0 +1,78 @@
+<div class="desktop">
+  <div class="crt-grain" *ngIf="grainEnabled"></div>
+  <div class="crt-scanlines"></div>
+
+  <div class="desktop-icons">
+    <div class="desktop-icon" (dblclick)="addNewWindow()">
+      <div class="icon-image">💻</div>
+      <div class="icon-label">My Computer</div>
+    </div>
+    <div class="desktop-icon">
+      <div class="icon-image">📁</div>
+      <div class="icon-label">My Documents</div>
+    </div>
+    <div class="desktop-icon" (dblclick)="toggleGrain()">
+      <div class="icon-image">⚙️</div>
+      <div class="icon-label">Toggle Grain</div>
+    </div>
+  </div>
+
+  <app-window-modal
+    *ngFor="let window of windows"
+    [title]="window.title"
+    [initialPosition]="window.position"
+    [initialSize]="window.size"
+    [zIndex]="window.zIndex"
+    (onClose)="closeWindow(window.id)"
+    (onFocus)="bringToFront(window.id)">
+    
+    <div class="window-content">
+      <div class="toolbar">
+        <button>File</button>
+        <button>Edit</button>
+        <button>View</button>
+        <button>Favorites</button>
+        <button>Tools</button>
+        <button>Help</button>
+      </div>
+      <div class="address-bar">
+        <span>Address:</span>
+        <input type="text" value="My Computer" readonly />
+        <button>Go</button>
+      </div>
+      <div class="content-area">
+        <div class="xp-logo">
+          <div class="flag-piece red"></div>
+          <div class="flag-piece green"></div>
+          <div class="flag-piece blue"></div>
+          <div class="flag-piece yellow"></div>
+        </div>
+        <h1>
+          Microsoft<br />
+          <span class="windows-text">Windows</span>
+          <span class="xp-text">XP</span>
+        </h1>
+      </div>
+    </div>
+  </app-window-modal>
+
+  <div class="taskbar">
+    <button class="start-button">
+      <span class="start-icon">🪟</span>
+      <span>start</span>
+    </button>
+    <div class="taskbar-items">
+      <button
+        *ngFor="let window of windows"
+        class="taskbar-item"
+        (click)="bringToFront(window.id)">
+        {{ window.title }}
+      </button>
+    </div>
+    <div class="system-tray">
+      <span class="tray-icon">🔊</span>
+      <span class="tray-icon">🌐</span>
+      <span class="clock">{{ formattedTime }}</span>
+    </div>
+  </div>
+</div>
