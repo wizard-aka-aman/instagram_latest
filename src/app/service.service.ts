@@ -9,8 +9,8 @@ import { Router } from '@angular/router';
 })
 export class ServiceService {
 
-   public BaseUrl :string= 'https://xatavop939.bsite.net';
-  // public BaseUrl: string = 'https://localhost:7246';
+  //  public BaseUrl :string= 'https://xatavop939.bsite.net';
+  public BaseUrl: string = 'https://localhost:7246';
   // public BaseUrl: string = 'https://10.0.0.204:5000';
   private chatListCache: any[] = [];
   private postRefreshSubject = new BehaviorSubject<boolean>(false);
@@ -445,6 +445,7 @@ export class ServiceService {
     }
 
     this.clearTokens();
+    localStorage.clear()
     this.router.navigate(['/']);
   }
 
@@ -500,5 +501,11 @@ export class ServiceService {
     console.error('Auth error:', error);
     return throwError(() => error);
   }
-  
+getPublicKey(username: string): Observable<any> {
+  return this.http.get(`${this.BaseUrl}/api/Chat/publickey/${username}`);
+}
+
+savePublicKey(username: string, publicKey: string): Observable<any> {
+  return this.http.post(`${this.BaseUrl}/api/Chat/publickey`, { username, publicKey });
+}
 }

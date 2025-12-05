@@ -7,6 +7,7 @@ import { EventEmitter } from '@angular/core';
 import { MessageServiceService } from 'src/app/message-service.service';
 import { ToastrService } from 'ngx-toastr';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { EncryptionService } from 'src/app/encryption.service';
 @Component({
   selector: 'app-rightside',
   templateUrl: './rightside.component.html',
@@ -51,7 +52,7 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
   }
 
   constructor(private router: ActivatedRoute, private location: Location, private ServiceSrv: ServiceService, private chatService: ChatService ,private route :Router , private MessageService : MessageServiceService,
-    private toastr:ToastrService,private sanitizer: DomSanitizer
+    private toastr:ToastrService,private sanitizer: DomSanitizer,private encryptionService :EncryptionService
   ) {
     this.user = this.ServiceSrv.getUserName();
     this.router.paramMap.subscribe(params => {
@@ -116,114 +117,442 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     // this.location.back();
     this.route.navigate(['/messages/t']);
   }
-  ngOnInit() {
-    this.MessageService.SetIsMessage(false);
-    this.router.paramMap.subscribe(params => {
-      this.groupName = String(params.get('groupname'));
-      this.loadChatData();
-    });
+  // async ngOnInit() {
+  //   await this.initializeEncryption();
+  //   this.MessageService.SetIsMessage(false);
+  //   this.router.paramMap.subscribe(params => {
+  //     this.groupName = String(params.get('groupname'));
+  //     this.loadChatData();
+  //   });
 
-    this.user = this.ServiceSrv.getUserName();
+  //   this.user = this.ServiceSrv.getUserName();
 
-    const conn = this.chatService.connection;
+  //   const conn = this.chatService.connection;
+  // if (conn) {
+  //   conn.on("ReceiveMessage", async (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+  //     // yaha pe sirf messages ko push karna hai
+  //     // Decrypt message if it's a text message and has IV
+  //         let decryptedMessage = message;
+  //         const iv = usernameofpostreel.split(',')[1];
+  //         if (iv && postlink === null) {  // Only decrypt text messages
+  //           // Determine the other user (sender if we're receiver, or groupName if we're sender)
+  //           const currentUser = this.ServiceSrv.getUserName();
+  //           const otherUser = sender === currentUser ? this.groupName : sender;
+            
+  //           decryptedMessage = await this.encryptionService.decryptMessage(
+  //             message,
+  //             iv,
+  //             otherUser
+  //           );
+  //         }
+  //     if (messageGroup === this.groupName || sender === this.groupName) {
+  //      this.messages.push({
+  //         id: messageId,
+  //         groupName: messageGroup,
+  //         sender,
+  //         message:decryptedMessage,
+  //         postLink : postlink,
+  //         profilePicture:profilepicture,
+  //         usernameOfPostReel:usernameofpostreel,
+  //         postId : postid,
+  //         reelPublicId:publicid,
+  //         mediaUrl:reelurl,
+  //         sentAt: new Date()
+  //       });
+  //       this.shouldScrollToBottom = true;
+  //     }
+  //   });
+  // }
+
+
+
+  //   /*this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
+  //     const isForThisChat = messageGroup === this.groupName || sender === this.groupName;
+  //     console.log({
+  //       id: messageId,
+  //       groupName: messageGroup,
+  //       sender,
+  //       message,
+  //       postlink,
+  //       profilepicture,
+  //       usernameofpostreel,
+  //       postid,
+  //       publicid,
+  //       reelurl
+  //     });
+  //     if(sender == this.user){
+  //     this.MessageService.SetIsMessage(true);
+  //   } 
+
+  //     if (isForThisChat) {        
+  //       this.messageId = messageId;
+  //       this.messages.push({
+  //         id: messageId,
+  //         groupName: messageGroup,
+  //         sender,
+  //         message,
+  //         postLink : postlink,
+  //         profilePicture:profilepicture,
+  //         usernameOfPostReel:usernameofpostreel,
+  //         postId : postid,
+  //         reelPublicId:publicid,
+  //         mediaUrl:reelurl,
+  //         sentAt: new Date()
+  //       });
+  //       this.shouldScrollToBottom = true;
+  //     }
+  //   }); */
+ 
+  // }
+  // rightside.component.ts
+
+async ngOnInit() {
+  // ✅ FIRST: Initialize encryption and WAIT for it
+  console.log("onintionintionintionintionintionintioninti");
+  
+  await this.initializeEncryption();
+  
+  this.MessageService.SetIsMessage(false);
+  
+  this.router.paramMap.subscribe(async params => {
+    this.groupName = String(params.get('groupname'));
+    
+    // ✅ When route changes, generate shared secret again
+    if (this.groupName && this.groupName !== 'null') {
+      await this.generateSharedSecretForUser(this.groupName);
+    }
+    
+    this.loadChatData();
+  });
+
+  this.user = this.ServiceSrv.getUserName();
+
+  const conn = this.chatService.connection;
   if (conn) {
-    conn.on("ReceiveMessage", (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
-      // yaha pe sirf messages ko push karna hai
-      if (messageGroup === this.groupName || sender === this.groupName) {
-       this.messages.push({
-          id: messageId,
-          groupName: messageGroup,
-          sender,
-          message,
-          postLink : postlink,
-          profilePicture:profilepicture,
-          usernameOfPostReel:usernameofpostreel,
-          postId : postid,
-          reelPublicId:publicid,
-          mediaUrl:reelurl,
-          sentAt: new Date()
-        });
-        this.shouldScrollToBottom = true;
+    conn.on("ReceiveMessage", async (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel, postid, publicid, reelurl) => {
+      let decryptedMessage = message;
+      const ivData = usernameofpostreel?.split(',');
+      const iv = ivData?.[1];
+      
+      if (iv && postlink === null) {
+        const currentUser = this.ServiceSrv.getUserName();
+        const otherUser = sender === currentUser ? messageGroup : sender;
+        
+        try {
+          decryptedMessage = await this.encryptionService.decryptMessage(
+            message,
+            iv,
+            otherUser
+          );
+        } catch (error) {
+          console.error('Decryption failed:', error);
+          decryptedMessage = '[Encrypted Message]';
+        }
       }
-    });
-  }
-
-
-
-    /*this.chatService.startConnection(this.user, (messageId, sender, messageGroup, message, postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl) => {
-      const isForThisChat = messageGroup === this.groupName || sender === this.groupName;
-      console.log({
-        id: messageId,
-        groupName: messageGroup,
-        sender,
-        message,
-        postlink,
-        profilepicture,
-        usernameofpostreel,
-        postid,
-        publicid,
-        reelurl
-      });
-      if(sender == this.user){
-      this.MessageService.SetIsMessage(true);
-    } 
-
-      if (isForThisChat) {        
-        this.messageId = messageId;
+      
+      if (messageGroup === this.groupName || sender === this.groupName) {
         this.messages.push({
           id: messageId,
           groupName: messageGroup,
           sender,
-          message,
-          postLink : postlink,
-          profilePicture:profilepicture,
-          usernameOfPostReel:usernameofpostreel,
-          postId : postid,
-          reelPublicId:publicid,
-          mediaUrl:reelurl,
+          message: decryptedMessage,
+          postLink: postlink,
+          profilePicture: profilepicture,
+          usernameOfPostReel: ivData?.[0], // Original username without IV
+          postId: postid,
+          reelPublicId: publicid,
+          mediaUrl: reelurl,
           sentAt: new Date()
         });
         this.shouldScrollToBottom = true;
       }
-    }); */
- 
+    });
   }
-  loadChatData() {
+}
+
+// ✅ NEW: Helper function to generate shared secret
+private async generateSharedSecretForUser(username: string): Promise<void> {
+  try {
+    console.log(`🔍 Fetching public key for: ${username}`);
+    
+    const response: any = await this.ServiceSrv
+      .getPublicKey(username)
+      .toPromise();
+    
+    console.log(`📥 Response for ${username}:`, response);
+    
+    if (response?.publicKey) {
+      await this.encryptionService.generateSharedSecret(
+        response.publicKey,
+        username
+      );
+      console.log(`✅ Shared secret generated for ${username}`);
+    } else {
+      console.warn(`⚠️ No public key in response for ${username}`);
+    }
+  } catch (error: any) {
+    console.error(`❌ Failed to generate shared secret for ${username}:`, error);
+    
+    if (error.status === 404) {
+      console.warn(`⚠️ ${username} hasn't set up encryption yet`);
+      // Don't show error - just log
+    } else {
+      console.error('Unexpected error:', error);
+    }
+  }
+}
+
+// ✅ UPDATE: Initialize encryption properly
+private async initializeEncryption() {
+  try {
+    let privateKey = localStorage.getItem('privateKey');
+    let publicKey = localStorage.getItem('publicKey');
+
+    if (!privateKey || !publicKey) {
+      console.log('🔑 Generating new key pair...');
+      const keys = await this.encryptionService.generateKeyPair();
+      privateKey = keys.privateKey;
+      publicKey = keys.publicKey;
+
+      localStorage.setItem('privateKey', privateKey);
+      localStorage.setItem('publicKey', publicKey);
+      console.log(`✅ Keys generated - Public key length: ${publicKey.length}`);
+
+      // ✅ Save public key to server with better error handling
+      try {
+        console.log(`📤 Saving public key for user: ${this.user}`);
+        const saveResponse: any = await this.ServiceSrv
+          .savePublicKey(this.user, publicKey)
+          .toPromise();
+        
+        console.log('✅ Server response:', saveResponse);
+        this.toastr.success('Encryption keys generated successfully');
+      } catch (saveError: any) {
+        console.error('❌ Failed to save public key:', saveError);
+        
+        if (saveError.status === 404) {
+          this.toastr.error('User not found. Please login again.');
+        } else if (saveError.status === 400) {
+          this.toastr.error('Invalid request: ' + (saveError.error?.message || 'Unknown error'));
+        } else {
+          this.toastr.error('Failed to save encryption key to server');
+        }
+        
+        // Clear the generated keys since they couldn't be saved
+        localStorage.removeItem('privateKey');
+        localStorage.removeItem('publicKey');
+        return; // Don't proceed
+      }
+    } else {
+      console.log('✅ Existing keys found in localStorage');
+    }
+
+    // Load private key
+    await this.encryptionService.loadKeys(privateKey);
+    console.log('✅ Private key loaded');
+
+    // Generate shared secret for current chat user
+    if (this.groupName && this.groupName !== 'null') {
+      await this.generateSharedSecretForUser(this.groupName);
+    }
+  } catch (error) {
+    console.error('❌ Encryption initialization failed:', error);
+    this.toastr.error('Failed to initialize encryption');
+  }
+}
+
+
+// ✅ UPDATE: loadChatData with decryption
+loadChatData() {
   this.newMessage = '';
-    if(this.groupName != null &&this.groupName!= undefined && this.groupName != "null" ){
-      this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
-          next: (data: any) => {
-            console.log(data);
-            this.profilePicture = data.profilePicture;
-            this.username = data.userName
-            this.fullName = data.fullName
-          },
-          error: (error: any) => {
-            console.log(error);
+  
+  if (this.groupName != null && this.groupName != undefined && this.groupName != "null") {
+    this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
+      next: (data: any) => {
+        console.log(data);
+        this.profilePicture = data.profilePicture;
+        this.username = data.userName;
+        this.fullName = data.fullName;
+      },
+      error: (error: any) => {
+        console.log(error);
+      }
+    });
+
+    // Load chat messages
+    this.chatService.PersonalChat(this.groupName, this.user).subscribe(async (msgs: any) => {
+      // ✅ Decrypt all messages safely
+      const decryptedMessages = await Promise.all(
+        msgs.map(async (msg: any) => {
+          // Only try to decrypt if IV exists and it's a text message
+          if (msg.iv && msg.messageType === 'text' && msg.message) {
+            const otherUser = msg.sender === this.ServiceSrv.getUserName()
+              ? msg.groupName
+              : msg.sender;
+            
+            try {
+              // Check if shared secret exists
+              const hasSharedSecret = this.encryptionService.hasSharedSecret(otherUser);
+              
+              if (!hasSharedSecret) {
+                console.warn(`⚠️ No shared secret for ${otherUser}, trying to generate...`);
+                await this.generateSharedSecretForUser(otherUser);
+              }
+              
+              // Try to decrypt
+              msg.message = await this.encryptionService.decryptMessage(
+                msg.message,
+                msg.iv,
+                otherUser
+              );
+              console.log('✅ Message decrypted');
+            } catch (error) {
+              console.error('❌ Failed to decrypt message:', error);
+              msg.message = '[Encrypted Message]';
+            }
           }
+          return msg;
         })
-    // 👇 Load chat messages
-    this.chatService.PersonalChat(this.groupName, this.user).subscribe((msgs: any) => {
-      this.messages = msgs;
-      console.log(msgs);
-      this.shouldScrollToBottom = true; // Scroll on initial load
+      );
+
+      this.messages = decryptedMessages;
+      console.log(`✅ Loaded ${msgs.length} messages`);
+      this.shouldScrollToBottom = true;
+      
+      // Setup SignalR listeners
       const conn = this.chatService.connection;
       if (conn) {
-        conn.off("ReceiveReaction"); // Remove previous handler
+        conn.off("ReceiveReaction");
         conn.on("ReceiveReaction", (messageId: number, reaction: string) => {
           const msg = this.messages.find(m => m.id === messageId);
           if (msg) msg.reaction = reaction;
         });
 
-        // ✅ Listen for real-time unsend
         conn.off("RecieveUnSend");
         conn.on("RecieveUnSend", (messageId: number) => {
           this.messages = this.messages.filter(m => m.id !== messageId);
         });
       }
     });
-     }
   }
+}
+
+// ✅ UPDATE: send function with fallback for non-encrypted users
+async send(postlink?: string, profilepicture?: string, usernameofpostreel?: string, postid?: number, publicid?: string, reelurl?: string) {
+  if (this.isUploadingFile) {
+    return;
+  }
+  
+  if (this.selectedFile) {
+    this.SendFileFunction();
+  } else if (this.newMessage.trim()) {
+    try {
+      let messageToSend = this.newMessage;
+      let ivToSend: string | undefined = undefined;
+
+      // ✅ Try to encrypt if shared secret exists
+      const hasSharedSecret = this.encryptionService.hasSharedSecret(this.groupName);
+      
+      if (hasSharedSecret) {
+        try {
+          const { encryptedMessage, iv } = await this.encryptionService.encryptMessage(
+            this.newMessage,
+            this.groupName
+          );
+          messageToSend = encryptedMessage;
+          ivToSend = iv;
+          console.log('✅ Message encrypted');
+        } catch (encryptError) {
+          console.error('❌ Encryption failed, sending unencrypted:', encryptError);
+          // Fall back to unencrypted message
+        }
+      } else {
+        console.warn(`⚠️ No shared secret for ${this.groupName}, sending unencrypted`);
+        // Try to generate shared secret for next time
+        await this.generateSharedSecretForUser(this.groupName);
+      }
+
+      const DateTime = new Date();
+      this.chatService.sendMessage(
+        this.user,
+        this.groupName,
+        messageToSend, // Could be encrypted or plain
+        DateTime.toLocaleString(),
+        postlink,
+        profilepicture,
+        usernameofpostreel,
+        postid,
+        publicid,
+        reelurl,
+        ivToSend // null if not encrypted
+      );
+
+      this.newMessage = '';
+      this.shouldScrollToBottom = true;
+      
+      setTimeout(() => {
+        const textarea = document.querySelector('.chat-input') as HTMLTextAreaElement;
+        if (textarea) {
+          textarea.style.height = 'auto';
+        }
+      }, 0);
+    } catch (error) {
+      console.error('❌ Failed to send message:', error);
+      this.toastr.error('Failed to send message. Please try again.');
+    }
+  }
+}
+  // loadChatData() {
+  // this.newMessage = '';
+  //   if(this.groupName != null &&this.groupName!= undefined && this.groupName != "null" ){
+  //     this.ServiceSrv.GetProfileByUserName(this.groupName).subscribe({
+  //         next: (data: any) => {
+  //           console.log(data);
+  //           this.profilePicture = data.profilePicture;
+  //           this.username = data.userName
+  //           this.fullName = data.fullName
+  //         },
+  //         error: (error: any) => {
+  //           console.log(error);
+  //         }
+  //       })
+  //   // 👇 Load chat messages
+  //   this.chatService.PersonalChat(this.groupName, this.user).subscribe((msgs: any) => { 
+  //       msgs.map(async (msg: any) => {
+  //         if (msg.iv && msg.messageType === 'text') {
+  //           const otherUser = msg.sender === this.ServiceSrv.getUserName()
+  //             ? msg.groupName 
+  //             : msg.sender;
+            
+  //           msg.message = await this.encryptionService.decryptMessage(
+  //             msg.message,
+  //             msg.iv,
+  //             otherUser
+  //           );
+  //         }
+  //         return msg;
+  //       })
+      
+  //     this.messages = msgs;
+  //     console.log(msgs);
+  //     this.shouldScrollToBottom = true; // Scroll on initial load
+  //     const conn = this.chatService.connection;
+  //     if (conn) {
+  //       conn.off("ReceiveReaction"); // Remove previous handler
+  //       conn.on("ReceiveReaction", (messageId: number, reaction: string) => {
+  //         const msg = this.messages.find(m => m.id === messageId);
+  //         if (msg) msg.reaction = reaction;
+  //       });
+
+  //       // ✅ Listen for real-time unsend
+  //       conn.off("RecieveUnSend");
+  //       conn.on("RecieveUnSend", (messageId: number) => {
+  //         this.messages = this.messages.filter(m => m.id !== messageId);
+  //       });
+  //     }
+  //   });
+  //    }
+  // }
 
 
 
@@ -232,27 +561,33 @@ export class RightsideComponent implements AfterViewChecked, OnInit {
     this.emojiPickerIndex = this.emojiPickerIndex === index ? null : index;
   }
 
-  send(postlink?: string, profilepicture?: string, usernameofpostreel?: string,postid? :number,publicid?:string ,reelurl?:string) {
-    if (this.isUploadingFile) {
-    return;
-  }
-  if (this.selectedFile) {
-    this.SendFileFunction();
-  } else if (this.newMessage.trim()) { 
-      const DateTime = new Date(); 
-      this.chatService.sendMessage(this.user, this.groupName, this.newMessage, DateTime.toLocaleString(),postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl);
-      this.FunctionGetSaveRecentMessage(); 
-      this.newMessage = '';
-      this.shouldScrollToBottom = true; 
-      setTimeout(() => {
-    const textarea = document.querySelector('.chat-input') as HTMLTextAreaElement;
-    if (textarea) {
-      textarea.style.height = 'auto';
-    }
-  }, 0);
-  }
+//  async send(postlink?: string, profilepicture?: string, usernameofpostreel?: string,postid? :number,publicid?:string ,reelurl?:string) {
+//     if (this.isUploadingFile) {
+//     return;
+//   }
+//   if (this.selectedFile) {
+//     this.SendFileFunction();
+//   } else if (this.newMessage.trim()) 
+//     { 
+//        const { encryptedMessage, iv } = await this.encryptionService.encryptMessage(
+//         this.newMessage,
+//         this.groupName  // recipient username
+//       );
 
-  }
+//       const DateTime = new Date(); 
+//       this.chatService.sendMessage(this.user, this.groupName, this.newMessage, DateTime.toLocaleString(),postlink, profilepicture, usernameofpostreel,postid,publicid ,reelurl,iv);
+//       // this.FunctionGetSaveRecentMessage(); 
+//       this.newMessage = '';
+//       this.shouldScrollToBottom = true; 
+//       setTimeout(() => {
+//     const textarea = document.querySelector('.chat-input') as HTMLTextAreaElement;
+//     if (textarea) {
+//       textarea.style.height = 'auto';
+//     }
+//   }, 0);
+//   }
+
+//   }
   toggleMenu(msgId: string): void {
     if (this.menuOpenId === msgId) {
       this.menuOpenId = null; // Close if already open
@@ -696,8 +1031,99 @@ openBrowserSettings() {
   this.toastr.info("Please go to Settings > Safari > Microphone and Allow");
 }
 isProcessingAudio = false;
+// Add this to your component TypeScript file
 
+// Helper function to format time (e.g., "5:14 PM")
+formatMessageTime(sentAt: string): string {
+  const date = new Date(sentAt);
+  return date.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  });
+}
 
+// Helper function to format date for separator (e.g., "Today", "Yesterday", "12/03/2024")
+formatDateSeparator(sentAt: string): string {
+  const messageDate = new Date(sentAt);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  // Reset time to midnight for comparison
+  const messageDateOnly = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+  
+  if (messageDateOnly.getTime() === todayOnly.getTime()) {
+    return 'Today';
+  } else if (messageDateOnly.getTime() === yesterdayOnly.getTime()) {
+    return 'Yesterday';
+  } else {
+    return messageDate.toLocaleDateString('en-US', { 
+      month: '2-digit', 
+      day: '2-digit', 
+      year: 'numeric' 
+    });
+  }
+}
+
+// Helper function to check if we need to show date separator
+shouldShowDateSeparator(currentMsg: any, previousMsg: any): boolean {
+  if (!previousMsg) return true;
+  
+  const currentDate = new Date(currentMsg.sentAt);
+  const previousDate = new Date(previousMsg.sentAt);
+  
+  return currentDate.toDateString() !== previousDate.toDateString();
+}
+// Initialize encryption keys
+  // private async initializeEncryption() {
+  //   try {
+  //     // Check if keys exist in localStorage
+  //     let privateKey = localStorage.getItem('privateKey');
+  //     let publicKey = localStorage.getItem('publicKey');
+
+  //     if (!privateKey || !publicKey) {
+  //       // Generate new key pair
+  //       const keys = await this.encryptionService.generateKeyPair();
+  //       privateKey = keys.privateKey;
+  //       publicKey = keys.publicKey;
+
+  //       // Save to localStorage
+  //       localStorage.setItem('privateKey', privateKey);
+  //       localStorage.setItem('publicKey', publicKey);
+
+  //       // Save public key to server
+  //       await this.ServiceSrv
+  //         .savePublicKey(this.user, publicKey).subscribe({
+  //           next:()=>{
+
+  //           }
+  //         })
+  //     }
+
+  //     // Load private key
+  //     await this.encryptionService.loadKeys(privateKey);
+
+  //     // Get recipient's public key and generate shared secret
+  //       await this.ServiceSrv
+  //       .getPublicKey(this.groupName).subscribe({
+  //         next:async (response:any)=>{
+  //         if (response?.publicKey) {
+  //             await this.encryptionService.generateSharedSecret(
+  //               response.publicKey,
+  //               this.groupName
+  //             );
+  //           }
+  //         }
+  //       })
+
+     
+  //   } catch (error) {
+  //     console.error('Encryption initialization failed:', error);
+  //   }
+  // }
 }
 
 

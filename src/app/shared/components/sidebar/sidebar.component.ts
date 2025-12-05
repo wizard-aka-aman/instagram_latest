@@ -161,39 +161,39 @@ export class SidebarComponent {
       });
       this.MessageService.SetIsMessage(true);
 
-      this.Service.GetRecentMessage(this.username).subscribe({
-        next: (data: any) => {
-          console.log(data);
-          this.Service.setChatList(data);
-          const existing = this.Service.getChatList()?.find((c: any) => c.username === sender);
-          console.log(existing);
-          if (!existing && this.username !== messageGroup) {
-            const recentForm = {
-              SenderUsername: this.username,
-              ReceiverUsername: messageGroup,
-              Message: message
-            };
-            console.log(recentForm);
-            console.log("sidebar");
+      // this.Service.GetRecentMessage(this.username).subscribe({
+      //   next: (data: any) => {
+      //     console.log(data);
+      //     this.Service.setChatList(data);
+      //     const existing = this.Service.getChatList()?.find((c: any) => c.username === sender);
+      //     console.log(existing);
+      //     if (!existing && this.username !== messageGroup) {
+      //       const recentForm = {
+      //         SenderUsername: this.username,
+      //         ReceiverUsername: messageGroup,
+      //         Message: message
+      //       };
+      //       console.log(recentForm);
+      //       console.log("sidebar");
 
-            this.Service.SaveRecentMessage(recentForm).subscribe({
-              next: () => {
-                this.Service.GetRecentMessage(this.username).subscribe({
-                  next: (data: any) => {
-                    this.Service.setChatList(data);
-                    this.Service.chatListRefreshSubject.next(true);
-                  },
-                  error: (err) => console.error(err)
-                });
-              },
-              error: (err) => console.error(err)
-            });
-          }
-        },
-        error: (error: any) => {
-          console.error(error);
-        }
-      })
+      //       this.Service.SaveRecentMessage(recentForm).subscribe({
+      //         next: () => {
+      //           this.Service.GetRecentMessage(this.username).subscribe({
+      //             next: (data: any) => {
+      //               this.Service.setChatList(data);
+      //               this.Service.chatListRefreshSubject.next(true);
+      //             },
+      //             error: (err) => console.error(err)
+      //           });
+      //         },
+      //         error: (err) => console.error(err)
+      //       });
+      //     }
+      //   },
+      //   error: (error: any) => {
+      //     console.error(error);
+      //   }
+      // })
     });
 
     this.MessageService.isMessage$.subscribe({
@@ -214,6 +214,7 @@ export class SidebarComponent {
     const pakka = confirm("Sure you want to Logout?");
     if (pakka) {
       this.Service.logout();
+      localStorage.clear()
       setTimeout(() => {
         window.location.reload()
       }, 200);

@@ -125,7 +125,7 @@ export class EditProfileComponent implements OnInit {
 logout(){
     const pakka = confirm("Sure you want to Logout?");
     if (pakka) {
-      localStorage.removeItem('jwt');
+      localStorage.clear()
       this.route.navigateByUrl("/")
       setTimeout(() => {
         window.location.reload()

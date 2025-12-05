@@ -28,135 +28,148 @@
   <!-- Messages Wrapper -->
   <div [ngClass]="noUserSelected ? '':'messages-wrapper'" #scrollContainer>
 
-    <div *ngFor="let msg of messages" class="mb-2 message-text position-relative"
-      [class.text-end]="msg.groupName === user">
-
-      <!-- Emoji Button for Sender -->
-      <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName === user">
-        <i class="fa-regular fa-face-smile"></i>
+    <div *ngFor="let msg of messages; let i = index">
+      
+      <!-- Date Separator -->
+      <div *ngIf="shouldShowDateSeparator(msg, messages[i-1])" class="date-separator">
+        <span class="date-separator-text">{{ formatDateSeparator(msg.sentAt)}}</span>
       </div>
-      <div *ngIf="msg.reaction &&  msg.groupName === user" class=" ">
-        <span class="emoji fs-6">{{ msg.reaction }}</span>
-      </div>
-      <!-- 3-dot Menu Button -->
-      <div class="menu position-relative" *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
 
-        <!-- Dropdown -->
-        <div *ngIf="menuOpenId === msg.id" class="dropdown-menu-custom position-absolute end-0 p-2 rounded shadow">
-          <div class="dropdown-item" (click)="copyMessage(msg)">
-            <i class="fa-regular fa-copy me-2 "></i>Copy
-          </div>
-          <div class="dropdown-item text-danger" (click)="unsendMessage(msg.id)">
-            <i class="fa-regular fa-trash-can me-2"></i>Unsend
-          </div>
+      <div class="mb-2 message-text position-relative"
+        [class.text-end]="msg.groupName === user">
+
+        <!-- Emoji Button for Sender -->
+        <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName === user">
+          <i class="fa-regular fa-face-smile"></i>
         </div>
-      </div>
+        <div *ngIf="msg.reaction &&  msg.groupName === user" class=" ">
+          <span class="emoji fs-6">{{ msg.reaction }}</span>
+        </div>
+        <!-- 3-dot Menu Button -->
+        <div class="menu position-relative" *ngIf="msg.groupName === user" (click)="toggleMenu(msg.id)">
+          <i class="fa-solid fa-ellipsis-vertical"></i>
 
-
-      <!-- Message Bubble -->
-      <div class="d-inline-block fs-small px-2 py-1 rounded-5 position-relative"
-        [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}"
-        style="max-width: 70%; word-wrap: break-word; word-break: break-word; white-space: pre-wrap; text-align: left;">
-
-        <!-- Simple Text Message (no post, no reel, no file) -->
-        <span
-          *ngIf="msg.postLink == null && msg.reelPublicId == null && (msg.message !== 'Shared a file' || msg.mediaUrl == null)"
-          [innerHTML]="formatMessageWithLinks(msg.message)">
-        </span>
-
-        <!-- Post / Reel Section -->
-        <div *ngIf="(msg.postLink != null || msg.reelPublicId != null) && msg.message !== 'Shared a file'"
-          class="card shadow-sm border-0 rounded-3"
-          style="max-width: 100%; width: 100%; background-color: transparent;">
-
-          <!-- Header: profile image + username -->
-          <div class="d-flex align-items-center p-2">
-            <img [src]="getProfileImage(msg.profilePicture)" routerLink="/{{msg.usernameOfPostReel}}"
-              class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" />
-            <div>
-              <strong style="color: white;">{{ msg.usernameOfPostReel }}</strong>
+          <!-- Dropdown -->
+          <div *ngIf="menuOpenId === msg.id" class="dropdown-menu-custom position-absolute end-0 p-2 rounded shadow">
+            <div class="dropdown-item" (click)="copyMessage(msg)">
+              <i class="fa-regular fa-copy me-2 "></i>Copy
+            </div>
+            <div class="dropdown-item text-danger" (click)="unsendMessage(msg.id)">
+              <i class="fa-regular fa-trash-can me-2"></i>Unsend
             </div>
           </div>
-
-          <!-- Post Image -->
-          <ng-container *ngIf="msg.postLink">
-            <img [src]="getProfileImage(msg.postLink)" routerLink="/{{msg.usernameOfPostReel}}/p/{{msg.postId}}"
-              class="card-img-top rounded-3" alt="media preview"
-              style="object-fit: cover; max-height: 300px; width: 100%;" />
-          </ng-container>
-
-          <!-- Reel Video -->
-          <ng-container *ngIf="msg.reelPublicId">
-            <video [src]="msg.mediaUrl" routerLink="/{{msg.usernameOfPostReel}}/reel/{{msg.reelPublicId}}"
-              class="post-media card-img-top rounded-3" muted loop playsinline
-              style="object-fit: cover; max-height: 400px; width: 100%;">
-            </video>
-          </ng-container>
-
-          <!-- Caption -->
-          <div class="card-body p-2" *ngIf="msg.message !== 'Voice Message' && !msg.mediaUrl">
-            <p class="card-text mb-1 text-white">
-              {{ msg.message }}
-            </p>
-          </div>
         </div>
+
+
+        <!-- Message Bubble -->
+        <div class="d-inline-block fs-small px-2 py-1 rounded-5 position-relative"
+          [ngClass]="{'mytext': msg.groupName === user, 'othertext': msg.groupName !== user}"
+          style="max-width: 70%; word-wrap: break-word; word-break: break-word; white-space: pre-wrap; text-align: left;">
+
+          <!-- Simple Text Message (no post, no reel, no file) -->
+          <span
+            *ngIf="msg.postLink == null && msg.reelPublicId == null && (msg.message !== 'Shared a file' || msg.mediaUrl == null)"
+            [innerHTML]="formatMessageWithLinks(msg.message)">
+          </span>
+
+          <!-- Post / Reel Section -->
+          <div *ngIf="(msg.postLink != null || msg.reelPublicId != null) && msg.message !== 'Shared a file'"
+            class="card shadow-sm border-0 rounded-3"
+            style="max-width: 100%; width: 100%; background-color: transparent;">
+
+            <!-- Header: profile image + username -->
+            <div class="d-flex align-items-center p-2">
+              <img [src]="getProfileImage(msg.profilePicture)" routerLink="/{{msg.usernameOfPostReel}}"
+                class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" />
+              <div>
+                <strong style="color: white;">{{ msg.usernameOfPostReel }}</strong>
+              </div>
+            </div>
+
+            <!-- Post Image -->
+            <ng-container *ngIf="msg.postLink">
+              <img [src]="getProfileImage(msg.postLink)" routerLink="/{{msg.usernameOfPostReel}}/p/{{msg.postId}}"
+                class="card-img-top rounded-3" alt="media preview"
+                style="object-fit: cover; max-height: 300px; width: 100%;" />
+            </ng-container>
+
+            <!-- Reel Video -->
+            <ng-container *ngIf="msg.reelPublicId">
+              <video [src]="msg.mediaUrl" routerLink="/{{msg.usernameOfPostReel}}/reel/{{msg.reelPublicId}}"
+                class="post-media card-img-top rounded-3" muted loop playsinline
+                style="object-fit: cover; max-height: 400px; width: 100%;">
+              </video>
+            </ng-container>
+
+            <!-- Caption -->
+            <div class="card-body p-2" *ngIf="msg.message !== 'Voice Message' && !msg.mediaUrl">
+              <p class="card-text mb-1 text-white">
+                {{ msg.message }}
+              </p>
+            </div>
+          </div>
           <div *ngIf="msg.message === 'Voice Message' && msg.mediaUrl" class="audio-wrapper">
             <audio [src]="msg.mediaUrl" controls class="audio-player"></audio>
           </div>
-        <!-- File Section (Shared a file) -->
-        <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
+          <!-- File Section (Shared a file) -->
+          <ng-container *ngIf="msg.message === 'Shared a file' && msg.mediaUrl != null">
 
-          <!-- IMAGE PREVIEW -->
-          <img *ngIf="isImage(msg?.mediaUrl)" [src]="msg.mediaUrl" class="rounded mt-1"
-            style="max-width:200px; max-height:200px; object-fit:cover; cursor:pointer;" (click)="downloadFile(msg)" />
+            <!-- IMAGE PREVIEW -->
+            <img *ngIf="isImage(msg?.mediaUrl)" [src]="msg.mediaUrl" class="rounded mt-1"
+              style="max-width:200px; max-height:200px; object-fit:cover; cursor:pointer;" (click)="downloadFile(msg)" />
 
-          <!-- VIDEO PREVIEW -->
-          <video *ngIf="isVideo(msg?.mediaUrl)" [src]="msg.mediaUrl" controls class="mt-1"
-            style="max-width:250px; max-height:250px; object-fit:cover; cursor:pointer;">
-          </video>
+            <!-- VIDEO PREVIEW -->
+            <video *ngIf="isVideo(msg?.mediaUrl)" [src]="msg.mediaUrl" controls class="mt-1"
+              style="max-width:250px; max-height:250px; object-fit:cover; cursor:pointer;">
+            </video>
 
-          <!-- OTHER FILE TYPES (txt, zip, pdf, docx, etc.) -->
-          <div *ngIf="!isImage(msg?.mediaUrl) && !isVideo(msg?.mediaUrl)"
-            class="d-flex align-items-center p-2 rounded text-white mt-1" style="cursor: pointer;"
-            (click)="downloadFile(msg)">
-            <i class="fa-solid fa-file fs-4 me-2"></i>
-            <span>{{ getFileName(msg.mediaUrl) }}</span>
+            <!-- OTHER FILE TYPES (txt, zip, pdf, docx, etc.) -->
+            <div *ngIf="!isImage(msg?.mediaUrl) && !isVideo(msg?.mediaUrl)"
+              class="d-flex align-items-center p-2 rounded text-white mt-1" style="cursor: pointer;"
+              (click)="downloadFile(msg)">
+              <i class="fa-solid fa-file fs-4 me-2"></i>
+              <span>{{ getFileName(msg.mediaUrl) }}</span>
+            </div>
+
+          </ng-container>
+
+          <!-- Message Timestamp -->
+          <div class="message-time">
+            {{ formatMessageTime(msg.sentAt) }}
           </div>
 
-        </ng-container>
+        </div>
+        <div *ngIf="msg.reaction && msg.groupName !== user" class=" ">
+          <span class="emoji fs-6">{{ msg.reaction }}</span>
+        </div>
 
-      </div>
-      <div *ngIf="msg.reaction && msg.groupName !== user" class=" ">
-        <span class="emoji fs-6">{{ msg.reaction }}</span>
-      </div>
+        <!-- Copy Button for Receiver -->
+        <div class="overlay" (click)="copyMessage(msg)" *ngIf="msg.groupName !== user">
+          <i class="fa-regular fa-copy"></i>
+        </div>
 
-      <!-- Copy Button for Receiver -->
-      <div class="overlay" (click)="copyMessage(msg)" *ngIf="msg.groupName !== user">
-        <i class="fa-regular fa-copy"></i>
-      </div>
-
-      <!-- Emoji Button for Receiver -->
-      <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName !== user">
-        <i class="fa-regular fa-face-smile"></i>
-      </div>
+        <!-- Emoji Button for Receiver -->
+        <div class="overlay" (click)="toggleEmojiPicker(msg.id)" *ngIf="msg.groupName !== user">
+          <i class="fa-regular fa-face-smile"></i>
+        </div>
 
 
-      <!-- Emoji Picker -->
-      <div *ngIf="emojiPickerIndex === msg.id"
-        class="emoji-picker-container position-absolute bg-light rounded shadow p-2">
-        <span *ngIf="msg.reaction">
-          <span class="emoji" *ngFor="let emoji of emojis" (click)="addEmojiToMessage(msg.id, emoji)">
-            {{ emoji }}
+        <!-- Emoji Picker -->
+        <div *ngIf="emojiPickerIndex === msg.id"
+          class="emoji-picker-container position-absolute bg-light rounded shadow p-2">
+          <span *ngIf="msg.reaction">
+            <span class="emoji" *ngFor="let emoji of emojis" (click)="addEmojiToMessage(msg.id, emoji)">
+              {{ emoji }}
+            </span>
           </span>
-        </span>
-        <span *ngIf="!msg.reaction">
-          <span class="emoji" *ngFor="let emoji of emojisWithoutRemove" (click)="addEmojiToMessage(msg.id, emoji)">
-            {{ emoji }}
+          <span *ngIf="!msg.reaction">
+            <span class="emoji" *ngFor="let emoji of emojisWithoutRemove" (click)="addEmojiToMessage(msg.id, emoji)">
+              {{ emoji }}
+            </span>
           </span>
-        </span>
-      </div>
+        </div>
 
+      </div>
     </div>
 
   </div>

@@ -76,6 +76,7 @@ export class TokenInterceptor implements HttpInterceptor {
           catchError((err) => {
             this.isRefreshing = false;
             this.authService.logout();
+            localStorage.clear()
             this.toastr.info('Session expired. Please log in again.');
             return throwError(() => err);
           })
@@ -84,6 +85,7 @@ export class TokenInterceptor implements HttpInterceptor {
         // No refresh token available
         this.isRefreshing = false;
         this.authService.logout();
+        localStorage.clear()
         this.toastr.info('Session expired. Please log in again.');
         return throwError(() => new Error('No refresh token available'));
       }

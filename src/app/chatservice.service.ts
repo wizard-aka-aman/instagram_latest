@@ -10,8 +10,8 @@ import { ServiceService } from './service.service';
 export class ChatService {
   private hubConnection!: signalR.HubConnection;
 
-  private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
-  // public baseUrl: string = 'https://localhost:7246';
+  // private baseUrl = 'https://xatavop939.bsite.net'; // online server as needed
+  public baseUrl: string = 'https://localhost:7246';
   // public baseUrl: string = 'https://10.0.0.204:5000';
   
   constructor(private http: HttpClient,private service : ServiceService) { }
@@ -42,10 +42,10 @@ export class ChatService {
 
 
 
-  public sendMessage(groupName: string, user: string, message: string, DateTime: any,postlink?:string, profilepicture?:string, usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string) {
+  public sendMessage(groupName: string, user: string, message: string, DateTime: any,postlink?:string, profilepicture?:string, usernameofpostreel?:string,postid?:number,publicid?:string ,reelurl?:string,iv?:string) {
 
     if (this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      this.hubConnection.invoke("SendMessage", groupName, user, message,postlink,profilepicture,usernameofpostreel,postid,publicid ,reelurl);
+      this.hubConnection.invoke("SendMessage", groupName, user, message,postlink,profilepicture,usernameofpostreel,postid,publicid ,reelurl,iv);
     } else {
       console.warn("SignalR not connected. Message not sent.");
     }
@@ -83,5 +83,38 @@ export class ChatService {
       this.connection.invoke("UnSend", messageId, groupName).catch(err => console.error(err));
     }
   }
+
+ 
+
+  // // Load messages from server (they're encrypted)
+  // async loadMessages(groupName: string, receiver: string): Promise<void> {
+  //   try {
+  //     const response: any = await this.http
+  //       .get(`${this.apiUrl}/${groupName}/${receiver}`)
+  //       .toPromise();
+
+  //     // Decrypt all messages
+  //     const decryptedMessages = await Promise.all(
+  //       response.map(async (msg: any) => {
+  //         if (msg.iv && msg.messageType === 'text') {
+  //           const otherUser = msg.sender === localStorage.getItem('username') 
+  //             ? receiver 
+  //             : msg.sender;
+            
+  //           msg.message = await this.encryptionService.decryptMessage(
+  //             msg.message,
+  //             msg.iv,
+  //             otherUser
+  //           );
+  //         }
+  //         return msg;
+  //       })
+  //     );
+
+  //     this.messagesSubject.next(decryptedMessages);
+  //   } catch (error) {
+  //     console.error('Load messages failed:', error);
+  //   }
+  // }
 
 }
