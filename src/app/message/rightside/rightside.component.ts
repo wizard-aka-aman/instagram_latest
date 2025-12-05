@@ -308,59 +308,71 @@ private async initializeEncryption() {
     let privateKey = localStorage.getItem('privateKey');
     let publicKey = localStorage.getItem('publicKey');
 
-    if (!privateKey || !publicKey) {
-      console.log('🔑 Generating new key pair...');
-      const keys = await this.encryptionService.generateKeyPair();
-      privateKey = keys.privateKey;
-      publicKey = keys.publicKey;
-
-      localStorage.setItem('privateKey', privateKey);
-      localStorage.setItem('publicKey', publicKey);
-      console.log(`✅ Keys generated - Public key length: ${publicKey.length}`);
-
-      // ✅ Save public key to server with better error handling
+    // SCENARIO 1: Keys Local Storage me hain (Normal flow)
+    if (privateKey && publicKey) {
+      console.log('✅ Keys found in LocalStorage');
+      await this.encryptionService.loadKeys(privateKey);
+    } 
+    // SCENARIO 2: Local Storage khali hai (Clear kar diya ya new device)
+    else {
+      console.log('🔍 Checking server for backup keys...');
+      
       try {
-        console.log(`📤 Saving public key for user: ${this.user}`);
-        const saveResponse: any = await this.ServiceSrv
-          .savePublicKey(this.user, publicKey)
-          .toPromise();
-        
-        console.log('✅ Server response:', saveResponse);
-        this.toastr.success('Encryption keys generated successfully');
-      } catch (saveError: any) {
-        console.error('❌ Failed to save public key:', saveError);
-        
-        if (saveError.status === 404) {
-          this.toastr.error('User not found. Please login again.');
-        } else if (saveError.status === 400) {
-          this.toastr.error('Invalid request: ' + (saveError.error?.message || 'Unknown error'));
-        } else {
-          this.toastr.error('Failed to save encryption key to server');
+        // Server se keys mango
+        const serverResponse: any = await this.ServiceSrv.getPublicKey(this.user).toPromise();
+
+        // Check karo ki server ke paas Private Key hai ya nahi
+        if (serverResponse && serverResponse.publicKey && serverResponse.privateKey) {
+          console.log('📥 Keys found on server. Restoring...');
+          
+          privateKey = serverResponse.privateKey;
+          publicKey = serverResponse.publicKey;
+
+          // Wapas Local Storage me daal do
+          if (privateKey && publicKey) {
+             localStorage.setItem('privateKey', privateKey);
+             localStorage.setItem('publicKey', publicKey);
+             
+             // Load kar lo taaki decryption chalu ho jaye
+             await this.encryptionService.loadKeys(privateKey);
+             console.log('✅ Keys restored successfully!');
+          }
+        } 
+        else {
+          // Server pe bhi nahi hai -> Matlab bilkul naya user hai
+          throw new Error("No keys on server");
         }
+      } catch (err) {
+        // SCENARIO 3: First Time Setup (Generate & Save to Server)
+        console.log('🆕 Generating NEW key pair...');
         
-        // Clear the generated keys since they couldn't be saved
-        localStorage.removeItem('privateKey');
-        localStorage.removeItem('publicKey');
-        return; // Don't proceed
+        const keys = await this.encryptionService.generateKeyPair();
+
+        // Server par Public Key + Private Key dono save karo
+        await this.ServiceSrv.savePublicKey(
+            this.user,
+            keys.publicKey,
+            keys.privateKey // Private key bhej rahe hain backup ke liye
+        ).toPromise();
+
+        localStorage.setItem('privateKey', keys.privateKey);
+        localStorage.setItem('publicKey', keys.publicKey);
+        
+        await this.encryptionService.loadKeys(keys.privateKey);
+        console.log('✅ New Encryption setup complete!');
       }
-    } else {
-      console.log('✅ Existing keys found in localStorage');
     }
 
-    // Load private key
-    await this.encryptionService.loadKeys(privateKey);
-    console.log('✅ Private key loaded');
-
-    // Generate shared secret for current chat user
+    // Shared Secret generate karo current chat ke liye
     if (this.groupName && this.groupName !== 'null') {
       await this.generateSharedSecretForUser(this.groupName);
     }
+
   } catch (error) {
     console.error('❌ Encryption initialization failed:', error);
     this.toastr.error('Failed to initialize encryption');
   }
 }
-
 
 // ✅ UPDATE: loadChatData with decryption
 loadChatData() {

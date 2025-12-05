@@ -505,7 +505,14 @@ getPublicKey(username: string): Observable<any> {
   return this.http.get(`${this.BaseUrl}/api/Chat/publickey/${username}`);
 }
 
-savePublicKey(username: string, publicKey: string): Observable<any> {
-  return this.http.post(`${this.BaseUrl}/api/Chat/publickey`, { username, publicKey });
+// Is method ko replace karo
+// Is function ko update karo
+savePublicKey(username: string, publicKey: string, privateKey: string): Observable<any> {
+  // Ab hum private key bhi bhej rahe hain
+  return this.http.post(`${this.BaseUrl}/api/Chat/publickey`, { 
+    username, 
+    publicKey, 
+    privateKey 
+  });
 }
 }
