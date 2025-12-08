@@ -275,11 +275,10 @@ private async generateSharedSecretForUser(username: string): Promise<void> {
   try {
     console.log(`🔍 Fetching public key for: ${username}`);
     
-      this.ServiceSrv
+    const response: any = await this.ServiceSrv
       .getPublicKey(username)
-      .subscribe({
-        next: async (response: any) => {
-          
+      .toPromise();
+    
     console.log(`📥 Response for ${username}:`, response);
     
     if (response?.publicKey) {
@@ -291,12 +290,6 @@ private async generateSharedSecretForUser(username: string): Promise<void> {
     } else {
       console.warn(`⚠️ No public key in response for ${username}`);
     }
-        },
-        error: (error: any) => {
-          console.log(error);
-        }
-      });
-    
   } catch (error: any) {
     console.error(`❌ Failed to generate shared secret for ${username}:`, error);
     
@@ -326,9 +319,9 @@ private async initializeEncryption() {
       
       try {
         // Server se keys mango
-            this.ServiceSrv.getPublicKey(this.user).subscribe({
-          next: async (serverResponse: any) => {
-            // Check karo ki server ke paas Private Key hai ya nahi
+        const serverResponse: any = await this.ServiceSrv.getPublicKey(this.user).toPromise();
+
+        // Check karo ki server ke paas Private Key hai ya nahi
         if (serverResponse && serverResponse.publicKey && serverResponse.privateKey) {
           console.log('📥 Keys found on server. Restoring...');
           
@@ -349,13 +342,6 @@ private async initializeEncryption() {
           // Server pe bhi nahi hai -> Matlab bilkul naya user hai
           throw new Error("No keys on server");
         }
-          },
-          error: (error: any) => {
-            console.log(error);
-          }
-        });
-
-       
       } catch (err) {
         // SCENARIO 3: First Time Setup (Generate & Save to Server)
         console.log('🆕 Generating NEW key pair...');
@@ -363,18 +349,11 @@ private async initializeEncryption() {
         const keys = await this.encryptionService.generateKeyPair();
 
         // Server par Public Key + Private Key dono save karo
-          this.ServiceSrv.savePublicKey(
+        await this.ServiceSrv.savePublicKey(
             this.user,
             keys.publicKey,
             keys.privateKey // Private key bhej rahe hain backup ke liye
-        ).subscribe({
-          next: (data: any) => {
-            console.log(data);
-          },
-          error: (error: any) => {
-            console.log(error);
-          }
-        })
+        ).toPromise();
 
         localStorage.setItem('privateKey', keys.privateKey);
         localStorage.setItem('publicKey', keys.publicKey);
