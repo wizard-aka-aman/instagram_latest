@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-post-view',
   templateUrl: './post-view.component.html',
@@ -360,7 +361,28 @@ getTagsForCurrentImage() {
 
   }
   DeletePost(){
-    if (confirm("Are you sure you want to delete this post?")) {
+ 
+    Swal.fire({
+  title: 'Sure you want to Delete this Post ?',
+  html: '<p style="color: #df2020ff; margin-top: 10px; line-height: 1.6;">This action cannot be undone.</p>',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Delete',
+  cancelButtonText: 'Cancel',
+  reverseButtons: true,
+  background: '#000000',
+  color: '#ffffff',
+  iconColor: '#ffffff',
+  backdrop: 'rgba(0, 0, 0, 0.95)',
+  confirmButtonColor: '#ffffff',
+  cancelButtonColor: '#000000',
+  customClass: {
+    popup: 'black-white-popup',
+    confirmButton: 'black-white-confirm-btn',
+    cancelButton: 'black-white-cancel-btn'
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
     this.service.DeletePost(this.singlepost.postId).subscribe({
       next: (data: any) => {
         console.log(data);
@@ -371,7 +393,8 @@ getTagsForCurrentImage() {
         console.log(err);
         this.toastr.error("Error Occured!!")
     }})
-    }
+  }
+});
   }
   toggleTags() {
   this.showTags = !this.showTags;

@@ -61,3 +61,76 @@
   font-size: 12px;
   margin-top: 2px;
 }
+/* Black & White SweetAlert Theme - Reversed */
+.black-white-popup {
+  border: 3px solid #fff !important;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  border-radius: 12px !important;
+}
+
+.black-white-popup .swal2-title {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.black-white-popup .swal2-html-container {
+  color: #ccc !important;
+}
+
+.black-white-confirm-btn {
+  background-color: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 10px 30px !important;
+  font-size: 16px !important;
+  border-radius: 6px !important;
+}
+
+.black-white-confirm-btn:hover {
+  background-color: #ddd !important;
+}
+
+.black-white-cancel-btn {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+  font-weight: 600 !important;
+  padding: 10px 30px !important;
+  font-size: 16px !important;
+  border-radius: 6px !important;
+}
+
+.black-white-cancel-btn:hover {
+  background-color: #222 !important;
+}
+
+.black-white-timer {
+  background: #fff !important;
+}
+
+.black-white-popup .swal2-icon.swal2-warning {
+  border-color: #fff !important;
+  color: #fff !important;
+}
+
+.black-white-popup .swal2-icon.swal2-success {
+  border-color: #fff !important;
+}
+
+.black-white-popup .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #fff !important;
+}
+
+.black-white-popup .swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.black-white-popup .swal2-icon.swal2-error {
+  border-color: #fff !important;
+}
+
+.black-white-popup .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: #fff !important;
+}

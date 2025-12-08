@@ -5,7 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PagenotfoundComponent } from 'src/app/pagenotfound/pagenotfound.component';
 import { ServiceService } from 'src/app/service.service';
 import { StoryTransferService } from 'src/app/story-transfer.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-display',
   templateUrl: './display.component.html',
@@ -331,24 +331,58 @@ export class DisplayComponent implements OnInit {
   }
   UnFollow() {
     if (!this.isPublic) {
-      const isconfirm = confirm("If you change your mind, you'll have to request to follow " + this.username + " again.");
+Swal.fire({
+  title: 'Unfollow User?',
+  html: `<p style="color: #999; margin-top: 10px; line-height: 1.6;">If you change your mind, you'll need to send a follow request to <strong style="color: #fff;">${this.username}</strong> again.</p>`,
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Unfollow',
+  cancelButtonText: 'Cancel',
+  reverseButtons: true,
+  background: '#000000',
+  color: '#ffffff',
+  iconColor: '#ffffff',
+  backdrop: 'rgba(0, 0, 0, 0.66)',
+  confirmButtonColor: '#ffffff',
+  cancelButtonColor: '#000000',
+  customClass: {
+    popup: 'black-white-popup',
+    confirmButton: 'black-white-confirm-btn',
+    cancelButton: 'black-white-cancel-btn'
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
+    this.followForm.followerUsername = this.loggedInUserName;
+    this.followForm.followingUsername = this.username;
+    console.log(this.followForm);
 
-      if (isconfirm) {
-        this.followForm.followerUsername = this.loggedInUserName
-        this.followForm.followingUsername = this.username;
-        console.log(this.followForm);
-
-        this.Service.UnFollowPost(this.followForm).subscribe({
-          next: (res: any) => {
-            console.log(res);
-            this.getProfile(this.username);
-            this.isFollowing();
-          },
-          error: (err) => {
-            console.log(err);
+    this.Service.UnFollowPost(this.followForm).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.getProfile(this.username);
+        this.isFollowing();
+      },
+      error: (err) => {
+        console.log(err);
+        
+        Swal.fire({
+          title: 'Error',
+          text: 'Something went wrong. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          background: '#000000',
+          color: '#ffffff',
+          iconColor: '#ffffff',
+          confirmButtonColor: '#ffffff',
+          customClass: {
+            popup: 'black-white-popup',
+            confirmButton: 'black-white-confirm-btn'
           }
-        })
+        });
       }
+    });
+  }
+});
     }
     else {
       this.followForm.followerUsername = this.loggedInUserName

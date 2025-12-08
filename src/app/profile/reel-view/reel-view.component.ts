@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServiceService } from 'src/app/service.service';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-reel-view',
   templateUrl: './reel-view.component.html',
@@ -282,18 +282,39 @@ export class ReelViewComponent implements OnInit {
 
   }
   DeletePost(){
-    if (confirm("Are you sure you want to delete this reel?")) {
-    this.service.DeleteReel(this.singlepost.publicid).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.closePost();
-        this.toastr.success("Reel Deleted Successfully")
-      },
-      error: (err: any) => {
-        console.log(err);
-        this.toastr.error("Error Occured!!")
-    }})
-    }
-
+    Swal.fire({
+      title: 'Sure you want to Delete this Reel ?',
+      html: '<p style="color: #df2020ff; margin-top: 10px; line-height: 1.6;">This action cannot be undone.</p>',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      background: '#000000',
+      color: '#ffffff',
+      iconColor: '#ffffff',
+      backdrop: 'rgba(0, 0, 0, 0.95)',
+      confirmButtonColor: '#ffffff',
+      cancelButtonColor: '#000000',
+      customClass: {
+        popup: 'black-white-popup',
+        confirmButton: 'black-white-confirm-btn',
+        cancelButton: 'black-white-cancel-btn'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.service.DeleteReel(this.singlepost.publicid).subscribe({
+          next: (data: any) => {
+            console.log(data);
+            this.closePost();
+            this.toastr.success("Reel Deleted Successfully")
+          },
+          error: (err: any) => {
+            console.log(err);
+            this.toastr.error("Error Occured!!")
+          }
+        })
+      }
+    });
   }
 }

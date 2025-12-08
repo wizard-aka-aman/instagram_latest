@@ -7,7 +7,7 @@ import { MessageServiceService } from 'src/app/message-service.service';
 import { NotificationServiceService } from 'src/app/notification-service.service';
 import { ServiceService } from 'src/app/service.service';
 import { CLIENT_RENEG_LIMIT } from 'tls';
-
+import Swal from 'sweetalert2';
 // Interface for tagged users
 interface TaggedUser {
   userId: string;
@@ -211,14 +211,50 @@ export class SidebarComponent {
   }
 
   logout() {
-    const pakka = confirm("Sure you want to Logout?");
-    if (pakka) {
-      this.Service.logout();
-      localStorage.clear()
-      setTimeout(() => {
-        window.location.reload()
-      }, 200);
-    }
+   Swal.fire({
+  title: 'Sure you want to Logout?',
+  html: '<p style="color: #999; margin-top: 10px; line-height: 1.6;">You will need to login again to access your account.</p>',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Logout',
+  cancelButtonText: 'Cancel',
+  reverseButtons: true,
+  background: '#000000',
+  color: '#ffffff',
+  iconColor: '#ffffff',
+  backdrop: 'rgba(0, 0, 0, 0.95)',
+  confirmButtonColor: '#ffffff',
+  cancelButtonColor: '#000000',
+  customClass: {
+    popup: 'black-white-popup',
+    confirmButton: 'black-white-confirm-btn',
+    cancelButton: 'black-white-cancel-btn'
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: 'Logging out...',
+      text: 'See you soon!',
+      icon: 'success',
+      background: '#000000',
+      color: '#ffffff',
+      iconColor: '#ffffff',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+      customClass: {
+        popup: 'black-white-popup',
+        timerProgressBar: 'black-white-timer'
+      }
+    });
+    
+    this.Service.logout();
+    localStorage.clear();
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  }
+});
   }
 
   handleFileUploadPost(event: Event) {

@@ -2,7 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-edit-profile',
   templateUrl: './edit-profile.component.html',
@@ -123,14 +123,50 @@ export class EditProfileComponent implements OnInit {
     })
   }
 logout(){
-    const pakka = confirm("Sure you want to Logout?");
-    if (pakka) {
-      localStorage.clear()
-      this.route.navigateByUrl("/")
-      setTimeout(() => {
-        window.location.reload()
-      }, 200);
-    }
+Swal.fire({
+  title: 'Sure you want to Logout?',
+  html: '<p style="color: #999; margin-top: 10px; line-height: 1.6;">You will need to login again to access your account.</p>',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Logout',
+  cancelButtonText: 'Cancel',
+  reverseButtons: true,
+  background: '#000000',
+  color: '#ffffff',
+  iconColor: '#ffffff',
+  backdrop: 'rgba(0, 0, 0, 0.95)',
+  confirmButtonColor: '#ffffff',
+  cancelButtonColor: '#000000',
+  customClass: {
+    popup: 'black-white-popup',
+    confirmButton: 'black-white-confirm-btn',
+    cancelButton: 'black-white-cancel-btn'
+  }
+}).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: 'Logging out...',
+      text: 'See you soon!',
+      icon: 'success',
+      background: '#000000',
+      color: '#ffffff',
+      iconColor: '#ffffff',
+      showConfirmButton: false,
+      timer: 1500,
+      timerProgressBar: true,
+      customClass: {
+        popup: 'black-white-popup',
+        timerProgressBar: 'black-white-timer'
+      }
+    });
+    
+    this.ServiceSrv.logout();
+    localStorage.clear();
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  }
+});
 }
  
 }

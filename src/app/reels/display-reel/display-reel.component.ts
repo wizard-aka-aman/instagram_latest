@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, OnInit, QueryList, ViewChild, View
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ServiceService } from 'src/app/service.service';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-display-reel',
   templateUrl: './display-reel.component.html',
@@ -312,26 +312,45 @@ export class DisplayReelComponent implements OnInit {
 
   UnFollow(reel:any){
      if(!reel.isPublic){
-      const isconfirm = confirm("If you change your mind, you'll have to request to follow "+reel.userName+ " again.");
-    
-    if(isconfirm){
-      this.followForm.followerUsername = this.LoggedInUser
-    this.followForm.followingUsername = reel.userName;
-    console.log(this.followForm);
-     reel.alreadyFollowing = false;
-        reel.isRequested = false;
-    this.serviceSrv.UnFollowPost(this.followForm).subscribe({
-      next: (res: any) => {
-        console.log(res);
-       
-      },
-      error: (err) => {
-        console.log(err);
-         reel.alreadyFollowing = true;
-        reel.isRequested = true;
-      }
-    })
-    }
+       Swal.fire({
+         title: 'Unfollow User?',
+         html: `<p style="color: #999; margin-top: 10px; line-height: 1.6;">If you change your mind, you'll need to send a follow request to <strong style="color: #fff;">${reel.userName}</strong> again.</p>`,
+         icon: 'warning',
+         showCancelButton: true,
+         confirmButtonText: 'Unfollow',
+         cancelButtonText: 'Cancel',
+         reverseButtons: true,
+         background: '#000000',
+         color: '#ffffff',
+         iconColor: '#ffffff',
+         backdrop: 'rgba(0, 0, 0, 0.95)',
+         confirmButtonColor: '#ffffff',
+         cancelButtonColor: '#000000',
+         customClass: {
+           popup: 'black-white-popup',
+           confirmButton: 'black-white-confirm-btn',
+           cancelButton: 'black-white-cancel-btn'
+         }
+       }).then((result) => {
+         if (result.isConfirmed) {
+           this.followForm.followerUsername = this.LoggedInUser
+           this.followForm.followingUsername = reel.userName;
+           console.log(this.followForm);
+           reel.alreadyFollowing = false;
+           reel.isRequested = false;
+           this.serviceSrv.UnFollowPost(this.followForm).subscribe({
+             next: (res: any) => {
+               console.log(res);
+
+             },
+             error: (err) => {
+               console.log(err);
+               reel.alreadyFollowing = true;
+               reel.isRequested = true;
+             }
+           })
+         }
+       });
   }
   else{
      this.followForm.followerUsername = this.LoggedInUser
