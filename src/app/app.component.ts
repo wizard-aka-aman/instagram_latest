@@ -97,16 +97,14 @@ export class AppComponent implements OnInit {
     this.ServiceSrv.login(this.loginFormData).subscribe({
       next: (res: any) => { 
           console.log(res);
-          // Store only the access token
-          localStorage.setItem('jwt', res.token);
-
-          this.isLoggedIn = true;
+          // Store only the access token 
           this.loginemail = "";
           this.loginpassword = "";
           this.isLoading = false;
           this.toastr.success('Logged in successfully');
-              setTimeout(() => {
-        window.location.reload()
+          setTimeout(() => {
+                this.isLoggedIn = true;
+        // window.location.reload()
       }, 200);
 
       },
@@ -156,20 +154,19 @@ export class AppComponent implements OnInit {
       next: (res: any) => {
         this.toastr.success('You have been registered successfully');
         // Store only the access token
-        localStorage.setItem("jwt", res.token);
 
-        this.isLoggedIn = true;
-
+        
         // Clear fields
         this.signupemail = "";
         this.signuppassword = "";
         this.signupusername = "";
         this.signupname = "";
         this.errorMessages = [];
-
+        
         this.isLoading = false;
-          setTimeout(() => {
-        window.location.reload()
+            setTimeout(() => {
+          this.isLoggedIn = true;
+      //   window.location.reload()
       }, 200);
       },
       error: (error: any) => {
