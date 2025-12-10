@@ -15,6 +15,17 @@ export class MapDisplayComponent implements OnInit {
   selectedLon: number = 0;
   marker: any;
   loggedInUser: string = ""
+  // State variables
+  userLat: number = 0; // The actual GPS location
+  userLon: number = 0;
+  currentViewLat: number = 0; // Where the map is currently looking
+  currentViewLon: number = 0;
+  
+  showSearchBtn: boolean = false;
+  currentLayer: string = 'street'; // 'street' | 'satellite' | 'dark'
+  
+  // Layer objects
+  tileLayers: any = {};
   constructor(private serviceSrv: ServiceService, private router: Router , private Location: Location) {
     this.loggedInUser = this.serviceSrv.getUserName()
   }
@@ -48,39 +59,6 @@ export class MapDisplayComponent implements OnInit {
       }
     );
   }
-
-  createMap(lat: number, lon: number) {
-    // Map create karo
-    // Satellite layer (base)
-    const satellite = L.tileLayer(
-      `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
-      {
-        maxZoom: 19,
-      }
-    );
- 
-    // Add both to map
-    this.map = L.map('map', {
-      center: [this.selectedLat, this.selectedLon],
-      zoom: 13,
-      layers: [satellite]
-    });
-
-    // Current location marker
-    this.marker = L.marker([lat, lon], { draggable: false }).addTo(this.map);
-    this.marker.on('dragend', (e: any) => {
-      const latLng = e.target.getLatLng();
-      this.selectedLat = latLng.lat;
-      this.selectedLon = latLng.lng;
-    });
-
-    // 🧩 Fix: wait a bit then adjust map size
-    setTimeout(() => {
-      this.map.invalidateSize();
-      this.loadStoriesOnMap();
-    }, 500);
-  }
-
   loadStoriesOnMap() {
    this.serviceSrv.getMapStoriesCached(this.loggedInUser).subscribe((stories: any) => {
   stories.forEach((story: any) => {
@@ -197,5 +175,61 @@ export class MapDisplayComponent implements OnInit {
   }
   close(){
     this.Location.back();
+  }
+  createMap(lat: number, lon: number) {
+    this.tileLayers = {
+      street: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }),
+      satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 }),
+      dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 })
+    };
+
+    this.map = L.map('map', {
+      center: [lat, lon],
+      zoom: 13,
+      layers: [this.tileLayers['street']],
+      zoomControl: false 
+    });
+
+    const myIcon = L.divIcon({
+      html: `<div style="background-color:#007bff; width:15px; height:15px; border-radius:50%; border:2px solid white; box-shadow:0 0 10px #007bff;"></div>`,
+      className: ''
+    });
+    this.marker = L.marker([lat, lon], { icon: myIcon }).addTo(this.map);
+
+    this.map.on('moveend', () => {
+      const center = this.map.getCenter();
+      const dist = this.getDistance(center.lat, center.lng, this.currentViewLat, this.currentViewLon);
+      if (dist > 0.5) { 
+        this.showSearchBtn = true;
+      }
+    });
+
+    this.currentViewLat = lat;
+    this.currentViewLon = lon;
+    this.loadStoriesOnMap(); 
+  }
+  changeLayer(layerName: string) {
+    this.currentLayer = layerName; 
+    Object.values(this.tileLayers).forEach((layer: any) => this.map.removeLayer(layer));
+    this.map.addLayer(this.tileLayers[layerName]);
+  }
+  centerMap() {
+    this.map.flyTo([this.selectedLat, this.selectedLon],15);
+    this.currentViewLat = this.selectedLat;
+    this.currentViewLon = this.selectedLon;
+    this.showSearchBtn = false;
+  }
+  getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    if ((lat1 == lat2) && (lon1 == lon2)) return 0;
+    const radlat1 = Math.PI * lat1 / 180;
+    const radlat2 = Math.PI * lat2 / 180;
+    const theta = lon1 - lon2;
+    const radtheta = Math.PI * theta / 180;
+    let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) dist = 1;
+    dist = Math.acos(dist);
+    dist = dist * 180 / Math.PI;
+    dist = dist * 60 * 1.1515;
+    return dist * 1.609344; // Kilometers
   }
 }

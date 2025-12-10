@@ -2,3 +2,19 @@
     <div class="btn btn-secondary position-absolute " style="z-index: 100; top: 15px; right: 15px;" (click)="close()" > X </div>
     <div id="map" ></div>
 </div>
+<div class="map-container position-relative">
+   <div class="map-controls glass-panel">
+    <div class="control-item" (click)="changeLayer('street')" [class.active]="currentLayer === 'street'">
+      <i class="fa fa-map-o"></i> <span>Street</span>
+    </div>
+    <div class="control-item" (click)="changeLayer('satellite')" [class.active]="currentLayer === 'satellite'">
+      <i class="fa fa-globe"></i> <span>Sat</span>
+    </div>
+    <div class="control-item" (click)="changeLayer('dark')" [class.active]="currentLayer === 'dark'">
+      <i class="fa fa-moon-o"></i> <span>Dark</span>
+    </div>
+    <div class="control-item" (click)="centerMap()">
+      <i class="fa fa-location-arrow"></i>
+    </div>
+  </div>
+</div>
