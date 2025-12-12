@@ -1,20 +1,141 @@
-<div class="p-3 m-3 position-relative" >
-    <div class="btn btn-secondary position-absolute " style="z-index: 100; top: 15px; right: 15px;" (click)="close()" > X </div>
-    <div id="map" ></div>
-</div>
-<div class="map-container position-relative">
-   <div class="map-controls glass-panel">
-    <div class="control-item" (click)="changeLayer('street')" [class.active]="currentLayer === 'street'">
-      <i class="fa fa-map-o"></i> <span>Street</span>
+<div class="map-wrapper">
+  <div id="map"></div>
+
+  <div 
+    class="search-area-btn" 
+    *ngIf="showSearchBtn" 
+    (click)="searchThisArea()" 
+    style="animation: fadeIn 0.3s forwards;"
+  >
+    <i class="fa fa-search"></i>
+    Search This Area
+  </div>
+
+  <div 
+    class="directions-panel glass-panel" 
+    [class.hidden]="!showDirections" 
+    *ngIf="showDirections && selectedPost"
+  >
+    <div class="directions-header">
+      <h5><i class="fa fa-route"></i> Directions to Post</h5>
+      <button class="btn-close-panel" (click)="clearDirections()">
+        <i class="fa fa-times"></i>
+      </button>
     </div>
-    <div class="control-item" (click)="changeLayer('satellite')" [class.active]="currentLayer === 'satellite'">
-      <i class="fa fa-globe"></i> <span>Sat</span>
+    <hr style="margin: 5px 0 10px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.1);">
+    <div class="directions-content">
+      <p><strong>Destination:</strong> {{ selectedPost.userName }}'s Post</p>
+      <p><strong>Post Caption:</strong> {{ selectedPost.caption }}</p>
+      <p><strong>Distance:</strong> {{ postDistance }} km</p>
+      <p><strong>ETA:</strong> {{ postDuration }} mins</p>
+      <p style="font-style: italic; color: #007aff; font-size: 12px;">
+        Route plotted on map in blue.
+      </p>
+      <button class="btn-open-maps" 
+              (click)="openInExternalMaps(selectedPost.latitude, selectedPost.longitude)">
+        <i class="fa fa-external-link"></i> Open in Google Maps
+      </button>
     </div>
-    <div class="control-item" (click)="changeLayer('dark')" [class.active]="currentLayer === 'dark'">
-      <i class="fa fa-moon-o"></i> <span>Dark</span>
+  </div>
+
+  <div class="filter-panel glass-panel" [class.expanded]="showFilters">
+    <div class="filter-header" (click)="toggleFilters()">
+      <i class="fa fa-sliders"></i>
+      <span>Filters</span>
+      <i class="fa fa-chevron-down transition-transform" [style.transform]="showFilters ? 'rotate(180deg)' : 'rotate(0)'"></i>
     </div>
-    <div class="control-item" (click)="centerMap()">
-      <i class="fa fa-location-arrow"></i>
+    
+    <div class="filter-content">
+      <div class="filter-section">
+        <label>
+          <i class="fa fa-dot-circle-o"></i> Search Radius: 
+          <strong>{{ searchRadius }} km</strong>
+        </label>
+        <input 
+          type="range" 
+          min="1" 
+          max="50" 
+          step="1" 
+          [value]="searchRadius" 
+          (input)="updateRadius($event)" 
+          class="radius-slider"
+        >
+        <div class="radius-labels">
+          <span>1 km</span>
+          <span>50 km</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Map Controls with Dropdown -->
+  <div class="map-controls-wrapper glass-panel" [class.expanded]="showMapControls">
+    <!-- Dropdown Toggle Button -->
+    <button class="controls-toggle" (click)="toggleMapControls()">
+      <i class="fa fa-bars"></i>
+      <span>Controls</span>
+      <i class="fa fa-chevron-up transition-transform" [style.transform]="showMapControls ? 'rotate(180deg)' : 'rotate(0)'"></i>
+    </button>
+
+    <!-- Dropdown Content -->
+    <div class="map-controls-content">
+      <!-- Layer Controls -->
+      <div class="control-group">
+        <div class="control-group-title">
+          <i class="fa fa-map"></i>
+          <span>Map Layer</span>
+        </div>
+        <div class="control-items-row">
+          <div class="control-item" (click)="changeLayer('street')" [class.active]="currentLayer === 'street'">
+            <i class="fa fa-map-o"></i>
+            <span>Street</span>
+          </div>
+          <div class="control-item" (click)="changeLayer('satellite')" [class.active]="currentLayer === 'satellite'">
+            <i class="fa fa-globe"></i>
+            <span>Satellite</span>
+          </div>
+          <div class="control-item" (click)="changeLayer('dark')" [class.active]="currentLayer === 'dark'">
+            <i class="fa fa-moon-o"></i>
+            <span>Dark</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-divider"></div>
+
+      <!-- View Controls -->
+      <div class="control-group">
+        <div class="control-group-title">
+          <i class="fa fa-eye"></i>
+          <span>View Options</span>
+        </div>
+        <div class="control-items-row">
+          <div class="control-item" (click)="centerMap()">
+            <i class="fa fa-crosshairs"></i>
+            <span>Recenter</span>
+          </div>
+          <div class="control-item" (click)="toggleHeatmap()" [class.active]="showHeatmap">
+            <i class="fa fa-fire" [style.color]="showHeatmap ? '#ff4757' : ''"></i>
+            <span>Heatmap</span>
+          </div>
+          <div class="control-item" (click)="toggleLiveTracking()" [class.active]="liveTrackingEnabled">
+            <i class="fa fa-user-circle-o" [style.color]="liveTrackingEnabled ? '#2ed573' : ''"></i>
+            <span>Live Track</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-divider"></div>
+
+      <!-- Action Controls -->
+      <div class="control-group">
+        <div class="control-items-row">
+          <div class="control-item control-close" (click)="close()">
+            <i class="fa fa-times-circle"></i>
+            <span>Close Map</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

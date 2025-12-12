@@ -1,108 +1,760 @@
+.map-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
 #map {
-  height: 90vh; 
+  height: 90vh;
+  width: 100%;
   z-index: 1;
   background: #eaeaea;
 }
- 
- 
-// Custom Close Button
-.btn-close-custom {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: all 0.2s;
 
-  &:hover {
-    background: rgba(255, 0, 0, 0.8);
-    transform: scale(1.1);
-  }
+// ========================================
+// GLASS PANEL BASE STYLE (iOS-like)
+// ========================================
+.glass-panel {
+  // background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(3px) saturate(20%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 32px rgb(255 255 255 / 36%), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.705);
+    border-radius: 16px;
+    -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-// "Search This Area" Floating Pill
+// ========================================
+// SEARCH THIS AREA BUTTON
+// ========================================
 .search-area-btn {
   position: absolute;
-  top: 80px; // Below close button
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  background: white;
-  color: #333;
-  padding: 8px 16px;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  color: #1a1a1a;
+  padding: 12px 24px;
+  border-radius: 25px;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+
+  &:hover {
+    background: rgba(0, 122, 255, 0.9);
+    color: white;
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0, 122, 255, 0.3);
+  }
 
   &:active {
-    transform: translateX(-50%) scale(0.95);
+    transform: translateX(-50%) scale(0.98);
   }
 }
 
-// Bottom Control Panel
-.map-controls {
+// ========================================
+// DIRECTIONS PANEL
+// ========================================
+.directions-panel {
   position: absolute;
-  bottom: 30px;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  padding: 16px;
+  min-width: 280px;
+  max-width: 320px;
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .directions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    h5 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+
+      i {
+        color: #007aff;
+        margin-right: 6px;
+      }
+    }
+
+    .btn-close-panel {
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      cursor: pointer;
+      color: #8e8e93;
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 59, 48, 0.1);
+        color: #ff3b30;
+      }
+    }
+  }
+
+  .directions-content {
+    p {
+      margin: 8px 0;
+      font-size: 13px;
+      color: #3a3a3c;
+      line-height: 1.5;
+    }
+
+    .btn-open-maps {
+      width: 100%;
+      padding: 12px;
+      background: #007aff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #0051d5;
+        transform: scale(1.02);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+}
+
+// ========================================
+// FILTER PANEL (Responsive)
+// ========================================
+.filter-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 999;
+  padding: 16px;
+  width: 280px;
+  max-height: 60px;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #1a1a1a;
+
+  &.expanded {
+    max-height: 300px;
+  }
+
+  .filter-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1a1a1a;
+    user-select: none;
+
+    i:first-child {
+      color: #007aff;
+      font-size: 16px;
+    }
+
+    span {
+      flex: 1;
+      font-size: 15px;
+    }
+
+    i:last-child {
+      color: #8e8e93;
+      font-size: 14px;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .filter-content {
+    margin-top: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &.expanded .filter-content {
+    opacity: 1;
+  }
+
+  .filter-section {
+    margin-bottom: 16px;
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #3a3a3c;
+      margin-bottom: 10px;
+
+      i {
+        color: #007aff;
+        margin-right: 6px;
+      }
+
+      strong {
+        color: #007aff;
+      }
+    }
+
+    .radius-slider {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+      -webkit-appearance: none;
+      background: linear-gradient(to right, #007aff, #5ac8fa);
+      cursor: pointer;
+
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #007aff;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+
+      &::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        border: 2px solid #007aff;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .radius-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #8e8e93;
+      margin-top: 6px;
+    }
+  }
+}
+
+// ========================================
+// MAP CONTROLS WRAPPER (Dropdown Style)
+// ========================================
+.map-controls-wrapper {
+  position: absolute;
+  bottom: 100px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  display: flex;
-  gap: 15px;
-  padding: 10px 20px;
-  border-radius: 30px;
-  
-  // Glassmorphism effect
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 12px;
+  min-width: 200px;
+  max-width: 90vw;
+  max-height: 56px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &.expanded {
+    max-height: 500px;
+    padding: 16px;
+  }
+
+  .controls-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #1a1a1a;
+    transition: all 0.2s ease;
+    user-select: none;
+
+    i:first-child {
+      color: #007aff;
+      font-size: 18px;
+    }
+
+    span {
+      flex: 1;
+      text-align: center;
+    }
+
+    i:last-child {
+      color: #8e8e93;
+      font-size: 14px;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    &:active {
+      background: rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  .map-controls-content {
+    margin-top: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &.expanded .map-controls-content {
+    opacity: 1;
+  }
+
+  .control-group {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-group-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #8e8e93;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+
+      i {
+        font-size: 13px;
+      }
+    }
+
+    .control-items-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+  }
+
+  .control-divider {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.1);
+    margin: 12px 0;
+  }
 
   .control-item {
+    flex: 1;
+    min-width: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #666;
+    color: #3a3a3c;
     font-size: 12px;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.02);
+    text-align: center;
+    gap: 6px;
+    user-select: none;
 
     i {
-      font-size: 18px;
-      margin-bottom: 2px;
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+
+    span {
+      font-weight: 500;
+      white-space: nowrap;
     }
 
     &:hover {
-      color: #007bff;
+      background: rgba(0, 122, 255, 0.08);
+      color: #007aff;
+      transform: translateY(-2px);
     }
-    
+
+    &:active {
+      transform: translateY(0) scale(0.96);
+    }
+
     &.active {
-      color: #007bff;
-      font-weight: bold;
+      background: rgba(0, 122, 255, 0.15);
+      color: #007aff;
+      font-weight: 600;
+
+      i {
+        transform: scale(1.1);
+      }
+    }
+
+    &.control-close {
+      background: rgba(255, 59, 48, 0.08);
+      color: #ff3b30;
+      width: 100%;
+
+      &:hover {
+        background: rgba(255, 59, 48, 0.15);
+      }
     }
   }
 }
 
-// Animation for Search Button
-.fade-in {
-  animation: fadeIn 0.3s ease-in;
+// ========================================
+// MARKER CLUSTER STYLES
+// ======================================== 
+.marker-cluster { 
+  border: none !important;
+}
+
+.cluster-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: pulse 2s infinite;
+
+  &.cluster-small {
+    background: #34c759;
+    width: 44px;
+    height: 44px;
+    font-size: 14px;
+    color: white;
+  }
+
+  &.cluster-medium {
+    background: #ff9500;
+    width: 52px;
+    height: 52px;
+    font-size: 16px;
+    color: white;
+  }
+
+  &.cluster-large {
+    background: #ff3b30;
+    width: 60px;
+    height: 60px;
+    font-size: 18px;
+    color: white;
+  }
+}
+
+// ========================================
+// STORY MARKER STYLES
+// ========================================
+.story-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  &.pulse {
+    animation: pulse 2s infinite;
+  }
+
+  .story-image-wrapper {
+    position: relative;
+  }
+
+  .story-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #007aff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    &.seen {
+      border-color: #d1d1d6;
+      opacity: 0.7;
+    }
+
+    &.unseen {
+      border-color: #ff2d55;
+    }
+  }
+
+  .story-username {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a1a1a;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 3px 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// ========================================
+// LIVE MARKER STYLES
+// ========================================
+.live-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+
+  .live-pulse {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15px;
+    height: 15px;
+    background: #34c759;
+    border-radius: 50%;
+    animation: livePulse 1.5s infinite;
+  }
+
+  i {
+    font-size: 26px;
+    color: #34c759;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #1a1a1a;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    padding: 3px 8px;
+    border-radius: 8px;
+    margin-top: 4px;
+  }
+}
+
+// ========================================
+// POPUP STYLES
+// ========================================
+.leaflet-popup-content-wrapper {
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+.btn-directions {
+  width: 100%;
+  padding: 10px;
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  &:hover {
+    background: #0051d5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+// ========================================
+// UTILITY CLASSES
+// ========================================
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+// ========================================
+// ANIMATIONS
+// ========================================
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes livePulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -10px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+// ========================================
+// RESPONSIVE DESIGN
+// ========================================
+@media (max-width: 768px) {
+  .filter-panel {
+    left: 12px;
+    top: 12px;
+    width: calc(100vw - 24px);
+    text-align: center;
+  }
+
+  .directions-panel {
+    right: 12px;
+    top: 120px;
+    left: 12px;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .search-area-btn {
+    top: 70px;
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+
+  .map-controls-wrapper {
+    bottom: 150px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+    width: calc(100vw - 24px);
+
+    .control-items-row {
+      justify-content: space-between;
+    }
+
+    .control-item {
+      min-width: 70px;
+      padding: 10px 6px;
+
+      i {
+        font-size: 18px;
+      }
+
+      span {
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-panel {
+    padding: 12px;
+    
+    .filter-header {
+      font-size: 14px;
+    }
+  }
+
+  .directions-panel {
+    padding: 12px;
+
+    .directions-header h5 {
+      font-size: 14px;
+    }
+
+    .directions-content p {
+      font-size: 12px;
+    }
+  }
+
+  .map-controls-wrapper {
+    .control-item {
+      min-width: 60px;
+      padding: 8px 4px;
+
+      i {
+        font-size: 16px;
+      }
+
+      span {
+        font-size: 10px;
+      }
+    }
+
+    .control-group-title {
+      font-size: 11px;
+    }
+  }
+
+  .search-area-btn {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
 }
