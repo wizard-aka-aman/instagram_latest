@@ -212,3 +212,239 @@ input::placeholder {
     box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.25) !important;
     outline: none;
   }
+  .left-sidebar {
+  width: 300px;
+  height: 100vh;
+  position: fixed;
+  background-color: #000000;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Custom scrollbar for sidebar */
+.left-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.left-sidebar::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.logo {
+  width: 130px;
+}
+
+.nav-link {
+  color: #ffffff;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: rgb(142, 142, 142);
+  color: #000;
+  text-decoration: none;
+}
+
+.nav-link i {
+  min-width: 24px;
+  text-align: center;
+}
+
+textarea::placeholder {
+  color: rgb(255, 255, 255) !important;
+}
+input::placeholder {
+  color: rgb(255, 255, 255) !important;
+}
+
+.instagramloading {
+  animation: ghumna 0.5s linear infinite;
+}
+
+.horizontal-bar {
+  display: flex;
+  overflow-x: auto;   /* horizontal scroll enable */
+  white-space: nowrap;
+  gap: 15px;          /* links ke beech space */
+  padding: 10px;
+  background-color: #000;
+  border-bottom: 1px solid #333;
+  scrollbar-width: thin;      /* Firefox */
+}
+
+.horizontal-bar::-webkit-scrollbar {
+  height: 6px;        /* Chrome/Edge ke liye scrollbar height */
+}
+
+.horizontal-bar::-webkit-scrollbar-thumb {
+  background: #666;   /* scrollbar ka color */
+  border-radius: 10px;
+}
+
+.horizontal-bar a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #111;
+  flex-shrink: 0; /* prevent wrapping */
+}
+
+@keyframes ghumna {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media screen and (max-width: 768px) {
+  .display-none-ok {
+  display: none !important;
+} 
+}
+/* ✅ Responsive Sidebar -> Bottom Navbar */
+@media (max-width: 768px) {
+  .bottom-sidebar {
+  position: fixed !important;
+  bottom: 0; 
+  width: 100vw !important;
+  background-color: #000;  /* black bar */ 
+  z-index: 1000;
+  display: flex; 
+  overflow-x: scroll;
+  height: 55px; /* fixed height */
+  
+}
+ .left-sidebar { 
+    display: flex !important;   /* force enable */ 
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100vw !important;
+    position: fixed !important;
+    height: auto !important;
+    overflow-y: visible !important; /* Allow content to show in bottom bar */
+    overflow-x: scroll !important; /* Horizontal scroll for bottom bar */
+  }
+
+  /* Hide the logo on small screens */
+  .left-sidebar .pt-2,
+  .left-sidebar .logo {
+    display: none !important;
+  }
+
+  /* Nav in bottom bar -> row */
+  .left-sidebar .nav { 
+    gap: 0 !important;
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  /* Each nav-link becomes column (icon above text) */
+  .left-sidebar .nav-link {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .left-sidebar .nav-link span {
+    display: block !important;
+    font-size: 10px;
+    margin-top: 2px;
+  }
+
+  /* Hide "More" section in bottom bar */
+  .left-sidebar .pt-5 {
+    display: none !important;
+  }
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .nav-link-margin{
+    margin-left: 40px !important;
+    margin-right: 40px !important;
+  }
+}
+.nav-link-margin{
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+ 
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+  }
+
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+
+  /* Mobile optimization */
+  @media (max-width: 767.98px) {
+    .modal-dialog {
+      margin: 0.5rem !important;
+      max-width: calc(100% - 1rem) !important;
+    }
+    
+    .modal-content {
+      max-height: 95vh !important;
+    }
+    
+    .modal-body {
+      max-height: calc(95vh - 60px) !important;
+    }
+
+    .modal-header {
+      padding: 0.75rem !important;
+    }
+
+    .modal-title {
+      font-size: 0.95rem !important;
+    }
+  }
+
+  /* Smooth transitions */
+  .carousel-item {
+    transition: transform 0.6s ease-in-out;
+  }
+
+  /* Better focus states for accessibility */
+  .btn:focus,
+  .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.25) !important;
+    outline: none;
+  }
