@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
   initializeGoogleSignIn() {
     if (typeof google !== 'undefined') {
       google.accounts.id.initialize({
-        client_id: '342524114261-p3vsv8huurr2psln2365dpjol1plnmdf.apps.googleusercontent.com', // Replace with your actual Google Client ID
+        client_id: '1063221874510-l25cg8e1e216fk6735r21v87806f7ent.apps.googleusercontent.com', // Replace with your actual Google Client ID
         callback: this.handleCredentialResponse.bind(this),
         auto_select: false,
         cancel_on_tap_outside: true
