@@ -3,6 +3,7 @@ import { AfterViewChecked, Component, OnInit } from '@angular/core';
 import { ServiceService } from './service.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-root',
@@ -132,7 +133,26 @@ export class AppComponent implements OnInit {
       error: (err: any) => {
         console.log('Error:', err);
         this.isLoading = false;
-        this.toastr.error('Error occurred while logging in', err?.error?.message || 'Authentication failed');
+        Swal.fire({
+          title: err.error,
+          html: `<p style="color: #999; margin-top: 10px; line-height: 1.6;">No Account found with ${this.user.email}.</p>`,
+          icon: 'error', 
+          confirmButtonText: 'Close',
+          cancelButtonText: 'Cancel',
+          reverseButtons: true,
+          background: '#000000',
+          color: '#ffffff',
+          iconColor: '#ffffff',
+          backdrop: 'rgba(0, 0, 0, 0.95)',
+          confirmButtonColor: '#ffffff',
+          cancelButtonColor: '#000000',
+          customClass: {
+            popup: 'black-white-popup',
+            confirmButton: 'black-white-confirm-btn',
+            cancelButton: 'black-white-casncel-btn'
+          }
+        }).then((result) => { 
+        });
       }
     });
   }
