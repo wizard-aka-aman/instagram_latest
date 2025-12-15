@@ -1,5 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'leaflet/dist/leaflet.css';
+html, body {
+  overscroll-behavior: none !important;
+}
+* {
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none; 
+}
+
 
 .story-marker {
   text-align: center;
