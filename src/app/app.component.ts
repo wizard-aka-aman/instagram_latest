@@ -47,40 +47,137 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Google OAuth initialization (if needed)
+    // Load Google Identity Services script
+    this.loadGoogleScript();
+  }
+
+  loadGoogleScript() {
+    // Check if script already exists
+    if (document.getElementById('google-signin-script')) {
+      this.initializeGoogleSignIn();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'google-signin-script';
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      this.initializeGoogleSignIn();
+    };
+    document.head.appendChild(script);
+  }
+
+  initializeGoogleSignIn() {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: '342524114261-p3vsv8huurr2psln2365dpjol1plnmdf.apps.googleusercontent.com', // Replace with your actual Google Client ID
+        callback: this.handleCredentialResponse.bind(this),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+
+      // Render the button
+      const buttonDiv = document.getElementById('googleBtn');
+      if (buttonDiv) {
+        google.accounts.id.renderButton(
+          buttonDiv,
+          {
+            theme: 'filled_blue',
+            size: 'large',
+            text: 'continue_with',
+            shape: 'rectangular',
+            width: '100%'
+          }
+        );
+      }
+
+      this.googleReady = true;
+    }
   }
 
   handleCredentialResponse(response: any) {
+    this.isLoading = true;
     const token = response.credential;
-    const payload: any = this.ServiceSrv.decodeJwt(token);
-    console.log(payload);
+    
+    // Decode JWT token to get user info
+    const payload = this.parseJwt(token);
+    console.log('Google User Info:', payload);
 
     this.user = {
-      name: payload.FullName,
-      email: payload.Email
+      name: payload.name,
+      email: payload.email,
+      picture: payload.picture,
+      googleId: payload.sub
     };
 
-    this.Authform.email = this.user.email;
-    if (this.user.email != null || this.user.email != undefined || this.user.email != "") {
-      this.ServiceSrv.Auth(this.Authform).subscribe({
-        next: (res: any) => {
-          console.log(res);
-          localStorage.setItem('jwt', res.token);
-          this.toastr.success('You have been logged in successfully');
+    // Send to backend for authentication
+    this.Authform = {
+      Email: this.user.email,
+      FullName: this.user.name,
+      GoogleId: this.user.googleId,
+      ProfilePicture: this.user.picture
+    };
+
+    this.ServiceSrv.Auth(this.Authform).subscribe({
+      next: (res: any) => {
+        console.log('Backend response:', res);
+        this.isLoading = false;
+        setTimeout(() => {
           this.isLoggedIn = true;
-          this.router.navigateByUrl('/home');
-        },
-        error: (err: any) => {
-          console.log(err);
-          this.toastr.error('Error occurred while logging in', err.error);
-        }
-      })
+          window.location.reload();
+        }, 200);
+      },
+      error: (err: any) => {
+        console.log('Error:', err);
+        this.isLoading = false;
+        this.toastr.error('Error occurred while logging in', err?.error?.message || 'Authentication failed');
+      }
+    });
+  }
+
+  // Helper function to decode JWT
+  parseJwt(token: string) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error('Error parsing JWT:', e);
+      return null;
     }
   }
 
   signup() {
     this.loginform = !this.loginform;
     this.errorMessages = [];
+    
+    // Re-render Google button when switching forms
+    setTimeout(() => {
+      if (this.googleReady) {
+        const buttonDiv = document.getElementById('googleBtn');
+        if (buttonDiv && typeof google !== 'undefined') {
+          buttonDiv.innerHTML = ''; // Clear existing button
+          google.accounts.id.renderButton(
+            buttonDiv,
+            {
+              theme: 'filled_blue',
+              size: 'large',
+              text: 'continue_with',
+              shape: 'rectangular',
+              width: '100%'
+            }
+          );
+        }
+      }
+    }, 100);
   }
 
   // Login
@@ -96,17 +193,14 @@ export class AppComponent implements OnInit {
 
     this.ServiceSrv.login(this.loginFormData).subscribe({
       next: (res: any) => { 
-          console.log(res);
-          // Store only the access token 
-          this.loginemail = "";
-          this.loginpassword = "";
-          this.isLoading = false;
-          this.toastr.success('Logged in successfully');
-          setTimeout(() => {
-                this.isLoggedIn = true;
-        // window.location.reload()
-      }, 200);
-
+        console.log(res);
+        this.loginemail = "";
+        this.loginpassword = "";
+        this.isLoading = false;
+        this.toastr.success('Logged in successfully');
+        setTimeout(() => {
+          this.isLoggedIn = true;
+        }, 200);
       },
       error: (err: any) => {
         console.log(err);
@@ -116,8 +210,7 @@ export class AppComponent implements OnInit {
           (err?.error?.errors?.Email?.[0]) ? err.error.errors.Email[0] : err?.error?.message
         );
       }
-    })
-
+    });
   }
 
   SignUpInsta() {
@@ -153,10 +246,7 @@ export class AppComponent implements OnInit {
     this.ServiceSrv.register(this.signUpFormData).subscribe({
       next: (res: any) => {
         this.toastr.success('You have been registered successfully');
-        // Store only the access token
-
         
-        // Clear fields
         this.signupemail = "";
         this.signuppassword = "";
         this.signupusername = "";
@@ -164,10 +254,9 @@ export class AppComponent implements OnInit {
         this.errorMessages = [];
         
         this.isLoading = false;
-            setTimeout(() => {
+        setTimeout(() => {
           this.isLoggedIn = true;
-      //   window.location.reload()
-      }, 200);
+        }, 200);
       },
       error: (error: any) => {
         this.isLoading = false;
@@ -175,7 +264,6 @@ export class AppComponent implements OnInit {
 
         if (error.status === 400 && error.error?.errors) {
           const validationErrors = error.error.errors;
-
           for (const field in validationErrors) {
             this.errorMessages.push(...validationErrors[field]);
           }
