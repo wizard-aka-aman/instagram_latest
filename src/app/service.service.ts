@@ -145,7 +145,11 @@ export class ServiceService {
   }
 
   Auth(item: any) {
-    return this.http.post(`${this.BaseUrl}/api/auth/login`, item);
+    return this.http.post(`${this.BaseUrl}/api/auth/login`, item)
+    .pipe(
+        tap(response => this.handleAuthentication(response)),
+        catchError(this.handleError)
+      );
   }
 
   Authlogin(item: any) {
