@@ -126,7 +126,7 @@ export class AppComponent implements OnInit {
         this.isLoading = false;
         setTimeout(() => {
           this.isLoggedIn = true;
-          window.location.reload();
+          // window.location.reload();
         }, 200);
       },
       error: (err: any) => {
