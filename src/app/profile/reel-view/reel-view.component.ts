@@ -146,47 +146,47 @@ export class ReelViewComponent implements OnInit {
   closePost() {
     this.location.back();
   }
-
+  deBounceTimeForLike: any;
   // ✅ Optimistic Like
-  Like() {
-    if (this.isLikedByMe) return;
+  Like(isForLike: boolean) {
+    clearTimeout(this.deBounceTimeForLike);
+    if (isForLike) {
+      this.isLikedByMe = true;
+      this.singlepost.likesCount++;
+      this.zeroLike = false;
+    } else {
+      this.isLikedByMe = false;
+      this.singlepost.likesCount--;
+      if (this.singlepost.likesCount == 0) this.zeroLike = true;
+    }
+    this.deBounceTimeForLike = setTimeout(() => {
+      this.handleLike(isForLike);
+    }, 300);
 
-    this.isLikedByMe = true;
-    this.singlepost.likesCount++;
-    this.zeroLike = false;
-
-    this.likeAndUnLike.Publicid = this.publicid;
-    this.likeAndUnLike.LikedBy = this.LoggedInUser;
-
-    this.service.LikeReel(this.likeAndUnLike).subscribe({
-      next: () => { /* already updated */ },
-      error: () => {
-        this.isLikedByMe = false;
-        this.singlepost.likesCount--;
-        if (this.singlepost.likesCount == 0) this.zeroLike = true;
-      }
-    });
   }
 
   // ✅ Optimistic UnLike
-  UnLike() {
-    if (!this.isLikedByMe) return;
-
-    this.isLikedByMe = false;
-    this.singlepost.likesCount--;
-    if (this.singlepost.likesCount == 0) this.zeroLike = true;
-
-    this.likeAndUnLike.Publicid = this.publicid;
-    this.likeAndUnLike.LikedBy = this.LoggedInUser;
-
-    this.service.UnLikeReel(this.likeAndUnLike).subscribe({
-      next: () => { /* already updated */ },
-      error: () => {
-        this.isLikedByMe = true;
-        this.singlepost.likesCount++;
-        this.zeroLike = false;
-      }
-    });
+  handleLike(isForLike: boolean) {
+    if (isForLike) {
+      this.likeAndUnLike.Publicid = this.publicid;
+      this.likeAndUnLike.LikedBy = this.LoggedInUser;
+      this.service.LikeReel(this.likeAndUnLike).subscribe({
+        next: () => { /* already updated */ },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
+    else {
+      this.likeAndUnLike.Publicid = this.publicid;
+      this.likeAndUnLike.LikedBy = this.LoggedInUser;
+      this.service.UnLikeReel(this.likeAndUnLike).subscribe({
+        next: () => { /* already updated */ },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
   }
 
   FocusComment() {

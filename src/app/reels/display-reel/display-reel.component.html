@@ -23,7 +23,7 @@
           <div class="action-item">
             <button 
               class="action-btn"
-              (click)="reel.isLikedLoggedInUser ? UnLike(reel, reel.isLikedLoggedInUser) : Like(reel, reel.isLikedLoggedInUser)"
+              (click)="reel.isLikedLoggedInUser ? Like(reel, reel.isLikedLoggedInUser,false) : Like(reel, reel.isLikedLoggedInUser,true)"
             >
               <i 
                 [class]="reel.isLikedLoggedInUser ? 'fa-solid fa-heart liked' : 'fa-regular fa-heart'"

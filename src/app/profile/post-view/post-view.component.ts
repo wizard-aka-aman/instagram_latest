@@ -185,48 +185,46 @@ getTagsForCurrentImage() {
   closePost() {
     this.location.back();
   }
-  Like() {
-    if (this.isLikedByMe) return; // agar already like hai to dobara call na kare
+  deBounceTimeForLike: any;
+  Like(isForLike: boolean) {
+    clearTimeout(this.deBounceTimeForLike)
+    if (isForLike) {
+      this.isLikedByMe = true;
+      this.singlepost.likesCount++; // ✅ pehle UI update
+    } else {
+      this.isLikedByMe = false;
+      this.singlepost.likesCount--; // ✅ pehle UI update
+    }
+    this.deBounceTimeForLike = setTimeout(() => {
+      this.HandleLike(isForLike);
+    }, 300);
 
-    this.isLikedByMe = true;
-    this.singlepost.likesCount++; // ✅ pehle UI update
-
-    this.likeAndUnLike.postId = this.postid;
-    this.likeAndUnLike.likedBy = this.LoggedInUser;
-    this.likeAndUnLike.postUsername = this.username;
-
-    this.service.LikePost(this.likeAndUnLike).subscribe({
-      next: () => {
-        // ✅ success → kuch karne ki zarurat nahi (UI already updated)
-      },
-      error: () => {
-        // ❌ fail → rollback
-        this.isLikedByMe = false;
-        this.singlepost.likesCount--;
-      }
-    });
   }
 
-  UnLike() {
-    if (!this.isLikedByMe) return; // agar already unlike hai to dobara call na kare
-
-    this.isLikedByMe = false;
-    this.singlepost.likesCount--; // ✅ pehle UI update
-
-    this.likeAndUnLike.postId = this.postid;
-    this.likeAndUnLike.likedBy = this.LoggedInUser;
-    this.likeAndUnLike.postUsername = this.username;
-
-    this.service.UnLikePost(this.likeAndUnLike).subscribe({
-      next: () => {
-        // ✅ success → kuch karne ki zarurat nahi (UI already updated)
-      },
-      error: () => {
-        // ❌ fail → rollback
-        this.isLikedByMe = true;
-        this.singlepost.likesCount++;
-      }
-    });
+  HandleLike(isForLike: boolean) {
+    if (isForLike) {
+      this.likeAndUnLike.postId = this.postid;
+      this.likeAndUnLike.likedBy = this.LoggedInUser;
+      this.likeAndUnLike.postUsername = this.username;
+      this.service.LikePost(this.likeAndUnLike).subscribe({
+        next: () => {
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    } else {
+      this.likeAndUnLike.postId = this.postid;
+      this.likeAndUnLike.likedBy = this.LoggedInUser;
+      this.likeAndUnLike.postUsername = this.username;
+      this.service.UnLikePost(this.likeAndUnLike).subscribe({
+        next: () => {
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      });
+    }
   }
 
 

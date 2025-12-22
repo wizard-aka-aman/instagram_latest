@@ -166,10 +166,10 @@
         <div class="post-actions px-3 py-2" style="background-color: black; color: white;">
           <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center gap-3">
-              <i style="cursor: pointer;" *ngIf="!post.isLikedByMe" (click)="Like(post)"
+              <i style="cursor: pointer;" *ngIf="!post.isLikedByMe" (click)="Like(post,true)"
                 class="fa-regular fa-heart action-icon"></i>
               <i style="cursor: pointer; color: #ff3040;" *ngIf="post.isLikedByMe" class="fa-solid fa-heart action-icon"
-                (click)="UnLike(post)"></i>
+                (click)="Like(post,false)"></i>
               <i class="fa-regular fa-comment action-icon" (click)="FocusComment(post)"
                 style="cursor: pointer;"></i>
               <i class="fa-regular fa-paper-plane action-icon" data-bs-toggle="modal" data-bs-target="#HomeSent"

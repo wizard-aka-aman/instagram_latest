@@ -163,53 +163,42 @@ export class DisplayReelComponent implements OnInit {
       video.pause();
     }
   }
-  Like(reel: any, isLikedLoggedInUser: boolean) {
-    if (isLikedLoggedInUser) {
-      return;
+  HandleLike(reel: any, isLikedLoggedInUser: boolean,isForLike:boolean) {
+    if (isForLike) {
+      this.likeAndUnLike.Publicid = this.publicid;
+      this.likeAndUnLike.LikedBy = this.LoggedInUser;
+      this.serviceSrv.LikeReel(this.likeAndUnLike).subscribe({
+        next: (data: any) => {
+        },
+        error: (err: any) => {
+          console.log(err);
+        }
+      })
+    } else {
+      this.likeAndUnLike.Publicid = this.publicid;
+      this.likeAndUnLike.LikedBy = this.LoggedInUser;
+      this.serviceSrv.UnLikeReel(this.likeAndUnLike).subscribe({
+        next: (data: any) => {
+        },
+        error: (err: any) => {
+          console.log(err);
+        }
+      })
     }
-    console.log("like");
-    this.likeAndUnLike.Publicid = this.publicid;
-    this.likeAndUnLike.LikedBy = this.LoggedInUser;
-    console.log(this.likeAndUnLike);
-    // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = true;
-        reel.likesCount += 1;
-
-    this.serviceSrv.LikeReel(this.likeAndUnLike).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      },
-      error: (err: any) => {
-        console.log(err);
-        // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = false;
-        reel.likesCount -= 1;
-      }
-    })
   }
-  UnLike(reel: any,isLikedLoggedInUser:boolean) {
-    if (!isLikedLoggedInUser) {
-      return;
+  deBounceTimeForLike :any;
+  Like(reel: any,isLikedLoggedInUser:boolean,isForLike:boolean) {
+    clearTimeout(this.deBounceTimeForLike);
+    if(isForLike){
+      reel.isLikedLoggedInUser = true;
+      reel.likesCount += 1;
+    }else{
+      reel.isLikedLoggedInUser = false;
+      reel.likesCount -= 1;
     }
-    console.log("unlike");
-    this.likeAndUnLike.Publicid = this.publicid;
-    this.likeAndUnLike.LikedBy = this.LoggedInUser;
-    console.log(this.likeAndUnLike);
-      // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = false;
-        reel.likesCount -= 1;
-    this.serviceSrv.UnLikeReel(this.likeAndUnLike).subscribe({
-      next: (data: any) => {
-        console.log(data);
-      
-      },
-      error: (err: any) => {
-        console.log(err);
-          // ✅ Update local reel immediately
-        reel.isLikedLoggedInUser = true;
-        reel.likesCount += 1;
-      }
-    })
+    this.deBounceTimeForLike = setTimeout(() => {
+      this.HandleLike(reel,isLikedLoggedInUser,isForLike);
+    }, 300);
   }
   toggleComments(selectedReel: any, event: MouseEvent) {
     event.stopPropagation();

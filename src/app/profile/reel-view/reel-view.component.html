@@ -45,8 +45,8 @@
 <div class="border-top px-3 mb-5 py-2" style="background-color: #000;">
   <!-- Icons Row -->
   <div class="d-flex align-items-center gap-5 mb-2">
-    <i style="cursor: pointer;" *ngIf="!isLikedByMe" (click)="Like()" class="fa-regular fa-heart fs-4"></i>
-    <i style="cursor: pointer; color: #ff4242;" *ngIf="isLikedByMe" class="fa-solid fa-heart fs-4" (click)="UnLike()"></i>
+    <i style="cursor: pointer;" *ngIf="!isLikedByMe" (click)="Like(true)" class="fa-regular fa-heart fs-4"></i>
+    <i style="cursor: pointer; color: #ff4242;" *ngIf="isLikedByMe" class="fa-solid fa-heart fs-4" (click)="Like(false)"></i>
     <i class="fa-regular fa-comment fs-4" style="cursor: pointer;"   (click)="FocusComment()" ></i>
     <i class="fa-regular fa-paper-plane fs-4"  data-bs-toggle="modal" data-bs-target="#HomeSent" style="cursor: pointer;" (click)="AddPostId()"  ></i>
     <i *ngIf="!isSavedPost" class="fa-regular fa-bookmark fs-4 ms-auto" (click)="AddSaved()" style="cursor: pointer;"></i>

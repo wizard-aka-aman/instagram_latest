@@ -256,51 +256,49 @@ export class DisplayComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     });
   }
-
+  debounceTimerForLike: any;
   // ================= LIKE =================
-  Like(post: any) {
-    if (post.isLikedByMe) return;
-
-    // Optimistic UI
-    post.isLikedByMe = true;
-    post.likesCount++;
-
-    this.serviceSrv
-      .LikePost({
-        postId: post.postId,
-        likedBy: this.loggedInUser,
-        postUsername: post.userName
-      })
-      .subscribe({
-        error: () => {
-          // Rollback on error
-          post.isLikedByMe = false;
-          post.likesCount--;
-        }
-      });
+  Like(post: any, isForLike: boolean) {
+    clearTimeout(this.debounceTimerForLike);
+    if (isForLike) {
+      post.isLikedByMe = true;
+      post.likesCount++;
+    } else {
+      post.isLikedByMe = false;
+      post.likesCount--;
+    }
+    this.debounceTimerForLike = setTimeout(() => {
+      this.HandleLike(post, isForLike);
+    }, 300);
   }
 
-  UnLike(post: any) {
-    if (!post.isLikedByMe) return;
-
-    // Optimistic UI
-    post.isLikedByMe = false;
-    post.likesCount--;
-
-    this.serviceSrv
-      .UnLikePost({
-        postId: post.postId,
-        likedBy: this.loggedInUser,
-        postUsername: post.userName
-      })
-      .subscribe({
-        error: () => {
-          // Rollback on error
-          post.isLikedByMe = true;
-          post.likesCount++;
-        }
-      });
+  HandleLike(post: any, isForLike: boolean) {
+    if (isForLike) {
+      this.serviceSrv
+        .LikePost({
+          postId: post.postId,
+          likedBy: this.loggedInUser,
+          postUsername: post.userName
+        })
+        .subscribe({
+          error: () => { 
+          }
+        });
+    } else {
+      this.serviceSrv
+        .UnLikePost({
+          postId: post.postId,
+          likedBy: this.loggedInUser,
+          postUsername: post.userName
+        })
+        .subscribe({
+          error: () => { 
+          }
+        });
+    }
   }
+
+
 
   isLike(data: any): boolean {
     return data.some((like: any) => like.userName === this.loggedInUser);
