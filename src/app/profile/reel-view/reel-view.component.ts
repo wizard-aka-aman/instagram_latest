@@ -79,7 +79,7 @@ export class ReelViewComponent implements OnInit {
 
         this.user.userName = data.userName;
         this.user.profilePicture = data.profilePicture
-          ? "data:image/jpeg;base64," + data.profilePicture
+          ?  data.profilePicture
           : 'assets/avatar.png';
 
         this.singlepost.description = data.descripton;
@@ -107,7 +107,7 @@ export class ReelViewComponent implements OnInit {
   getProfileImage(image: string | null): string {
     return (!image || image === 'null')
       ? 'assets/avatar.png'
-      : 'data:image/jpeg;base64,' + image;
+      :  image;
   }
 
   // ✅ Optimistic Comment

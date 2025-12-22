@@ -136,7 +136,7 @@
 
       <div class="post-card-instagram" *ngFor="let post of fullDetailPost">
         <ng-container *ngIf="post.imageUrl != 'multiple'">
-          <img [src]="'data:image/jpeg;base64,' + post.imageUrl" alt="Post" class="post-image-instagram">
+          <img [src]=" post.imageUrl" alt="Post" class="post-image-instagram">
         </ng-container>
         
         <ng-container *ngIf="post.imageUrl == 'multiple' && post.mediaUrl && post.mediaUrl.length > 0">

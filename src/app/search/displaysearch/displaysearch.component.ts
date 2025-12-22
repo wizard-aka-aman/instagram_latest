@@ -78,7 +78,7 @@ export class DisplaysearchComponent implements OnInit, OnDestroy {
   getProfileImage(image: string | null): string {
     return !image || image === 'null' 
       ? 'assets/avatar.png' 
-      : 'data:image/jpeg;base64,' + image;
+      :  image;
   }
     // Listen to window resize
     @HostListener('window:resize', ['$event'])

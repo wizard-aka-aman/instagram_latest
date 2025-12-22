@@ -143,7 +143,7 @@ getTagsForCurrentImage() {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
   addComment() {
     if (!this.newComment.trim()) return; // empty comment ignore

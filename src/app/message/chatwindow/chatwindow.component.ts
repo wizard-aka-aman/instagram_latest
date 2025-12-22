@@ -50,7 +50,7 @@ export class ChatwindowComponent implements OnInit {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
  performSearch(query: string) {
     if (!query || query.trim().length === 0) {

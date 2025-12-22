@@ -696,7 +696,7 @@ export class MapDisplayComponent implements OnInit, OnDestroy {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
 
   close() {

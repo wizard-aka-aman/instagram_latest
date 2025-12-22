@@ -713,7 +713,7 @@ export class SidebarComponent {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
   DeBounce() { 
     // Clear previous timer

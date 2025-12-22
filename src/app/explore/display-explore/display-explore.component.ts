@@ -43,7 +43,7 @@ export class DisplayExploreComponent implements OnInit {
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
   openPostPage(username:string ,postId: number) {
     this.router.navigate([`/${username}/p/${postId}`]);

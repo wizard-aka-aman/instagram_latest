@@ -189,7 +189,7 @@ export class DisplayComponent implements OnInit {
         if (data.profilePicture == null) {
           this.avatarUrl = 'assets/avatar.png';
         } else {
-          this.avatarUrl = "data:image/jpeg;base64," + data.profilePicture;
+          this.avatarUrl = data.profilePicture;
         }
         if (this.loggedInUserName != this.username) {
           this.isFollowing();
@@ -405,7 +405,7 @@ Swal.fire({
     if (!image || image === 'null') {
       return 'assets/avatar.png';
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
   Mutual(){
     if(this.loggedInUserName == this.username){

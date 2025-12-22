@@ -54,7 +54,7 @@ export class MoreDisplayComponent implements OnInit {
       // Ensure the 'assets/avatar.png' is always returned when no image exists.
       return 'assets/avatar.png'; 
     }
-    return 'data:image/jpeg;base64,' + image;
+    return  image;
   }
   
   RemoveRequest(request:any){
